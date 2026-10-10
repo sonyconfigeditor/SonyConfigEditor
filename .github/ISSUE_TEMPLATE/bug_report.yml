@@ -5,14 +5,14 @@ body:
   - type: input
     id: version
     attributes:
-      label: Version (About dialog)
-      placeholder: e.g. 0.1.0
+      label: "Version (About dialog)"
+      placeholder: "e.g. 0.1.0"
     validations:
       required: true
   - type: dropdown
     id: system
     attributes:
-      label: Operating system
+      label: "Operating system"
       options:
         - Windows
         - macOS
@@ -22,7 +22,7 @@ body:
   - type: dropdown
     id: how
     attributes:
-      label: How do you run it?
+      label: "How do you run it?"
       options:
         - EXE / app
         - Python file (SonyConfigEditor.py)
@@ -31,12 +31,12 @@ body:
   - type: input
     id: python
     attributes:
-      label: Python version (if you run the Python file)
-      placeholder: e.g. 3.12
+      label: "Python version (if you run the Python file)"
+      placeholder: "e.g. 3.12"
   - type: textarea
     id: what
     attributes:
-      label: What happened, and what did you expect?
-      description: Steps to reproduce, the message you saw, screenshots. Do not attach files with personal text.
+      label: "What happened, and what did you expect?"
+      description: "Steps to reproduce, the message you saw, screenshots. Do not attach files with personal text."
     validations:
       required: true

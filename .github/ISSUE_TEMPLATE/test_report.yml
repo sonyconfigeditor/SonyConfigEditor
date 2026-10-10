@@ -9,7 +9,7 @@ body:
   - type: dropdown
     id: camera
     attributes:
-      label: Camera
+      label: "Camera"
       options:
         - PXW-FS7 (Mk1)
         - PXW-FS7M2 (FS7 II)
@@ -18,12 +18,12 @@ body:
   - type: input
     id: firmware
     attributes:
-      label: Camera firmware version
-      placeholder: e.g. 4.0
+      label: "Camera firmware version"
+      placeholder: "e.g. 4.0"
   - type: dropdown
     id: kind
     attributes:
-      label: What is this about?
+      label: "What is this about?"
       options:
         - Before/after pair (one setting changed)
         - A file made with this tool loaded on the camera
@@ -33,17 +33,17 @@ body:
   - type: textarea
     id: changed
     attributes:
-      label: What changed (menu path, old value, new value)
-      description: For example "Paint / White Clip / Level: 108.0 % to 100.0 %". Mention anything the camera changed by itself.
+      label: "What changed (menu path, old value, new value)"
+      description: "For example \"Paint / White Clip / Level: 108.0 % to 100.0 %\". Mention anything the camera changed by itself."
     validations:
       required: true
   - type: textarea
     id: result
     attributes:
-      label: Result on the camera
-      description: Did a file made with the tool load without errors? Did the values look as expected?
+      label: "Result on the camera"
+      description: "Did a file made with the tool load without errors? Did the values look as expected?"
   - type: textarea
     id: files
     attributes:
-      label: Files
-      description: Drag a ZIP archive with the SCENE and ALL files and a short text file into this field (GitHub does not accept .SCENE / .ALL directly).
+      label: "Files"
+      description: "Drag a ZIP archive with the SCENE and ALL files and a short text file into this field (GitHub does not accept .SCENE / .ALL directly)."
