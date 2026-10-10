@@ -10,7 +10,7 @@ What is known about the configuration files of the Sony PXW-FS7 ("Mk1") and PXW-
 
 ## Research status
 
-- No public documentation or parser of the SCENE format was found (searches for parsers, editors, the `V01.00` header and parameter IDs). Community articles describe only the effect of scene files, not the format.
+- No public documentation or parser of the SCENE format was found (searches for parsers, editors, the `V01.00` header and parameter IDs). Community articles describe only the effect of SCENE files, not the format.
 - The format was derived from sample files from both camera models. Every sample file round-trips byte-identically through the reader/writer.
 
 ## Container format (confirmed)
@@ -25,15 +25,15 @@ V01.00^^^^^^^^^
 %%%%
 ```
 
-LF line endings, latin-1. Scene files (`.SCENE`), ALL files (`.ALL`) and the user menu file (`.USER`) use the same container. Values are numbers or, in a few ALL entries, text.
+LF line endings, latin-1. SCENE files (`.SCENE`), ALL files (`.ALL`) and the user menu file (`.USER`) use the same container. Values are numbers or, in a few ALL entries, text.
 
 ## SCENE files and ALL files
 
-- A scene file holds the *Camera* (ISO/gain/EI, shutter, auto exposure, noise suppression ...), *Paint* (black, gamma, knee, white clip, detail, matrix, multi matrix ...) and *White* items of the camera menu. The manuals list exactly which menu item belongs into which file type (appendix "items stored in files").
-- An ALL file additionally holds almost everything else (audio, viewfinder, time code, recording, system ...). It is a superset of the scene file items. Not included: Wi-Fi credentials, clip operations, hours meter, white offset R/B.
+- A SCENE file holds the *Camera* (ISO/gain/EI, shutter, auto exposure, noise suppression ...), *Paint* (black, gamma, knee, white clip, detail, matrix, multi matrix ...) and *White* items of the camera menu. The manuals list exactly which menu item belongs into which file type (appendix "items stored in files").
+- An ALL file additionally holds almost everything else (audio, viewfinder, time code, recording, system ...). It is a superset of the SCENE file items. Not included: Wi-Fi credentials, clip operations, hours meter, white offset R/B.
 - **The IDs of the two file types differ.** The scene items appear in the ALL file as a block in the same order, with additional items in between (offset grows: scene 00006/00007 = ALL 00024/00025, scene 00036/00037 = ALL 00068/00069, scene 00069 = ALL 00126 ...). `id_map.json` maps 101 scene IDs to ALL IDs (checked on file pairs of both models: all assigned pairs agree). 14 scene IDs have no counterpart.
 - The IDs do not follow the menu order. They can only be assigned by comparing files and with the option lists of the manuals; the manuals do not list numeric IDs.
-- **Recording mode:** scene files exist only in **Custom** mode. In **Cine EI** mode only ALL files can be written. Cine EI settings (exposure index, colour space, monitor LUT ...) therefore live in ALL files only.
+- **Recording mode:** SCENE files exist only in **Custom** mode. In **Cine EI** mode only ALL files can be written. Cine EI settings (exposure index, colour space, monitor LUT ...) therefore live in ALL files only.
 - The ALL files of the Mk2 use the same IDs as the Mk1 plus seven new, still unknown ones (`00341`, `00472`-`00477`). An early assumption that the IDs shift between the models was wrong.
 
 ## How values are stored
@@ -57,11 +57,11 @@ Master Black: the wheel has many values between two displayed steps and the file
 - **ISO/gain/EI:** ISO values depend on the dynamic range (460 %: ISO 800-6400; 800 %: 1600-12500; 1300 % S-Log: 2000-16000; dB -3..18). Exposure index (Cine EI) 500-8000, default M = 1600, L = 800.
 - **Shutter:** speed / angle / ECS / off; angles 5.6 ... 300 degrees; ECS frequency 23.99-8000 Hz.
 - **ND filter (Mk2 only):** presets 1/4 ... 1/128 (electronic variable ND). The Mk1 has fixed ND only.
-- **White:** preset white 2100-10000 K (3200 K); per memory A/B colour temperature, balance, R/B gain; shockless white, ATW speed. White data of a scene file is applied only when the scene white data setting is On.
+- **White:** preset white 2100-10000 K (3200 K); per memory A/B colour temperature, balance, R/B gain; shockless white, ATW speed. White data of a SCENE file is applied only when the scene white data setting is On.
 - **Paint:** black, gamma (categories STD, HG, User, S-Log2, S-Log3; step gamma; master/R/G/B gamma), black gamma, knee, white clip, detail, skin detail, aperture, matrix, multi matrix (16 axes, hue and saturation -99..+99). Black gamma and knee saturation cannot be used together. Knee and black gamma are active with gamma category STD only. The manuals list User 1 to User 5 as user gammas.
-- **Differences between the manuals (Mk1 / Mk2):** preset select has 5 entries on the Mk1 and BT.2020 additionally on the Mk2 (**only with a 4K/QFHD recording format**); the Mk2 has ND presets and auto ND in scene files, and output colour space, "Rec/Out EI applied", ND dial direction and camera ID in ALL files; ISO lists reach higher values on the Mk2; "scene white data" is a scene file item on the Mk1 and an ALL file item on the Mk2. The recording formats (resolution x frame rate) of the two manuals are identical (39 combinations): the Mk2 offers no additional formats.
+- **Differences between the manuals (Mk1 / Mk2):** preset select has 5 entries on the Mk1 and BT.2020 additionally on the Mk2 (**only with a 4K/QFHD recording format**); the Mk2 has ND presets and auto ND in SCENE files, and output colour space, "Rec/Out EI applied", ND dial direction and camera ID in ALL files; ISO lists reach higher values on the Mk2; "scene white data" is a SCENE file item on the Mk1 and an ALL file item on the Mk2. The recording formats (resolution x frame rate) of the two manuals are identical (39 combinations): the Mk2 offers no additional formats.
 
-## Mk1 versus Mk2 in scene files
+## Mk1 versus Mk2 in SCENE files
 
 - IDs only in Mk1 files: `00113`, `00153`, `00155`. Only in Mk2: `00179`-`00181` and the block `00159`-`00178`, which is fully populated in all Mk2 files.
 - Different shape: `00097`, `00158`, `00160`. Different values: `00002`, `00008`, `00037`, `00068`, `00069`, `00136`-`00138`, `00144`, `00145`.
@@ -72,8 +72,8 @@ Master Black: the wheel has many values between two displayed steps and the file
 - A value is carried over if it exists in both models with the same number of fields and is valid for the target model (`_transfer` in `scene_parameters.json`).
 - Model specific (kept at the target model's state): `00008` (Master Black, mapped by displayed step), `00097`, `00136`-`00138`, `00144`, `00145`, `00160`; `00158`: first field only; Mk1-only IDs stay stored for the way back.
 - Values that cannot be transferred (for example BT.2020, Mk2-only IDs) stay stored in their own model profile and return when switching back.
-- **Result:** scene files made for the Mk1 and converted to the Mk2 load on a real FS7M2 and show the intended master black, gamma and white clip. A conversion reproduces real Mk2 files up to camera- and state-specific IDs (master black, white memory, preset white, `00097`, `00136`-`00138`).
-- Loading a scene file on the camera rewrites camera-owned values in the following saved file (white memories A/B, preset white, `00166`, `00147`); this fits "scene white data" in the manual. White clip is switched off by the camera with S-Log2/S-Log3, and `00097` field 3 is computed by the camera from the gamma.
+- **Result:** SCENE files made for the Mk1 and converted to the Mk2 load on a real FS7M2 and show the intended master black, gamma and white clip. A conversion reproduces real Mk2 files up to camera- and state-specific IDs (master black, white memory, preset white, `00097`, `00136`-`00138`).
+- Loading a SCENE file on the camera rewrites camera-owned values in the following saved file (white memories A/B, preset white, `00166`, `00147`); this fits "scene white data" in the manual. White clip is switched off by the camera with S-Log2/S-Log3, and `00097` field 3 is computed by the camera from the gamma.
 
 ## Parameters by menu
 
@@ -107,7 +107,7 @@ Scene `00144` / `00145` = memory A / B (R gain, B gain); `00164` / `00165` hold 
 
 - **Shooting Mode** = ALL `00418` (0 Custom, 1 Cine EI, likely). Switching to Cine EI also changes `00031` (black setting), `00423` (colour space), `00023` (matrix Off), `00028` (master black 0), `00069` (aperture Off), `00499`, `00041`, and others; the camera does this itself.
 - **Colour space** = `00423`: 0 = Matrix (Custom), 2 = S-Gamut/S-Log2, 4 = S-Gamut3.Cine/S-Log3, 5 = S-Gamut3/S-Log3 (1 and 3 unknown). In Cine EI the gamma follows from the colour space; no gamma ID changes.
-- In Cine EI the Paint menu is greyed out on the camera. Other Cine EI restrictions of the manual: no gain (exposure index instead), no automatic white balance, no scene file, RAW recording only in Cine EI.
+- In Cine EI the Paint menu is greyed out on the camera. Other Cine EI restrictions of the manual: no gain (exposure index instead), no automatic white balance, no SCENE file, RAW recording only in Cine EI.
 
 ### Video format (ALL `00150`)
 
@@ -134,7 +134,7 @@ Rules from the manuals and camera observations are stored as `requires` / `_lock
 
 ## Open questions
 
-- Gamma User select in scene files; knee and black gamma IDs (the three STD-only flags `00060`, `00068` and one more are probably knee, auto knee and knee saturation).
+- Gamma User select in SCENE files; knee and black gamma IDs (the three STD-only flags `00060`, `00068` and one more are probably knee, auto knee and knee saturation).
 - High frame rate mode and the limits of the S&Q frame rate.
 - Codec indices 3-5; RAW output values 2, 4, 5 (derived only).
 - Gain/ISO, exposure index, monitor LUT, high/low key, noise suppression and white balance fixed values in Cine EI (IDs unknown).

@@ -5,7 +5,7 @@ State 2026-10-09. Sources: the manuals of the FS7 (Mk1) and FS7 II (Mk2) as text
 ## Paint
 | If ... | then ... | Source | Status |
 |---|---|---|---|
-| Shooting Mode = Cine EI | whole Paint menu locked; gain, scene file and lens file cannot be set | manual, test | done (Paint lock) |
+| Shooting Mode = Cine EI | whole Paint menu locked; gain, SCENE file and lens file cannot be set | manual, test | done (Paint lock) |
 | Gamma Setting = Off | all other gamma settings locked | test (gamma round 1) | done |
 | Gamma Category is not STD | **Knee Setting** and **Black Gamma Setting** not active | manual (Mk1 and Mk2) | open (ID: knee / black gamma, rounds 11/12) |
 | Knee Saturation = On | **Black Gamma** cannot be used at the same time (and the other way round) | manual | open (ID) |
@@ -48,5 +48,5 @@ State 2026-10-09. Sources: the manuals of the FS7 (Mk1) and FS7 II (Mk2) as text
 
 ## Notes on the method
 - Both manual text extracts were searched for "only available", "can only", "not at the same time", "is active when", "this option cannot", "automatically", "forcibly", "deactivated", "greyed out" (in the German manuals). The Mk2 layout (several columns) mixes columns; some hits there can be assigned safely only through the Mk1 wording.
-- The restriction table at the end of the manual ("yes/no" for ALL and scene file) contains no dependencies, only which menu items are stored in which file.
+- The restriction table at the end of the manual ("yes/no" for ALL and SCENE file) contains no dependencies, only which menu items are stored in which file.
 - The "open (ID)" items are settled with the next camera files; the "open (model)" items first need the setting as an ID.

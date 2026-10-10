@@ -1,6 +1,6 @@
 """Sony Config Editor - reads, converts and writes Sony Cinecam configuration files.
 
-Currently supported: PXW-FS7 / PXW-FS7M2 scene files (*.SCENE) and ALL files (*.ALL).
+Currently supported: PXW-FS7 / PXW-FS7M2 SCENE files (*.SCENE) and ALL files (*.ALL).
 
 Requirements: Python 3.10 or newer with Tkinter (Windows/macOS: included in the python.org installer;
 Debian/Ubuntu: sudo apt install python3-tk; Fedora: sudo dnf install python3-tkinter) and one extra library:
@@ -60,7 +60,7 @@ DEFAULTS_FILE = BASE_DIR / "defaults.json"   # neutral values for "Neu" (documen
 ID_MAP_FILE = BASE_DIR / "id_map.json"   # SCENE id -> ALL id per model, for switching between the two file types
 MODELS = ("PXW-FS7", "PXW-FS7M2")
 # Supported file types by extension.
-FILE_TYPES = {".scene": "Sony Scene File", ".all": "Sony ALL File"}
+FILE_TYPES = {".scene": "Sony SCENE File", ".all": "Sony ALL File"}
 # ALL files use the same container (MD5 line, V01.00, name, model, ID=value, %%%%) as SCENE files
 LOADERS = {".scene": lambda path: SceneFile.load(path), ".all": lambda path: SceneFile.load(path)}
 HISTORY_LIMIT = 200
@@ -367,7 +367,7 @@ def load_transfer_rules() -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# Scene file model
+# SCENE file model
 # --------------------------------------------------------------------------- #
 class SceneFileError(Exception):
     pass
@@ -679,6 +679,110 @@ def import_candidates(src: SceneFile, src_kind: str, dst_params: dict, dst_kind:
     return items, ""
 
 
+def clean_name(name: str) -> str:
+    """Menu name without the trailing explanations of the database names ('(menu step -99..+99)', '(?)')."""
+    previous = None
+    while previous != name:
+        previous = name
+        name = re.sub(r"\s*\([^()]*\)\s*$", "", name).strip()
+    return name or "?"
+
+
+def diff_path(tid: str, info: dict | None, full_name: bool = False) -> str:
+    """Readable path of a parameter in the camera menu, for example 'Paint/White Clip/White Clip Level' (no IDs for known parameters)."""
+    if not info:
+        return f"{tr('Unknown')}/ID {tid}"
+    sub = info.get("subgroup", "Other").replace(" › ", "/")
+    return f"{sub}/{info['name'] if full_name else clean_name(info['name'])}"
+
+
+def describe_value(info: dict | None, raw: str, params: dict) -> str:
+    """Readable text of a raw value (choice names, steps, percentages ...); the raw text if the value cannot be decoded."""
+    widget = (info or {}).get("widget")
+    if not widget:
+        return raw
+    parts = [x.strip() for x in raw.split(",")]
+    kind = widget.get("type")
+    try:
+        if kind == "choice":
+            return widget["choices"].get(parts[0], raw)
+        if kind == "checkbox":
+            return tr("On") if parts[widget.get("index", 0)] == widget.get("on", "1") else tr("Off")
+        if kind == "counter":
+            number = int(parts[widget["index"]])
+            scale = widget.get("scale")
+            text = f"{number * scale:.{widget.get('decimals', 2)}f}" if scale else str(number)
+            return f"{text} {widget['unit']}".strip() if widget.get("unit") else text
+        if kind == "fields":
+            return ", ".join(f["choices"].get(parts[f["index"]], parts[f["index"]]) if "choices" in f else parts[f["index"]] for f in widget["fields"])
+        if kind == "stepfields":
+            out = []
+            for f in widget["fields"]:
+                value = parts[f["index"]]
+                if "choices" in f:
+                    text = f["choices"].get(value, value)
+                else:
+                    lo, hi = f["range"] if "range" in f else widget["range"]
+                    step = max(lo, min(hi, round(f.get("sign", 1) * int(value) / f.get("unit", widget["unit"]))))
+                    text = f"{step:+d}" if lo < 0 else str(step)
+                out.append(f"{f['label']} {text}" if len(widget["fields"]) > 1 and "choices" not in f else text)
+            return ", ".join(out)
+        if kind == "axis_pairs":
+            axes, unit = widget["axes"], widget["unit"]
+            out = []
+            for i, axis in enumerate(axes):
+                hue, sat = round(int(parts[widget["hue_start"] + i]) / unit), round(int(parts[widget["sat_start"] + i]) / unit)
+                if hue or sat:
+                    out.append(f"{axis} {hue:+d}/{sat:+d}")
+            return "; ".join(out) or tr("all 0")
+        if kind == "derived":
+            for option in widget["options"]:
+                if all(params.get(pid, "").split(",")[int(field)].strip() == want for pid, fields in option["match"].items() for field, want in fields.items()):
+                    return option["label"]
+        if kind == "multichoice":
+            texts = []
+            for selector in widget["selectors"]:
+                for option in selector["options"]:
+                    if all(parts[int(field)] == want for field, want in option["values"].items()):
+                        texts.append(option["label"])
+                        break
+            if texts:
+                return " / ".join(texts)
+    except (KeyError, IndexError, ValueError, TypeError):
+        pass
+    return raw
+
+
+def build_diff_rows(items: list[dict], cur_params: dict, db: dict) -> list[dict]:
+    """Rows of the difference view in camera-menu order: {"path", "left", "right", "differs", "tid"} (parts of combined rows are left out)."""
+    new_params = dict(cur_params)
+    for item in items:
+        new_params[item["tid"]] = item["new"]
+    group_rank = {g: i for i, (g, _t) in enumerate(GROUPS)}
+
+    def order(item):
+        info = db.get(item["tid"])
+        sub = info.get("subgroup", "Other") if info else ""
+        return (group_rank.get(info.get("group", "misc") if info else "unknown", 9),
+                SUBGROUP_ORDER.index(sub) if sub in SUBGROUP_ORDER else len(SUBGROUP_ORDER), sub, info.get("order", 99) if info else 99, item["tid"])
+
+    rows = []
+    for item in sorted(items, key=order):
+        info = db.get(item["tid"])
+        if info and info.get("covered_by"):
+            continue
+        rows.append({"path": diff_path(item["tid"], info), "tid": item["tid"], "differs": item["differs"],
+                     "left": describe_value(info, item["cur"], cur_params), "right": describe_value(info, item["new"], new_params)})
+    seen: set[str] = set()
+    for row in rows:          # a second parameter with the same short path: full name first, the ID as the last resort
+        if row["path"] in seen:
+            row["path"] = diff_path(row["tid"], db.get(row["tid"]), full_name=True)
+            if row["path"] in seen:
+                row["path"] += f" [ID {row['tid']}]"
+        seen.add(row["path"])
+    return rows
+
+
 # --------------------------------------------------------------------------- #
 # GUI
 # --------------------------------------------------------------------------- #
@@ -689,7 +793,7 @@ class ImportDialog(ctk.CTkToplevel):
         super().__init__(app)
         if invisible:
             self.attributes("-alpha", 0)   # tests: never show a window to the user (set before anything is built)
-        self.app, self.items, self.result = app, items, None
+        self.app, self.items, self.result, self.source_text = app, items, None, source_text
         self.title(tr("Import from {source}").format(source=source_text))
         self.geometry(f"{int(app.winfo_width() * 0.85)}x{int(app.winfo_height() * 0.9)}")
         self.transient(app)
@@ -720,7 +824,8 @@ class ImportDialog(ctk.CTkToplevel):
             new = item["new"] if len(item["new"]) <= 70 else item["new"][:67] + "…"
             cur = item["cur"] if len(item["cur"]) <= 70 else item["cur"][:67] + "…"
             label = item["name"] or tr("(unknown)")
-            text = f"{item['tid']}  {label}:   {cur}  →  {new}" if item["differs"] else f"{item['tid']}  {label}:   {cur}  {tr("(same)")}"
+            same_text = tr("(same)")      # no nested quotes inside an f-string (Python < 3.12)
+            text = f"{item['tid']}  {label}:   {cur}  →  {new}" if item["differs"] else f"{item['tid']}  {label}:   {cur}  {same_text}"
             cb = tk.Checkbutton(self.list, text=text, variable=var, anchor="w", justify="left", command=self._update_count,
                                 bg=c["bg"], fg=c["label"] if item["known"] else "#9a9a9a", selectcolor=c["entry"],
                                 activebackground=c["bg"], activeforeground=c["text"], font=app._font)
@@ -730,6 +835,7 @@ class ImportDialog(ctk.CTkToplevel):
         ctk.CTkButton(foot, text=tr("Import selection"), width=app._tr_width("Import selection", 150), command=self._ok).pack(side="right", padx=4)
         ctk.CTkButton(foot, text=tr("Import all known"), width=app._tr_width("Import all known", 190), command=self._all_known).pack(side="right", padx=4)
         ctk.CTkButton(foot, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy).pack(side="right", padx=4)
+        ctk.CTkButton(foot, text=tr("Show differences"), width=app._tr_width("Show differences", 170), command=self._show_diff).pack(side="left", padx=4)
         self._refilter()
 
     def _visible(self, idx: int) -> bool:
@@ -761,6 +867,10 @@ class ImportDialog(ctk.CTkToplevel):
         chosen = sum(1 for v in self.vars if v.get())
         self.lbl_count.configure(text=tr("{chosen} selected, {shown} of {total} shown").format(chosen=chosen, shown=shown, total=len(self.items)))
 
+    def _show_diff(self):
+        self.app.show_diff(self.items, self.source_text)
+        self.after(50, self.grab_set)         # the difference window had the input grab
+
     def _ok(self):
         self.result = [i for i, v in zip(self.items, self.vars) if v.get()]
         self.destroy()
@@ -768,6 +878,160 @@ class ImportDialog(ctk.CTkToplevel):
     def _all_known(self):
         self.result = [i for i in self.items if i["known"] and i["differs"]]
         self.destroy()
+
+
+class DiffDialog(ctk.CTkToplevel):
+    """Side-by-side difference of the current file and another file (like a file compare tool): menu paths instead of IDs,
+    changed rows coloured, next/previous difference, all rows or only the differences."""
+
+    def __init__(self, app, rows: list[dict], other_name: str, invisible: bool = False):
+        super().__init__(app)
+        if invisible:
+            self.attributes("-alpha", 0)
+        self.app, self.rows, self.other_name = app, rows, other_name
+        self.diff_rows = [i for i, r in enumerate(rows) if r["differs"]]
+        self.current = 0 if self.diff_rows else -1       # index into diff_rows
+        self.only_diffs = True
+        self._lines: list[int] = []                      # row index of every line that is shown
+        self.title(tr("Compare with {source}").format(source=other_name))
+        self.geometry(f"{int(app.winfo_width() * 0.9)}x{int(app.winfo_height() * 0.9)}")
+        self.transient(app)
+        dark = ctk.get_appearance_mode() == "Dark"
+        self._colors = {"diff": "#4a4220" if dark else "#fff3c4", "cell": "#7a6414" if dark else "#ffe08a", "sel": "#2d4a6d" if dark else "#cfe4ff",
+                        "only": "#5a2f2f" if dark else "#ffd6d6"}
+        bar = ctk.CTkFrame(self)
+        bar.pack(fill="x", padx=8, pady=(8, 2))
+        sources = (("Previous difference", "Alt+Up", self.previous_difference), ("Next difference", "Alt+Down", self.next_difference))
+        for source, hint, command in sources:
+            ctk.CTkButton(bar, text=f"{tr(source)}  ({hint})", width=app._tr_width(source, 150) + 60, height=26, command=command).pack(side="left", padx=(6, 2), pady=3)
+        self.seg = ctk.CTkSegmentedButton(bar, values=[tr("Show full files") + "  (Ctrl+1)", tr("Show only differences") + "  (Ctrl+2)"], command=self._segment)
+        self.seg.set(tr("Show only differences") + "  (Ctrl+2)")
+        self.seg.pack(side="left", padx=(16, 2), pady=3)
+        self.lbl_count = ctk.CTkLabel(bar, text="", text_color="gray")
+        self.lbl_count.pack(side="right", padx=10)
+        font = app._font
+        self.head = tk.Text(self, height=1, font=app._font_bold, bg=app._c["bg"], fg=app._c["label"], relief="flat", borderwidth=0, highlightthickness=0, wrap="none")
+        self.head.pack(fill="x", padx=(10, 8))
+        body = ctk.CTkFrame(self, fg_color="transparent")
+        body.pack(fill="both", expand=True, padx=8, pady=(0, 8))
+        self.text = tk.Text(body, font=font, bg=app._c["entry"], fg=app._c["text"], relief="flat", borderwidth=0, highlightthickness=0, wrap="none",
+                            cursor="arrow", spacing1=app._sc(2), spacing3=app._sc(2))
+        scroll = ctk.CTkScrollbar(body, command=self.text.yview)
+        self.text.configure(yscrollcommand=scroll.set)
+        scroll.pack(side="right", fill="y")
+        self.text.pack(side="left", fill="both", expand=True)
+        for name, color in (("diff", "diff"), ("current", "sel"), ("only", "only")):
+            self.text.tag_configure(name, background=self._colors[color])
+        self.text.tag_configure("cell", background=self._colors["cell"])
+        self.text.tag_raise("cell", "diff")
+        self._job = None
+        self.text.bind("<Configure>", lambda _e: self._schedule_render())
+        self.text.bind("<Button-1>", self._click)
+        for seq, command in (("<Alt-Down>", self.next_difference), ("<F8>", self.next_difference), ("<Alt-Up>", self.previous_difference),
+                             ("<Shift-F8>", self.previous_difference), ("<Control-Key-1>", self.show_full), ("<Control-Key-2>", self.show_differences),
+                             ("<Escape>", self.destroy)):
+            self.bind(seq, lambda _e, c=command: (c(), "break")[1])
+        self.after(50, self._render)
+
+    # -- content ----------------------------------------------------------- #
+    def _clip(self, text: str, width: int) -> str:
+        font = self.app._font
+        if font.measure(text) <= width:
+            return text
+        while text and font.measure(text + "…") > width:
+            text = text[:-1]
+        return text + "…"
+
+    def _schedule_render(self):
+        if self._job is not None:
+            self.after_cancel(self._job)
+        self._job = self.after(120, self._render)
+
+    def _render(self):
+        self._job = None
+        width = max(self.text.winfo_width(), self.app._sc(600)) - self.app._sc(24)
+        col_path, col_left = int(width * 0.42), int(width * 0.29)
+        col_right = width - col_path - col_left
+        tabs = (col_path, col_path + col_left)
+        self.text.configure(tabs=tabs)
+        self.head.configure(tabs=tabs, state="normal")
+        self.head.delete("1.0", "end")
+        self.head.insert("1.0", f"{tr('Path')}\t{tr('Current file')}\t{self.other_name}")
+        self.head.configure(state="disabled")
+        self.text.configure(state="normal")
+        self.text.delete("1.0", "end")
+        self._lines = []
+        shown_diff_line = {}
+        for idx, row in enumerate(self.rows):
+            if self.only_diffs and not row["differs"]:
+                continue
+            line = len(self._lines) + 1
+            self._lines.append(idx)
+            left = self._clip(row["left"], col_left - self.app._sc(12))
+            right = self._clip(row["right"], col_right - self.app._sc(12))
+            path = self._clip(row["path"], col_path - self.app._sc(12))
+            start = self.text.index("end-1c")
+            self.text.insert("end", f"{path}\t{left}\t{right}\n")
+            if row["differs"]:
+                self.text.tag_add("diff", f"{line}.0", f"{line + 1}.0")          # up to the next line: the colour reaches the window edge
+                self.text.tag_add("cell", f"{line}.{len(path) + 1}", f"{line + 1}.0")
+            shown_diff_line[idx] = line
+        self.text.configure(state="disabled")
+        self._mark_current()
+        self._update_count()
+
+    def _mark_current(self):
+        self.text.tag_remove("current", "1.0", "end")
+        if self.current < 0:
+            return
+        idx = self.diff_rows[self.current]
+        if idx in self._lines:
+            line = self._lines.index(idx) + 1
+            self.text.tag_add("current", f"{line}.0", f"{line + 1}.0")
+            self.text.tag_raise("current")
+            self.text.see(f"{line}.0")
+
+    def _update_count(self):
+        if not self.diff_rows:
+            self.lbl_count.configure(text=tr("No differences"))
+        else:
+            self.lbl_count.configure(text=tr("Difference {n} of {total}").format(n=self.current + 1, total=len(self.diff_rows)))
+
+    # -- commands ---------------------------------------------------------- #
+    def next_difference(self):
+        if self.diff_rows:
+            self.current = (self.current + 1) % len(self.diff_rows)
+            self._mark_current()
+            self._update_count()
+
+    def previous_difference(self):
+        if self.diff_rows:
+            self.current = (self.current - 1) % len(self.diff_rows)
+            self._mark_current()
+            self._update_count()
+
+    def show_full(self):
+        self.only_diffs = False
+        self.seg.set(tr("Show full files") + "  (Ctrl+1)")
+        self._render()
+
+    def show_differences(self):
+        self.only_diffs = True
+        self.seg.set(tr("Show only differences") + "  (Ctrl+2)")
+        self._render()
+
+    def _segment(self, value: str):
+        (self.show_differences if tr("Show only differences") in value else self.show_full)()
+
+    def _click(self, event):
+        """A click on a changed row makes it the current difference."""
+        line = int(self.text.index(f"@{event.x},{event.y}").split(".")[0])
+        if 1 <= line <= len(self._lines):
+            idx = self._lines[line - 1]
+            if idx in self.diff_rows:
+                self.current = self.diff_rows.index(idx)
+                self._mark_current()
+                self._update_count()
 
 
 def hue_hex(degrees: int) -> str:
@@ -791,7 +1055,7 @@ class MenuItem:
 
 
 MENU_TEXTS = ["New…", "Open…", "Save", "Save As…", "Import…", "Exit", "Undo", "Redo", "Find", "File", "Edit",
-              "Language", "View", "Help", "About {app}…", "All", "None", "Invert selection", "Known only", "Miscellaneous", "Unknown"]   # texts that tr() gets through variables
+              "Language", "View", "Help", "About {app}…", "All", "None", "Invert selection", "Known only", "Miscellaneous", "Unknown", "Compare…", "Previous difference", "Next difference"]   # texts that tr() gets through variables
 ABOUT_TEXTS = [
     "Reads, converts and writes configuration files (SCENE and ALL files) of the Sony PXW-FS7 and PXW-FS7M2 cameras.",
     "Copyright (c) 2026 Lukas Himmelswanderer. Published under the MIT License.",
@@ -1173,7 +1437,7 @@ class App(ctk.CTk):
     def _build_menu(self):
         """Menu bar (File, Edit, View, Help) with the usual shortcuts; replaces the former toolbar buttons."""
         self._menu_entries = {}
-        self._menu_state = getattr(self, "_menu_state", None) or {k: "disabled" for k in ("save", "save_as", "import", "undo", "redo")}
+        self._menu_state = getattr(self, "_menu_state", None) or {k: "disabled" for k in ("save", "save_as", "import", "compare", "undo", "redo")}
         bar = ctk.CTkFrame(self, corner_radius=0, height=30)     # own menu bar: the native one can neither be scaled nor coloured
         bar.pack(side="top", fill="x")
         theme, mode = ctk.ThemeManager.theme, (1 if ctk.get_appearance_mode() == "Dark" else 0)
@@ -1205,6 +1469,7 @@ class App(ctk.CTk):
         add(file_menu, "save_as", "Save As…", self.save_as, "Ctrl+Shift+S")
         file_menu.add_separator()
         add(file_menu, "import", "Import…", self.import_file, "Ctrl+I")
+        add(file_menu, "compare", "Compare…", self.compare_file, "Ctrl+D")
         file_menu.add_separator()
         add(file_menu, "exit", "Exit", self.on_close, "Alt+F4")
         cascade(tr("File"), file_menu)
@@ -1229,12 +1494,12 @@ class App(ctk.CTk):
         cascade(tr("Help"), help_menu)
 
         self._menu_bar = bar
-        self._menu_commands = {"new": self.new_file, "open": self.open_file, "save": self.save, "save_as": self.save_as, "import": self.import_file,
+        self._menu_commands = {"new": self.new_file, "open": self.open_file, "save": self.save, "save_as": self.save_as, "import": self.import_file, "compare": self.compare_file,
                                "exit": self.on_close, "undo": self.undo, "redo": self.redo, "about": self.show_about}
         for key, state in self._menu_state.items():
             self._set_menu_state(key, state)
         # the former toolbar buttons: the code (and the tests) still enable / disable them by name
-        for name, key in (("btn_save", "save"), ("btn_save_as", "save_as"), ("btn_undo", "undo"), ("btn_redo", "redo"), ("btn_import", "import")):
+        for name, key in (("btn_save", "save"), ("btn_save_as", "save_as"), ("btn_undo", "undo"), ("btn_redo", "redo"), ("btn_import", "import"), ("btn_compare", "compare")):
             setattr(self, name, MenuItem(self, key))
 
     def _set_menu_state(self, key: str, state: str):
@@ -1252,7 +1517,7 @@ class App(ctk.CTk):
     def _bind_shortcuts(self):
         for seq, key in (("<Control-n>", "new"), ("<Control-N>", "new"), ("<Control-o>", "open"), ("<Control-O>", "open"), ("<Control-s>", "save"),
                          ("<Control-S>", "save_as"), ("<Control-Shift-s>", "save_as"), ("<Control-Shift-S>", "save_as"), ("<Control-i>", "import"),
-                         ("<Control-I>", "import"), ("<Control-q>", "exit"), ("<Control-Q>", "exit"), ("<F1>", "about")):
+                         ("<Control-I>", "import"), ("<Control-d>", "compare"), ("<Control-D>", "compare"), ("<Control-q>", "exit"), ("<Control-Q>", "exit"), ("<F1>", "about")):
             self.bind(seq, lambda _e, k=key: self._shortcut(k))
 
     def show_about(self, invisible: bool = False):
@@ -1390,8 +1655,8 @@ class App(ctk.CTk):
             title=tr("Open file"),
             initialdir=str(self._last_dir) if self._last_dir else None,
             filetypes=[
-                ("Sony Scene/ALL File", "*.SCENE *.ALL"),
-                ("Sony Scene File", "*.SCENE"),
+                ("Sony SCENE/ALL File", "*.SCENE *.ALL"),
+                ("Sony SCENE File", "*.SCENE"),
                 ("Sony ALL File", "*.ALL"),
                 (tr("All files"), "*.*"),
             ],
@@ -1698,6 +1963,7 @@ class App(ctk.CTk):
         self.btn_save.configure(state="normal")
         self.btn_save_as.configure(state="normal")
         self.btn_import.configure(state="normal")
+        self.btn_compare.configure(state="normal")
         self.lbl_sum.configure(
             text=tr("Checksum OK") if s.checksum_ok else tr("Checksum WRONG"),
             text_color="#4caf50" if s.checksum_ok else "#e57373",
@@ -2607,7 +2873,7 @@ class App(ctk.CTk):
         self._update_kind_switch()
 
     def _scene_possible(self) -> bool:
-        """Scene Files exist only in Custom mode (manual: not configurable in Cine EI)."""
+        """SCENE files exist only in Custom mode (manual: not configurable in Cine EI)."""
         return not (self.kind == "all" and self._field_value("00418", 0) == "1")
 
     def _update_lock_marks(self):
@@ -2616,7 +2882,7 @@ class App(ctk.CTk):
             return
         kind_reason = "" if self.session.can_switch_kind() else tr("Switching SCENE/ALL does not exist for {model}.").format(model=self.scene.model)
         if not kind_reason and not self._scene_possible():
-            kind_reason = tr("SCENE not possible: scene files exist in Custom mode only.")
+            kind_reason = tr("SCENE not possible: SCENE files exist in Custom mode only.")
         model_reason = "" if self.session and self.scene.model in MODELS else tr("There is no model switch for this model.")
         for label, widgets, reason, text in (
             (self.lbl_kind, tuple(self.seg_kind._buttons_dict.values()), kind_reason, tr("Type")),
@@ -2635,7 +2901,7 @@ class App(ctk.CTk):
             self.seg_kind._buttons_dict["SCENE"].configure(state="normal" if possible else "disabled")
         except (AttributeError, KeyError, tk.TclError):
             return
-        self.lbl_scene_hint.configure(text="" if possible else tr("SCENE not possible: scene files exist in Custom mode only"))
+        self.lbl_scene_hint.configure(text="" if possible else tr("SCENE not possible: SCENE files exist in Custom mode only"))
         self._update_lock_marks()
 
     def _set_enabled(self, widget, enabled: bool):
@@ -2853,12 +3119,37 @@ class App(ctk.CTk):
         )
         return items, reason, f"{Path(path).name} ({'ALL' if ext == '.all' else 'SCENE'}, {src.model})"
 
+    def show_diff(self, items: list[dict], source_text: str, invisible: bool = False):
+        """Difference view of the current file against another file (the items come from import_plan)."""
+        self._collect()
+        rows = build_diff_rows(items, self.scene.params, self.param_db)
+        dialog = DiffDialog(self, rows, source_text, invisible=invisible)
+        if not invisible:
+            dialog.after(50, dialog.grab_set)
+            self.wait_window(dialog)
+        return dialog
+
+    def compare_file(self):
+        if not self.scene:
+            return
+        path = filedialog.askopenfilename(
+            title=tr("Compare with…"), initialdir=self._last_dir,
+            filetypes=[("Sony SCENE/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")],
+        )
+        if not path:
+            return
+        items, reason, source = self.import_plan(Path(path))
+        if not items:
+            messagebox.showinfo(APP_NAME, reason or tr("Nothing can be imported from this file."))
+            return
+        self.show_diff(items, source)
+
     def import_file(self):
         if not self.scene:
             return
         path = filedialog.askopenfilename(
             title=tr("Import from…"), initialdir=self._last_dir,
-            filetypes=[("Sony Scene/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")],
+            filetypes=[("Sony SCENE/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")],
         )
         if not path:
             return
@@ -3112,7 +3403,7 @@ class App(ctk.CTk):
             defaultextension=self._ext(),
             initialfile=self._file_label(),
             initialdir=str(folder) if folder else None,
-            filetypes=[("Sony ALL File", "*.ALL")] if self.kind == "all" else [("Sony Scene File", "*.SCENE")],
+            filetypes=[("Sony ALL File", "*.ALL")] if self.kind == "all" else [("Sony SCENE File", "*.SCENE")],
         )
         if path:
             self._write(Path(path))

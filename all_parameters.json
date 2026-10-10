@@ -1,9 +1,9 @@
 {
-  "_comment": "Parameter database for Sony ALL files (same container as SCENE files, different IDs). Mapping derived by aligning the user's FS7 ALL files with the known sample set A/B scene files (identical values) and by sample set A descriptions. status: confirmed / likely / hypothesis as in scene_parameters.json. scene_equivalent = ID of the same parameter in SCENE files.",
+  "_comment": "Parameter database for Sony ALL files (same container as SCENE files, different IDs). Mapping derived by aligning the user's FS7 ALL files with the known sample set A/B SCENE files (identical values) and by sample set A descriptions. status: confirmed / likely / hypothesis as in scene_parameters.json. scene_equivalent = ID of the same parameter in SCENE files.",
   "00024": {
     "name": "Preset Matrix",
     "status": "confirmed",
-    "evidence": "Values 1,3 / 1,4 equal the scene file values (Universal/Interviews = Cinema, B-Roll = F55 709 Like); same coding as scene 00006 FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. Manual (FS7M2): BT.2020 can only be selected when the recording format is 4K or QFHD (greyed out with the HD formats of the test files).",
+    "evidence": "Values 1,3 / 1,4 equal the SCENE file values (Universal/Interviews = Cinema, B-Roll = F55 709 Like); same coding as scene 00006 FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. Manual (FS7M2): BT.2020 can only be selected when the recording format is 4K or QFHD (greyed out with the HD formats of the test files).",
     "scene_equivalent": "00006",
     "widget": {
       "type": "fields",
@@ -64,7 +64,7 @@
   "00025": {
     "name": "User Matrix",
     "status": "confirmed",
-    "evidence": "1,-2635,0,... (Level -8) and 1,-6586,... (Level -20) equal the sample set A scene files; same coding as scene 00007 FS7M2 round 9 (2026-10-09): Level -8 -> +8, Phase +5, R-G -5, R-B +10, G-R -10, G-B -3, B-R +3, B-G -7 give '1,2635,1647,-1647,3293,-3293,-988,988,-2305' (field order Level, Phase, R-G, R-B, G-R, G-B, B-R, B-G, scale 329.33 per step), Preset Cinema (3) -> Standard (0).",
+    "evidence": "1,-2635,0,... (Level -8) and 1,-6586,... (Level -20) equal the sample set A SCENE files; same coding as scene 00007 FS7M2 round 9 (2026-10-09): Level -8 -> +8, Phase +5, R-G -5, R-B +10, G-R -10, G-B -3, B-R +3, B-G -7 give '1,2635,1647,-1647,3293,-3293,-988,988,-2305' (field order Level, Phase, R-G, R-B, G-R, G-B, B-R, B-G, scale 329.33 per step), Preset Cinema (3) -> Standard (0).",
     "scene_equivalent": "00007",
     "fields": [
       "enable",
@@ -4623,7 +4623,7 @@
     "group": "video",
     "subgroup": "White",
     "order": 20,
-    "evidence": "Equals scene 00158 (id_map; unique value match in two FS7M2 pairs). The camera writes its own preset white values when a scene file is loaded."
+    "evidence": "Equals scene 00158 (id_map; unique value match in two FS7M2 pairs). The camera writes its own preset white values when a SCENE file is loaded."
   },
   "00193": {
     "name": "White memory B: R gain, B gain, colour temp K (?)",
@@ -4631,6 +4631,6 @@
     "group": "video",
     "subgroup": "White",
     "order": 21,
-    "evidence": "Equals scene 00165 (id_map; unique value match in two FS7M2 pairs); overwritten by the camera when a scene file is loaded (scene white data)."
+    "evidence": "Equals scene 00165 (id_map; unique value match in two FS7M2 pairs); overwritten by the camera when a SCENE file is loaded (scene white data)."
   }
 }

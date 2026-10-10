@@ -1,0 +1,49 @@
+name: Camera test report / test files
+description: Before/after files from an FS7 or FS7 II (one setting changed), or a report how a file behaved on the camera
+labels: ["camera-test"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read [CONTRIBUTING.md](https://github.com/sonyconfigeditor/SonyConfigEditor/blob/main/CONTRIBUTING.md) first. Remove personal text (clip name, camera ID) from ALL files and send only your own settings.
+  - type: dropdown
+    id: camera
+    attributes:
+      label: Camera
+      options:
+        - PXW-FS7 (Mk1)
+        - PXW-FS7M2 (FS7 II)
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Camera firmware version
+      placeholder: e.g. 4.0
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is this about?
+      options:
+        - Before/after pair (one setting changed)
+        - A file made with this tool loaded on the camera
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: changed
+    attributes:
+      label: What changed (menu path, old value, new value)
+      description: For example "Paint / White Clip / Level: 108.0 % to 100.0 %". Mention anything the camera changed by itself.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result on the camera
+      description: Did a file made with the tool load without errors? Did the values look as expected?
+  - type: textarea
+    id: files
+    attributes:
+      label: Files
+      description: Drag a ZIP archive with the SCENE and ALL files and a short text file into this field (GitHub does not accept .SCENE / .ALL directly).

@@ -627,7 +627,7 @@
           }
         }
       },
-      "note": "The gamma category consists of five flags (00017 STD, 00019 HG, 00078 User, 00022 S-Log2, 00143 S-Log3; exactly one is 1). Gamma Select has its own IDs per category (00018 STD, 00085 HG); S-Log2/S-Log3 have no sub-selection. The user selection is not yet assigned in the scene file."
+      "note": "The gamma category consists of five flags (00017 STD, 00019 HG, 00078 User, 00022 S-Log2, 00143 S-Log3; exactly one is 1). Gamma Select has its own IDs per category (00018 STD, 00085 HG); S-Log2/S-Log3 have no sub-selection. The user selection is not yet assigned in the SCENE file."
     }
   },
   "00060": {
@@ -779,7 +779,7 @@
     "group": "video",
     "subgroup": "Paint › Gamma",
     "order": 21,
-    "evidence": "Maps to ALL 00040 (STD select, FS7M2 006.ALL: STD5 -> STD2 changes only that ID). 4 (= STD5) in all scene files.",
+    "evidence": "Maps to ALL 00040 (STD select, FS7M2 006.ALL: STD5 -> STD2 changes only that ID). 4 (= STD5) in all SCENE files.",
     "widget": {
       "type": "choice",
       "note": "Applies while the gamma category is STD.",
@@ -800,7 +800,7 @@
     "group": "video",
     "subgroup": "Paint › Gamma",
     "order": 18,
-    "evidence": "Maps to ALL 00045 (FS7M2 008.ALL: Gamma Off changes only that ID); 1 in all scene files.",
+    "evidence": "Maps to ALL 00045 (FS7M2 008.ALL: Gamma Off changes only that ID); 1 in all SCENE files.",
     "widget": {
       "type": "checkbox",
       "index": 0,
@@ -816,7 +816,7 @@
     "group": "video",
     "subgroup": "Paint › Gamma",
     "order": 24,
-    "evidence": "Maps to ALL 00046 (FS7M2 009.ALL: Master Gamma -10 = -3293); 0 in all scene files.",
+    "evidence": "Maps to ALL 00046 (FS7M2 009.ALL: Master Gamma -10 = -3293); 0 in all SCENE files.",
     "widget": {
       "type": "stepfields",
       "unit": 329.32663316582915,
@@ -840,7 +840,7 @@
     "group": "video",
     "subgroup": "Paint › Gamma",
     "order": 22,
-    "evidence": "Maps to ALL 00190 (FS7M2 007.ALL: User/User4); 0 in all scene files.",
+    "evidence": "Maps to ALL 00190 (FS7M2 007.ALL: User/User4); 0 in all SCENE files.",
     "covered_by": "00017"
   },
   "_locks": [
@@ -1002,7 +1002,7 @@
     "group": "video",
     "subgroup": "Paint › Black",
     "order": 1,
-    "evidence": "Equals ALL 00031 (id_map; ALL 00031: 0 = On, 1 = Off, confirmed with FS7M2 011.ALL). Value 0 in all 58 scene files, so the pairing is not yet verified by a changed value.",
+    "evidence": "Equals ALL 00031 (id_map; ALL 00031: 0 = On, 1 = Off, confirmed with FS7M2 011.ALL). Value 0 in all 58 SCENE files, so the pairing is not yet verified by a changed value.",
     "widget": {
       "type": "checkbox",
       "index": 0,
@@ -1018,7 +1018,7 @@
     "group": "video",
     "subgroup": "Paint › Black",
     "order": 4,
-    "evidence": "Equals ALL 00030 (id_map; FS7M2 012.ALL: B Black +25 = 8254, scale 330.16 per step). Value 0 in all 58 scene files, pairing not yet verified by a changed value.",
+    "evidence": "Equals ALL 00030 (id_map; FS7M2 012.ALL: B Black +25 = 8254, scale 330.16 per step). Value 0 in all 58 SCENE files, pairing not yet verified by a changed value.",
     "widget": {
       "type": "stepfields",
       "unit": 330.16,
@@ -1042,7 +1042,7 @@
     "group": "video",
     "subgroup": "Paint › Matrix",
     "order": 1,
-    "evidence": "FS7M2 round 6 (2026-10-09): Matrix Off changes only scene 00005 1 -> 0 (the other file type: ALL 00023). Cine EI also sets it to 0. Equals ALL 00023 (id_map; ALL 00023 is 1 in Custom, 0 in Cine EI). Value 1 in all 58 scene files.",
+    "evidence": "FS7M2 round 6 (2026-10-09): Matrix Off changes only scene 00005 1 -> 0 (the other file type: ALL 00023). Cine EI also sets it to 0. Equals ALL 00023 (id_map; ALL 00023 is 1 in Custom, 0 in Cine EI). Value 1 in all 58 SCENE files.",
     "widget": {
       "type": "checkbox",
       "index": 0,

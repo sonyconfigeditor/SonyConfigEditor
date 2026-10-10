@@ -1,5 +1,5 @@
 {
-  "_comment": "Mapping of SCENE IDs to ALL IDs (PXW-FS7, PXW-FS7M2). Derived by aligning two ALL files with the scene files they contain (Universal-1 -> 001.ALL, B-Roll-1 -> 004.ALL); entries are kept where both alignments agree (monotone, shapes equal) plus the IDs fixed by scene_equivalent in all_parameters.json. Zero/one flags in constant runs are the least certain part.",
+  "_comment": "Mapping of SCENE IDs to ALL IDs (PXW-FS7, PXW-FS7M2). Derived by aligning two ALL files with the SCENE files they contain (Universal-1 -> 001.ALL, B-Roll-1 -> 004.ALL); entries are kept where both alignments agree (monotone, shapes equal) plus the IDs fixed by scene_equivalent in all_parameters.json. Zero/one flags in constant runs are the least certain part.",
   "PXW-FS7": {
     "scene_to_all": {
       "00002": "00020",
