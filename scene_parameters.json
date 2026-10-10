@@ -1,0 +1,1402 @@
+{
+  "_comment": "Parameter database for Sony SCENE files. status: confirmed = proven by file diff and/or manual+page; likely = strong indication; hypothesis = guess, verify on camera. Sources: community articles and the FS7 / FS7 II manuals (menu option lists, value ranges, 'saved in files' table).",
+  "00006": {
+    "name": "Preset Matrix",
+    "status": "confirmed",
+    "fields": [
+      "enable",
+      "preset select"
+    ],
+    "type_values": {
+      "0": "Standard",
+      "1": "High Saturation",
+      "2": "FL Light",
+      "3": "Cinema",
+      "4": "F55 709 Like",
+      "5": "BT.2020"
+    },
+    "evidence": "Index = order of the manual's Preset Select list. Verified: Minus-G1 (FL Light) = 2, Filmlike (Cinema) = 3. BT.2020 only with 4K/QFHD rec format. FS7 Mk1 manual lists only 5 presets (Standard..F55 709 Like): BT.2020 exists only on FS7M2. sample set A Mk1: F55 709 Like = 4 confirmed on FS7 Mk1. sample set C FS7II ABNORM/ABHIGHLIGHT: first field 0 with preset 4 stored -> 0 = Preset Matrix Off (consistent with 1 = On) FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera.",
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 0,
+          "choices": {
+            "0": "Preset Matrix Off",
+            "1": "Preset Matrix On"
+          }
+        },
+        {
+          "index": 1,
+          "choices": {
+            "0": "Standard",
+            "1": "High Saturation",
+            "2": "FL Light",
+            "3": "Cinema",
+            "4": "F55 709 Like",
+            "5": "BT.2020"
+          },
+          "only_models": {
+            "5": [
+              "PXW-FS7M2"
+            ]
+          },
+          "enabled_when": {
+            "field": 0,
+            "in": [
+              "1"
+            ]
+          }
+        }
+      ]
+    },
+    "only_models": {
+      "5": [
+        "PXW-FS7M2"
+      ]
+    },
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 3
+  },
+  "00007": {
+    "name": "User Matrix",
+    "status": "confirmed",
+    "fields": [
+      "enable",
+      "level",
+      "phase",
+      "R-G",
+      "R-B",
+      "G-R",
+      "G-B",
+      "B-R",
+      "B-G"
+    ],
+    "range": [
+      -99,
+      99
+    ],
+    "unit": 329.32663316582915,
+    "evidence": "Neutral R-G +10 -> 3293, R-B +8 -> 2635; Vibrant Level +23 -> 7574, Phase -5 -> -1647. Raw = menu step * ~329.3 (manual range -99..+99). Unit = 32768/99.5 = 329.327; camera values deviate by at most 1 raw unit from step*unit. sample set A Mk1 files: Level +15 -> 4940, -20 -> -6586 (phase and the rest 0). sample set C FS7II files: R-G +99 is stored as 32767 (not 99*329.33=32603) -> raw is capped at +-32767 (negative end assumed symmetric) FS7M2 round 9 (2026-10-09): Level -8 -> +8, Phase +5, R-G -5, R-B +10, G-R -10, G-B -3, B-R +3, B-G -7 give '1,2635,1647,-1647,3293,-3293,-988,988,-2305' (field order Level, Phase, R-G, R-B, G-R, G-B, B-R, B-G, scale 329.33 per step), Preset Cinema (3) -> Standard (0).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "User Matrix",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Level"
+        },
+        {
+          "index": 2,
+          "label": "Phase"
+        },
+        {
+          "index": 3,
+          "label": "R-G"
+        },
+        {
+          "index": 4,
+          "label": "R-B"
+        },
+        {
+          "index": 5,
+          "label": "G-R"
+        },
+        {
+          "index": 6,
+          "label": "G-B"
+        },
+        {
+          "index": 7,
+          "label": "B-R"
+        },
+        {
+          "index": 8,
+          "label": "B-G"
+        }
+      ],
+      "max_raw": 32767
+    },
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 4
+  },
+  "00074": {
+    "name": "Multi Matrix (hue and saturation per axis)",
+    "status": "confirmed",
+    "fields": 32,
+    "axes": [
+      "B",
+      "B+",
+      "MG-",
+      "MG",
+      "MG+",
+      "R",
+      "R+",
+      "YL-",
+      "YL",
+      "YL+",
+      "G-",
+      "G",
+      "G+",
+      "CY",
+      "CY+",
+      "B-"
+    ],
+    "range": [
+      -99,
+      99
+    ],
+    "evidence": "Manual: 16 axes x (Hue, Saturation) = 32 values. Non-zero only in Kodakish files. Probable order: 16 hue values, then 16 saturation values (Kodakish: sat raised on R/R+/YL- = orange) - unverified FS7M2 round 8 (2026-10-09): Hue +10 on axis B- changes position 15 to 3293, Saturation -10 changes position 31 to -3293: positions 0-15 = hue per axis, 16-31 = saturation per axis (axis order of the menu: B, B+, MG-, MG, MG+, R, R+, YL-, YL, YL+, G-, G, G+, CY, CY+, B-). Area Indication and the selected axis are not stored.",
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "widget": {
+      "type": "axis_pairs",
+      "axes": [
+        "B",
+        "B+",
+        "MG–",
+        "MG",
+        "MG+",
+        "R",
+        "R+",
+        "YL–",
+        "YL",
+        "YL+",
+        "G–",
+        "G",
+        "G+",
+        "CY",
+        "CY+",
+        "B–"
+      ],
+      "hue_start": 0,
+      "sat_start": 16,
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "note": "32 values: the first 16 are the hue per axis, the last 16 the saturation per axis (order as in the camera menu: B, B+, MG–, MG, MG+, R, R+, YL–, YL, YL+, G–, G, G+, CY, CY+, B–). Area Indication and the selected axis are not stored in the file. ● marks axes with a value."
+    },
+    "order": 6
+  },
+  "00085": {
+    "name": "Gamma Select: HG (index HG1-HG8)",
+    "status": "confirmed",
+    "values_by_category": {
+      "HG": {
+        "0": "HG1 3250G36",
+        "1": "HG2 4600G30",
+        "2": "HG3 3259G40",
+        "3": "HG4 4609G33",
+        "4": "HG7 8009G40",
+        "5": "HG8 8009G33"
+      },
+      "STD": {
+        "0": "STD1 DVW",
+        "1": "STD2 x4.5",
+        "2": "STD3 x3.5",
+        "3": "STD4 240M",
+        "4": "STD5 R709",
+        "5": "STD6 x5.0"
+      }
+    },
+    "evidence": "Only ID differing between HG3/HG4 and HG7/HG8 file pairs; 2..5 match the manual's HG list order. Category (STD/HG/User/S-Log2/S-Log3) is a separate, still unidentified ID. sample set A Interviews (STD5 R709) = 4, B-Roll (HG8) = 5, Universal (S-Log3) = 4: index is within the category, so S-Log3 = 4 is not an HG/STD index -> category matters",
+    "widget": {
+      "type": "choice",
+      "note": "Applies while the gamma category is HG (assignment HG1-HG4, HG7, HG8 = 0-5).",
+      "choices": {
+        "0": "HG1 3250G36",
+        "1": "HG2 4600G30",
+        "2": "HG3 3259G40",
+        "3": "HG4 4609G33",
+        "4": "HG7 8009G40",
+        "5": "HG8 8009G33"
+      }
+    },
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "covered_by": "00017"
+  },
+  "00158": {
+    "name": "Preset White (K) per ND slot (?)",
+    "status": "likely",
+    "fields": [
+      "preset white (K)",
+      "color temp ... (K, 5 more)"
+    ],
+    "evidence": "First value = Preset White in K: Kodakish5600K 4900 (page), sample set C FS7II files all 5600 (daylight preset), sample set B 6000/2800/4900/5700. Mk2 has 6 values = probably Preset White per ND-filter slot (CLEAR/1/2/3 + variable CLEAR/On), only the first is changed in all sample files. Older FS7 files only one value",
+    "group": "video",
+    "subgroup": "White"
+  },
+  "00144": {
+    "name": "White memory A: R gain, B gain (?)",
+    "status": "likely",
+    "evidence": "Same two values are the first two entries of 00164 in all files (FS7M2: sample set B -7604,750 / sample set C 9227,-21402; FS7: sample set A 8338,-19829). Memory A of Paint > White",
+    "group": "video",
+    "subgroup": "White"
+  },
+  "00164": {
+    "name": "White memory A: R gain, B gain, colour temp K (?)",
+    "status": "likely",
+    "fields": [
+      "R",
+      "B",
+      "colour temp"
+    ],
+    "evidence": "Third value = colour temperature of the stored white (sample set C 5624, sample set B 2872); first two = 00144. 00165 = memory B (sample set B 5625; sample set C unused 0,0,3200). 00166..00181 (0,0,3200) are probably further white memories (per ND slot)",
+    "group": "video",
+    "subgroup": "White"
+  },
+  "00057": {
+    "name": "Knee Point (x0.001 %) or shutter angle x500 (?)",
+    "status": "hypothesis",
+    "evidence": "Constant 90000: either Knee Point 90 % (manual default 90 %, range 75-109 %) or Shutter Angle 180 deg * 500. ALL files hold 90000 three times (00079, 00085, 00105), constant in custom and Cine EI files, so unresolved",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip"
+  },
+  "00084": {
+    "name": "ISO / EI value (?)",
+    "status": "hypothesis",
+    "evidence": "Constant 2000 = FS7 base sensitivity (ISO 2000 / 2000 EI)",
+    "group": "video",
+    "subgroup": "Camera"
+  },
+  "00008": {
+    "name": "Master Black (non-linear scale)",
+    "status": "likely",
+    "evidence": "FS7 Mk1: Master Black -2 -> -1075, -3 -> -1158 (sample sets A and B), -5 -> -1654. Not linear in the menu step (steps of 83 then 248) - scale unknown. FS7M2 differs (-786 for -3) FS7M2 ALL (014/013/012/010): -5 = -1778, -2 = -827, -4 = -1613, -3 = -992 (middle of the step); the older note '-786 for -3' is not confirmed.",
+    "group": "video",
+    "subgroup": "Paint › Black",
+    "order": 2
+  },
+  "00149": {
+    "name": "Kodakish-specific flags",
+    "status": "hypothesis",
+    "evidence": "1,1,0 only in Kodakish files (page: needs Scene White Data ON)",
+    "group": "video",
+    "subgroup": "White"
+  },
+  "_transfer": {
+    "_comment": "Rules for switching the target camera model. Default: an ID is copied between models if it exists in both with the same number of fields and the value is valid for the target. none = model specific (never copied, values differ systematically between FS7 and FS7M2 or unit unknown); first = only the first field is copied. 2026-10-09: 00002 (Multi Matrix Setting), 00037 (Aperture Setting), 00068/00069 (White Clip) are carried now: their meaning is the same on both cameras.",
+    "none": [
+      "00008",
+      "00097",
+      "00136",
+      "00137",
+      "00138",
+      "00144",
+      "00145",
+      "00160"
+    ],
+    "first": [
+      "00158"
+    ],
+    "value_maps": {
+      "00008": {
+        "PXW-FS7>PXW-FS7M2": {
+          "-1075": "-827",
+          "-1158": "-992",
+          "-1654": "-1778"
+        },
+        "PXW-FS7M2>PXW-FS7": {
+          "-827": "-1075",
+          "-992": "-1158",
+          "-1778": "-1654"
+        },
+        "_comment": "Master Black: raw wheel value of the same displayed step (-2, -3, -5). Mk1: sample set B/A files; Mk2: FS7M2 013.ALL (-2), 010.ALL (-3), 014.ALL (-5), taken in the middle of the step; -4 on the Mk2 = -1613 (012.ALL). The wheel has finer values than the display, so a step is a range, not one value."
+      }
+    }
+  },
+  "00036": {
+    "name": "Aperture Level",
+    "status": "confirmed",
+    "range": [
+      -99,
+      99
+    ],
+    "unit": 329.32663316582915,
+    "evidence": "the author of sample set A FS7 Mk1 files: Aperture Level +30/+20/+9 -> 9880/6586/2964 (= steps * 329.33). FS7 Mk1; FS7M2 files all 0",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "Aperture Level"
+        }
+      ],
+      "max_raw": 32767
+    },
+    "group": "video",
+    "subgroup": "Paint › Detail / Aperture",
+    "order": 2
+  },
+  "00037": {
+    "name": "Aperture Setting (On/Off)",
+    "status": "confirmed",
+    "evidence": "FS7 Mk1: 1 in the three sample set A files (APERTURE ON), 0 in sample set B's files (Aperture OFF). FS7M2: 1 in all sample set B files although the page says Aperture OFF - meaning on FS7M2 unclear, hence model specific. sample set C FS7II: 1 in JR45Video, 0 in the four others -> the flag does vary per look on FS7M2 as well (aperture meaning plausible) FS7M2 round 5 (2026-10-09): Aperture Off changes only 00037 1 -> 0 (Level 9 -> 12 = 2964 -> 3952 in 00036). Equals ALL 00069 (id_map).",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Aperture active",
+      "note": "With Off, the Aperture level is greyed out."
+    },
+    "group": "video",
+    "subgroup": "Paint › Detail / Aperture",
+    "order": 1
+  },
+  "00069": {
+    "name": "White Clip Level (90.0 to 109.0 %, file value x 10)",
+    "status": "likely",
+    "evidence": "1080 in all sample set A files and FS7M2, 1055 in sample set B's FS7 files; manual: White Clip Level 90.0-109.0 %, default 108.0/105.0 % Manual: 90.0-109.0 %. Values seen: 1055 (sample set B FS7), 1080 (sample set B FS7M2), 1090, 1080 (sample set A).",
+    "group": "video",
+    "subgroup": "Paint › White Clip",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 900,
+      "max": 1090,
+      "unit": "%",
+      "note": "Manual: White Clip level 90.0 % to 109.0 %; the setting (On/Off) returns to On when the camera is switched off, permanently off = level 109 %; not adjustable with gamma category S-Log2/S-Log3 (the camera switches it off there). Rule of thumb: standard gamma 105 %, HyperGamma (HG3/HG4/HG7/HG8) 109 %, otherwise the camera clips the highlights hard; live/broadcast 100 %.",
+      "scale": 0.1,
+      "decimals": 1,
+      "small": 1,
+      "large": 10
+    },
+    "order": 2
+  },
+  "00017": {
+    "name": "Gamma Category (STD / HG / User / S-Log2 / S-Log3)",
+    "status": "likely",
+    "evidence": "STD flag: 1 only in sample set A INTERVIEWS (STD5 R709). 00143 = 1 only in sample set A UNIVERSAL-1 (S-Log3), 00019 = 1 in the HG files. Same block as the ALL file (id_map: 00017 -> 00039, 00019 -> 00041, 00022 -> 00044, 00078 -> 00190, 00143 -> 00494).",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 19,
+    "widget": {
+      "type": "derived",
+      "label": "Category",
+      "select_label": "Gamma Select",
+      "options": [
+        {
+          "label": "STD",
+          "match": {
+            "00017": {
+              "0": "1"
+            },
+            "00019": {
+              "0": "0"
+            },
+            "00078": {
+              "0": "0"
+            },
+            "00022": {
+              "0": "0"
+            },
+            "00143": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00017": {
+              "0": "1"
+            },
+            "00019": {
+              "0": "0"
+            },
+            "00078": {
+              "0": "0"
+            },
+            "00022": {
+              "0": "0"
+            },
+            "00143": {
+              "0": "0"
+            },
+            "00068": {
+              "0": "1"
+            }
+          }
+        },
+        {
+          "label": "HG",
+          "match": {
+            "00017": {
+              "0": "0"
+            },
+            "00019": {
+              "0": "1"
+            },
+            "00078": {
+              "0": "0"
+            },
+            "00022": {
+              "0": "0"
+            },
+            "00143": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00017": {
+              "0": "0"
+            },
+            "00019": {
+              "0": "1"
+            },
+            "00078": {
+              "0": "0"
+            },
+            "00022": {
+              "0": "0"
+            },
+            "00143": {
+              "0": "0"
+            },
+            "00068": {
+              "0": "1"
+            }
+          }
+        },
+        {
+          "label": "User",
+          "match": {
+            "00017": {
+              "0": "0"
+            },
+            "00019": {
+              "0": "0"
+            },
+            "00078": {
+              "0": "1"
+            },
+            "00022": {
+              "0": "0"
+            },
+            "00143": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00017": {
+              "0": "0"
+            },
+            "00019": {
+              "0": "0"
+            },
+            "00078": {
+              "0": "1"
+            },
+            "00022": {
+              "0": "0"
+            },
+            "00143": {
+              "0": "0"
+            },
+            "00068": {
+              "0": "1"
+            }
+          }
+        },
+        {
+          "label": "S-Log2",
+          "match": {
+            "00017": {
+              "0": "0"
+            },
+            "00019": {
+              "0": "0"
+            },
+            "00078": {
+              "0": "0"
+            },
+            "00022": {
+              "0": "1"
+            },
+            "00143": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00017": {
+              "0": "0"
+            },
+            "00019": {
+              "0": "0"
+            },
+            "00078": {
+              "0": "0"
+            },
+            "00022": {
+              "0": "1"
+            },
+            "00143": {
+              "0": "0"
+            },
+            "00068": {
+              "0": "0"
+            }
+          }
+        },
+        {
+          "label": "S-Log3",
+          "match": {
+            "00017": {
+              "0": "0"
+            },
+            "00019": {
+              "0": "0"
+            },
+            "00078": {
+              "0": "0"
+            },
+            "00022": {
+              "0": "0"
+            },
+            "00143": {
+              "0": "1"
+            }
+          },
+          "set": {
+            "00017": {
+              "0": "0"
+            },
+            "00019": {
+              "0": "0"
+            },
+            "00078": {
+              "0": "0"
+            },
+            "00022": {
+              "0": "0"
+            },
+            "00143": {
+              "0": "1"
+            },
+            "00068": {
+              "0": "0"
+            }
+          }
+        }
+      ],
+      "selects": {
+        "STD": {
+          "id": "00018",
+          "field": 0,
+          "choices": {
+            "0": "STD1 DVW",
+            "1": "STD2 x4.5",
+            "2": "STD3 x3.5",
+            "3": "STD4 240M",
+            "4": "STD5 R709",
+            "5": "STD6 x5.0"
+          }
+        },
+        "HG": {
+          "id": "00085",
+          "field": 0,
+          "choices": {
+            "0": "HG1 3250G36",
+            "1": "HG2 4600G30",
+            "2": "HG3 3259G40",
+            "3": "HG4 4609G33",
+            "4": "HG7 8009G40",
+            "5": "HG8 8009G33"
+          }
+        }
+      },
+      "note": "The gamma category consists of five flags (00017 STD, 00019 HG, 00078 User, 00022 S-Log2, 00143 S-Log3; exactly one is 1). Gamma Select has its own IDs per category (00018 STD, 00085 HG); S-Log2/S-Log3 have no sub-selection. The user selection is not yet assigned in the scene file."
+    }
+  },
+  "00060": {
+    "name": "Knee flag (?)",
+    "status": "hypothesis",
+    "evidence": "see 00017. Flags that are 1 only with gamma category STD; the HG-only flags are 00019 and 00043 (also constant 1 in all sample set B files), the S-Log3-only ones are 00143, 00053 (+14) and 00115 (also 1 for STD)",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip"
+  },
+  "00068": {
+    "name": "White Clip Setting (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › White Clip",
+    "order": 1,
+    "evidence": "Equals ALL 00125 (FS7M2 015.ALL: White Clip Off changes only that ID). Values: 1 in the FS7M2 files and sample set A INTERVIEWS (STD), 0 in the sample set B FS7 files and sample set A B-Roll/Universal.",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "White Clip active",
+      "note": "With Off, the White Clip level is greyed out. With S-Log2/S-Log3 the camera switches the setting off."
+    }
+  },
+  "00145": {
+    "name": "White memory B: R gain, B gain (?)",
+    "status": "likely",
+    "evidence": "Pair copied into 00165; sample set C files have 0,0 (memory B unused), sample set B FS7M2 14692,-14857",
+    "group": "video",
+    "subgroup": "Other"
+  },
+  "00165": {
+    "name": "White memory B: R gain, B gain, colour temp K (?)",
+    "status": "likely",
+    "evidence": "See 00164",
+    "group": "video",
+    "subgroup": "White"
+  },
+  "00021": {
+    "name": "Step Gamma (0.35 to 0.90, file value x 100)",
+    "status": "likely",
+    "evidence": "Constant 45 in all FS7/FS7M2/sample sets A/C files = Step Gamma 0.45, the manual default (range 0.35-0.90 in 0.05 steps); ALL 00043 holds the same value User (2026-10-08): interpreted as 0.45, range 0.35-0.90 (manual: steps of 0.05).",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 35,
+      "max": 90,
+      "scale": 0.01,
+      "decimals": 2,
+      "small": 5,
+      "large": 10,
+      "snap": 5,
+      "note": "Step Gamma 0.35 to 0.90 in steps of 0.05 (manual), default 0.45. The file holds the value times 100 (45 = 0.45). The buttons change by 0.05 and 0.10."
+    },
+    "order": 20
+  },
+  "00002": {
+    "name": "Multi Matrix Setting (On/Off)",
+    "status": "confirmed",
+    "evidence": "FS7: 1 only in the files with Multi Matrix data (sample set B Kodakish 007/008, Filmlike2 004); 0 in all sample set A files; FS7M2 files all 1. ALL equivalent 00020 FS7M2 round 7 (2026-10-09): Multi Matrix Off changes only 00002 1 -> 0 (round 8: On again). Matrix Off blocks changes of the multi matrix on the camera. Equals ALL 00020 (id_map).",
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Multi Matrix active",
+      "note": "With Off, the multi matrix is greyed out. With Matrix Off it cannot be changed on the camera either."
+    },
+    "order": 5
+  },
+  "00019": {
+    "name": "HG gamma category flag (?)",
+    "status": "likely",
+    "evidence": "1 for HG gamma (B-Roll-1 and all sample set B files), 0 for STD (Interviews) and S-Log3 (Universal); 00043 behaves identically. Possibly part of the gamma category / HG related items. Part of a one-hot gamma category: 00019 = HG, 00022 = S-Log2, 00143 = S-Log3 (STD probably 00017)",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "covered_by": "00017"
+  },
+  "00043": {
+    "name": "Detail Level Depend (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 5,
+    "evidence": "FS7M2 round 2 (2026-10-09): Level Depend Off -> On: scene 00043 0 -> 1 (ALL 00087). Earlier taken for an HG-only flag.",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Level Depend active",
+      "note": "With Off, Level Depend Level is greyed out."
+    }
+  },
+  "00143": {
+    "name": "S-Log3 gamma category flag (?)",
+    "status": "likely",
+    "evidence": "1 only in sample set A Universal-1 (S-Log3); possibly part of the gamma category. One-hot gamma category with 00019 (HG) and 00022 (S-Log2) Pairs: Mk1 003.SCENE (S-Log3) / 003.ALL have 00143 = 1 / 00494 = 1, 004.SCENE (HG8) / 004.ALL 0 / 0.",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "covered_by": "00017"
+  },
+  "00053": {
+    "name": "Detail Frequency (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 7,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail Frequency -> 4940 (+15 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Frequency"
+        }
+      ]
+    }
+  },
+  "00022": {
+    "name": "S-Log2 gamma category flag (?)",
+    "status": "likely",
+    "evidence": "ALL equivalent 00044 flips to 1 only when the colour space is S-Gamut/SLog2 (011.ALL); constant 0 in all SCENE files (none uses S-Log2). Together with 00019 (HG) and 00143 (S-Log3) a one-hot gamma category",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "covered_by": "00017"
+  },
+  "_groups": {
+    "video": "Video (Bild, Format, Codec, Farbe, Belichtung)",
+    "audio": "Audio",
+    "misc": "Sonstiges (Sucher, Zebra, Namen, Marker ...)",
+    "unknown": "Unknown (IDs without a database entry)"
+  },
+  "00018": {
+    "name": "Gamma Select: STD (index STD1-STD6)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 21,
+    "evidence": "Maps to ALL 00040 (STD select, FS7M2 006.ALL: STD5 -> STD2 changes only that ID). 4 (= STD5) in all scene files.",
+    "widget": {
+      "type": "choice",
+      "note": "Applies while the gamma category is STD.",
+      "choices": {
+        "0": "STD1 DVW",
+        "1": "STD2 x4.5",
+        "2": "STD3 x3.5",
+        "3": "STD4 240M",
+        "4": "STD5 R709",
+        "5": "STD6 x5.0"
+      }
+    },
+    "covered_by": "00017"
+  },
+  "00023": {
+    "name": "Gamma (On/Off)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 18,
+    "evidence": "Maps to ALL 00045 (FS7M2 008.ALL: Gamma Off changes only that ID); 1 in all scene files.",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Gamma active",
+      "note": "With Off, all other gamma settings are greyed out."
+    }
+  },
+  "00024": {
+    "name": "Master Gamma (menu step -99..+99)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 24,
+    "evidence": "Maps to ALL 00046 (FS7M2 009.ALL: Master Gamma -10 = -3293); 0 in all scene files.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Master Gamma"
+        }
+      ]
+    }
+  },
+  "00078": {
+    "name": "Gamma category flag: User (?)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 22,
+    "evidence": "Maps to ALL 00190 (FS7M2 007.ALL: User/User4); 0 in all scene files.",
+    "covered_by": "00017"
+  },
+  "_locks": [
+    {
+      "subgroup_prefix": "Paint › Gamma",
+      "when": {
+        "id": "00023",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "except": [
+        "00023"
+      ],
+      "reason": "Gamma is Off"
+    },
+    {
+      "subgroup_prefix": "Paint › White Clip",
+      "when": {
+        "id": "00068",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "except": [
+        "00068"
+      ],
+      "reason": "White Clip is Off"
+    },
+    {
+      "subgroup_prefix": "Paint › Black",
+      "when": {
+        "id": "00010",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "except": [
+        "00010"
+      ],
+      "reason": "Black Setting is Off"
+    },
+    {
+      "subgroup_prefix": "Paint › Detail",
+      "when": {
+        "id": "00044",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "except": [
+        "00044"
+      ],
+      "reason": "Detail is Off"
+    },
+    {
+      "ids": [
+        "00042"
+      ],
+      "when": {
+        "id": "00043",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Level Depend is Off"
+    },
+    {
+      "ids": [
+        "00048"
+      ],
+      "when": {
+        "id": "00049",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Knee Aperture is Off"
+    },
+    {
+      "ids": [
+        "00036"
+      ],
+      "when": {
+        "id": "00037",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Aperture is Off"
+    },
+    {
+      "ids": [
+        "00006",
+        "00007",
+        "00002",
+        "00074",
+        "00115"
+      ],
+      "when": {
+        "id": "00005",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Matrix is Off"
+    },
+    {
+      "ids": [
+        "00074"
+      ],
+      "when": {
+        "id": "00002",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Multi Matrix is Off"
+    },
+    {
+      "ids": [
+        "00068"
+      ],
+      "when": {
+        "id": "00022",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "not adjustable with S-Log2/S-Log3"
+    },
+    {
+      "ids": [
+        "00068"
+      ],
+      "when": {
+        "id": "00143",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "not adjustable with S-Log2/S-Log3"
+    }
+  ],
+  "00010": {
+    "name": "Black Setting (On/Off)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Black",
+    "order": 1,
+    "evidence": "Equals ALL 00031 (id_map; ALL 00031: 0 = On, 1 = Off, confirmed with FS7M2 011.ALL). Value 0 in all 58 scene files, so the pairing is not yet verified by a changed value.",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "0",
+      "off": "1",
+      "text": "Black Setting active",
+      "note": "With Off, the other black settings are greyed out (as in the ALL file). The mapping to scene ID 00010 is not yet confirmed by a changed value."
+    }
+  },
+  "00009": {
+    "name": "B Black (menu step -99..+99)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Black",
+    "order": 4,
+    "evidence": "Equals ALL 00030 (id_map; FS7M2 012.ALL: B Black +25 = 8254, scale 330.16 per step). Value 0 in all 58 scene files, pairing not yet verified by a changed value.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "B Black"
+        }
+      ]
+    }
+  },
+  "00005": {
+    "name": "Matrix Setting (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 1,
+    "evidence": "FS7M2 round 6 (2026-10-09): Matrix Off changes only scene 00005 1 -> 0 (the other file type: ALL 00023). Cine EI also sets it to 0. Equals ALL 00023 (id_map; ALL 00023 is 1 in Custom, 0 in Cine EI). Value 1 in all 58 scene files.",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Matrix active",
+      "note": "With Off, Preset Matrix and User Matrix are greyed out (Multi Matrix has its own switch)."
+    }
+  },
+  "00044": {
+    "name": "Detail Setting (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 1,
+    "evidence": "FS7M2 round 1 (2026-10-09): Detail Setting Off -> On changes only scene 00044 0 -> 1 (and ALL 00088 0 -> 1, same pair).",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Detail active",
+      "note": "With Off, the other detail settings are greyed out (an assumption, as with gamma, black and white clip)."
+    }
+  },
+  "00045": {
+    "name": "Detail Level (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 2,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail Level -> 329 (+1 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Detail Level"
+        }
+      ]
+    }
+  },
+  "00046": {
+    "name": "Detail H/V Ratio (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 3,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail H/V Ratio -> 659 (+2 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "H/V Ratio"
+        }
+      ]
+    }
+  },
+  "00047": {
+    "name": "Detail Crispening (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 4,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail Crispening -> 988 (+3 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Crispening"
+        }
+      ]
+    }
+  },
+  "00042": {
+    "name": "Detail Level Depend Level (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 6,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail Level Depend Level -> -329 (-1 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Level Depend Level"
+        }
+      ]
+    }
+  },
+  "00049": {
+    "name": "Detail Knee Aperture (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 8,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail Knee Aperture (On/Off) Off -> On = 1 (pair 001.SCENE/001.ALL vs round 2).",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Knee Aperture active",
+      "note": "With Off, Knee Aperture Level is greyed out."
+    }
+  },
+  "00048": {
+    "name": "Detail Knee Aperture Level",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 9,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail Knee Aperture Level +5 = 1647 (pair 001.SCENE/001.ALL vs round 2).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Knee Aperture Level"
+        }
+      ]
+    }
+  },
+  "00052": {
+    "name": "Detail Limit",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 10,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail Limit -5 = -1647 (pair 001.SCENE/001.ALL vs round 2).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Limit"
+        }
+      ]
+    }
+  },
+  "00050": {
+    "name": "Detail White Limit",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 11,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail White Limit +10 = 3293 (pair 001.SCENE/001.ALL vs round 2).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "White Limit"
+        }
+      ]
+    }
+  },
+  "00051": {
+    "name": "Detail Black Limit",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 12,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail Black Limit -10 = -3293 (pair 001.SCENE/001.ALL vs round 2).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Black Limit"
+        }
+      ]
+    }
+  },
+  "00054": {
+    "name": "Detail V Black Limit",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 13,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail V Black Limit +15 = 4940 (pair 001.SCENE/001.ALL vs round 2).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "V Black Limit"
+        }
+      ]
+    }
+  },
+  "00055": {
+    "name": "Detail V Detail Creation",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 14,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail V Detail Creation Y -> NAM = 3 -> 0 (pair 001.SCENE/001.ALL vs round 2). Round 4: V Detail Creation G = 1.",
+    "widget": {
+      "type": "choice",
+      "note": "NAM = 0, G = 1 (FS7M2 round 4), Y = 3 (round 3); G+R is therefore probably 2.",
+      "choices": {
+        "0": "NAM",
+        "1": "G",
+        "2": "G+R (derived)",
+        "3": "Y"
+      }
+    }
+  },
+  "00025": {
+    "name": "Skin Detail (Setting, Level, Saturation, Hue, Width)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Skin Detail",
+    "order": 1,
+    "evidence": "FS7M2 round 4 (2026-10-09): Skin Detail Off -> On, Level +5 (1647), Saturation -5 (-1647), Hue 10 (-1820 = -10 x 182.04), Width 30 (5461 = 30 x 182.04): '0,0,0,0,7282' -> '1,1647,-1647,-1820,5461' (default width 40 = 7282).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "note": "Skin Detail: level and saturation -99 to +99 (329.33 per step), hue 0 to 359 degrees (stored as -degrees x 182.04, the colour next to it), width 0 to 90 (degrees x 182.04).",
+      "fields": [
+        {
+          "index": 0,
+          "label": "Setting",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Level"
+        },
+        {
+          "index": 2,
+          "label": "Saturation"
+        },
+        {
+          "index": 3,
+          "label": "Hue (°)",
+          "range": [
+            0,
+            359
+          ],
+          "unit": 182.04444444444445,
+          "sign": -1,
+          "swatch": "hue"
+        },
+        {
+          "index": 4,
+          "label": "Width (°)",
+          "range": [
+            0,
+            90
+          ],
+          "unit": 182.04444444444445
+        }
+      ]
+    }
+  },
+  "00115": {
+    "name": "Adaptive Matrix (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 2,
+    "evidence": "FS7M2 round 9 (2026-10-09): Adaptive Matrix On -> Off changes only scene 00115 1 -> 0 (and ALL 00307 in the other file type). Equals ALL 00307 (id_map).",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Adaptive Matrix active",
+      "note": "Cannot be changed with Matrix Off (assumed like the other matrix items)."
+    }
+  },
+  "00142": {
+    "name": "Related to RAW 2K Center (0/2) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "System › Base Setting",
+    "order": 20,
+    "evidence": "Equals ALL 00446 (id_map)."
+  }
+}

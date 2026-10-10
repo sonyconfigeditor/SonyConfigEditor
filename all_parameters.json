@@ -1,0 +1,4636 @@
+{
+  "_comment": "Parameter database for Sony ALL files (same container as SCENE files, different IDs). Mapping derived by aligning the user's FS7 ALL files with the known sample set A/B scene files (identical values) and by sample set A descriptions. status: confirmed / likely / hypothesis as in scene_parameters.json. scene_equivalent = ID of the same parameter in SCENE files.",
+  "00024": {
+    "name": "Preset Matrix",
+    "status": "confirmed",
+    "evidence": "Values 1,3 / 1,4 equal the scene file values (Universal/Interviews = Cinema, B-Roll = F55 709 Like); same coding as scene 00006 FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. Manual (FS7M2): BT.2020 can only be selected when the recording format is 4K or QFHD (greyed out with the HD formats of the test files).",
+    "scene_equivalent": "00006",
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 0,
+          "choices": {
+            "0": "Preset Matrix Off",
+            "1": "Preset Matrix On"
+          }
+        },
+        {
+          "index": 1,
+          "choices": {
+            "0": "Standard",
+            "1": "High Saturation",
+            "2": "FL Light",
+            "3": "Cinema",
+            "4": "F55 709 Like",
+            "5": "BT.2020"
+          },
+          "only_models": {
+            "5": [
+              "PXW-FS7M2"
+            ]
+          },
+          "enabled_when": {
+            "field": 0,
+            "in": [
+              "1"
+            ]
+          }
+        }
+      ],
+      "requires": {
+        "5": [
+          {
+            "id": "00150",
+            "field": 0,
+            "in": [
+              "3840",
+              "4096"
+            ],
+            "reason": "BT.2020 only with a 4K/QFHD format"
+          }
+        ]
+      }
+    },
+    "only_models": {
+      "5": [
+        "PXW-FS7M2"
+      ]
+    },
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 3
+  },
+  "00025": {
+    "name": "User Matrix",
+    "status": "confirmed",
+    "evidence": "1,-2635,0,... (Level -8) and 1,-6586,... (Level -20) equal the sample set A scene files; same coding as scene 00007 FS7M2 round 9 (2026-10-09): Level -8 -> +8, Phase +5, R-G -5, R-B +10, G-R -10, G-B -3, B-R +3, B-G -7 give '1,2635,1647,-1647,3293,-3293,-988,988,-2305' (field order Level, Phase, R-G, R-B, G-R, G-B, B-R, B-G, scale 329.33 per step), Preset Cinema (3) -> Standard (0).",
+    "scene_equivalent": "00007",
+    "fields": [
+      "enable",
+      "level",
+      "phase",
+      "R-G",
+      "R-B",
+      "G-R",
+      "G-B",
+      "B-R",
+      "B-G"
+    ],
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "User Matrix",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Level"
+        },
+        {
+          "index": 2,
+          "label": "Phase"
+        },
+        {
+          "index": 3,
+          "label": "R-G"
+        },
+        {
+          "index": 4,
+          "label": "R-B"
+        },
+        {
+          "index": 5,
+          "label": "G-R"
+        },
+        {
+          "index": 6,
+          "label": "G-B"
+        },
+        {
+          "index": 7,
+          "label": "B-R"
+        },
+        {
+          "index": 8,
+          "label": "B-G"
+        }
+      ],
+      "max_raw": 32767
+    },
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 4
+  },
+  "00028": {
+    "name": "Master Black (non-linear scale)",
+    "status": "likely",
+    "evidence": "-1075 (Universal-1, MB -2), -1654 (B-Roll-1, MB -5), 0 in the Cine EI files; same values as scene 00008. Cine EI switch sets it to 0 (Master Black is not available in Cine EI) FS7M2 ALL: -3 -> -992 (010.ALL), -4 -> -1613 (012.ALL); with the Mk1 and the Mk2 scene value for -3 (-1158, -786) this shows that the stored value depends on another camera setting, not only on the menu step.",
+    "scene_equivalent": "00008",
+    "group": "video",
+    "subgroup": "Paint › Black",
+    "order": 2
+  },
+  "00042": {
+    "name": "Gamma Select: HG (index HG1-HG8)",
+    "status": "likely",
+    "evidence": "4 in S-Log3 files, 5 in the HG8 file (B-Roll-1); same coding as scene 00085. No dropdown: the category (HG/STD/S-Log) is a separate ID User: HG1-HG8 / STD1-STD6 are sub-options of the categories HG / STD (menu: STD, HG, User, S-Log2, S-Log3). FS7M2 (003-006): stays 1 (HG2) although the category changes, because the STD select has its own ID (00040, FS7M2 006.ALL).",
+    "scene_equivalent": "00085",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "widget": {
+      "type": "choice",
+      "note": "Applies while the gamma category is HG (category flag 00041). Assignment as in scene 00085 (HG1-HG4, HG7, HG8 = 0-5).",
+      "choices": {
+        "0": "HG1 3250G36",
+        "1": "HG2 4600G30",
+        "2": "HG3 3259G40",
+        "3": "HG4 4609G33",
+        "4": "HG7 8009G40",
+        "5": "HG8 8009G33"
+      }
+    },
+    "covered_by": "00039"
+  },
+  "00068": {
+    "name": "Aperture Level",
+    "status": "confirmed",
+    "evidence": "2964 (+9) and 6586 (+20) equal sample set A Universal-1 / B-Roll-1; same coding as scene 00036",
+    "scene_equivalent": "00036",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Aperture Level"
+        }
+      ]
+    },
+    "group": "video",
+    "subgroup": "Paint › Detail / Aperture",
+    "order": 2
+  },
+  "00069": {
+    "name": "Aperture Setting (On/Off)",
+    "status": "confirmed",
+    "evidence": "1 in the custom files (Aperture ON), 0 in the Cine EI files; same coding as scene 00037. Cine EI switch sets it to 0 FS7M2 round 5 (2026-10-09): Aperture Off changes only 00069 1 -> 0 (Level 9 -> 12 = 2964 -> 3952 in 00068). Equals scene 00037 (id_map).",
+    "scene_equivalent": "00037",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Aperture active",
+      "note": "With Off, the Aperture level is greyed out."
+    },
+    "group": "video",
+    "subgroup": "Paint › Detail / Aperture",
+    "order": 1
+  },
+  "00126": {
+    "name": "White Clip Level (90.0 to 109.0 %, file value x 10)",
+    "status": "likely",
+    "evidence": "1080 in most files, 1090 in an own scene name; same as scene 00069 (hypothesis there); manual range 90.0-109.0 % Equals scene 00069 (id_map).",
+    "scene_equivalent": "00069",
+    "group": "video",
+    "subgroup": "Paint › White Clip",
+    "order": 2,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 900,
+      "max": 1090,
+      "unit": "%",
+      "note": "Manual: White Clip level 90.0 % to 109.0 %; the setting (On/Off) returns to On when the camera is switched off, permanently off = level 109 %; not adjustable with gamma category S-Log2/S-Log3 (the camera switches it off there). Rule of thumb: standard gamma 105 %, HyperGamma (HG3/HG4/HG7/HG8) 109 %, otherwise the camera clips the highlights hard; live/broadcast 100 %.",
+      "scale": 0.1,
+      "decimals": 1,
+      "small": 1,
+      "large": 10
+    }
+  },
+  "00132": {
+    "name": "Zebra 1 (On/Off, Level, Aperture Level) (?)",
+    "status": "likely",
+    "evidence": "0,70,10 (Custom) / 1,70,3 (Cine EI); 00480 holds an identical copy",
+    "group": "misc",
+    "subgroup": "VF › Zebra / Marker"
+  },
+  "00133": {
+    "name": "Zebra 2 (On/Off, Level %)",
+    "status": "likely",
+    "evidence": "1,62 in the Universal-1 ALL file and 1,90 in the B-Roll-1 ALL file: sample set A PDF names Zebra 2 @ 62 % / 90 %; 00481 holds a copy",
+    "fields": [
+      "on/off",
+      "level %"
+    ],
+    "group": "misc",
+    "subgroup": "VF › Zebra / Marker"
+  },
+  "00150": {
+    "name": "Video format: width, height, rate denominator, rate numerator, ...",
+    "status": "confirmed",
+    "evidence": "Fields 0-3 in all ALL files: 3840,2160,1,25 (UHD 25p) / 1920,1080,1,25 (HD 25p) / 3840,2160,1001,30000 (UHD 29.97p) / 4096,2160,1001,30000 (4K DCI 29.97p) / 4096,2160,1001,60000 (4K DCI 59.94p); frame rate = numerator / denominator. Field 14 changes with the format (UHD 25p 5, HD 25p 8, UHD 29.97p 6, DCI 29.97p 4, DCI 59.94p 3) - probably the recording format/codec entry; fields 16 and 18 differ only in the HD file (7 and 1); the remaining fields are constant (1,1,0,8,0,0,0,1,1,1 ... 60) | Test files: 013.ALL = 012.ALL with 1080p/59.94 -> 1920,1080,1001,60000 and field 14 = 9; 014.ALL = 013.ALL switched XAVC-I -> XAVC-L -> 3840,2160,1001,60000 with fields 7 (8->4), 9 (0->11), 11 (1->5), 12 and 13 (1->0), 14 (9->13), 16 (0->1) changed, i.e. fields 7, 9, 11-13, 14 and 16 carry the codec/format entry | 014.ALL: the camera itself switched to 3840x2160 59.94p when the codec was changed to XAVC-L (confirmed by the user) | 015.ALL (014 switched to MPEG HD422, 1920x1080 60i): 1920,1080,1001,60000 (rate stays 59.94 = field rate) with field 4 = 0 (interlaced; 1 in all progressive files), field 7 = 8, field 9 = 3, fields 11/12/13 = 0,0,1, field 14 = 0, field 16 = 2. Codec pattern in field 16: 0 = XAVC-I (013), 1 = XAVC-L (014), 2 = MPEG HD422 (015); field 9: 0 / 11 / 3; field 11: 1 / 5 / 0; field 7: 8 / 4 / 8 | 016.ALL (RAW, 4096x2160 59.94p external) and 017.ALL (RAW & XAVC-I): 00150 describes only the internally recorded format (1920x1080 59.94p, XAVC-I fields 7/9/11-13, index 9); field 16 = 6 for RAW and 7 for RAW & XAVC-I (also in 002.ALL, whose field 18 = 1 is probably a RAW output variant). The RAW output format itself is not in 00150 (constant 4096x2160 59.94p in 016/017, the user's setting). | 018.ALL (RAW & XAVC-L) = codec index 8, internal 1920x1080 59.94p with XAVC-L fields 7=4, 9=11, 11=5, 12=1, 13=1, 14=0; 019.ALL (RAW & MPEG HD422) = codec index 9, internal 1280x720 59.94p with the MPEG fields 7=8, 9=3, 11=0, 12=0, 13=1, 14=0. Codec indices confirmed: 0 XAVC-I, 1 XAVC-L, 2 MPEG HD422, 6 RAW, 7 RAW & XAVC-I, 8 RAW & XAVC-L, 9 RAW & MPEG HD422 | 020.ALL (ProRes 422 HQ) = codec index 10, 021.ALL (ProRes 422) = codec index 11; both 1920x1080 29.97p with fields 7=8, 9=14, 10=4, 11=6, 12=1, 13=1 and format index 18 (HQ) / 19; additional changes when switching from RAW & MPEG HD422: 00173 field 1 (0 -> 1), 00283 (1 -> 0), 00407 (0 -> 1), 00426 (1 -> 0), 00454 (frame rate class 2 -> 1) | Files 022/023/024 (RAW only): field 17 = RAW output format index (0 = 4096x2160 59.94p, 1 = 4096x2160 29.97p, 3 = 2048x1080 59.94p; 2, 4, 5 inferred from the manual's list order 4096: 59.94/29.97/23.98, 2048: 59.94/29.97/23.98); field 22 = frame rate limit of the imager mode (60 Normal, 120 2K Center; copy of 00151 first field; not the S&Q default, see 00151); with RAW output 29.97p the internal rate follows (29.97p, format index 8) | 002.ALL (PAL-typisch 25p, field 17 = 0): the index is a list position, in the PAL list presumably 0 = 4096x2160 50p, so the NTSC labels are only valid for NTSC rates | Block 1 (025-027): with S&Q Motion switched on the camera forces field 17 to 3 (RAW output 2048x1080 59.94p) even for XAVC-I; field 22 is the default S&Q frame rate of the current format (60, or 120 with RAW 2K), 00151 first field is the chosen S&Q frame rate | 029.ALL (014 with Video Format 1920x1080 59.94P 50, XAVC-L; the 50 is the bit rate in Mbps, not 50 Hz; the camera was in NTSC mode, PAL needs a reboot): 1920,1080,1001,60000 with the XAVC-L fields 7=4, 9=11, 11=5 and 12/13 = 1 (UHD XAVC-L 014 has 0), index 14 = 0 (as in 018); side effects: ALL 00158 4 -> 2 (also seen when S&Q was switched on, 025), 00282 second field 0 -> 3",
+    "fields": [
+      "width",
+      "height",
+      "rate denominator",
+      "rate numerator",
+      "progressive (1) / interlaced (0) (?)"
+    ],
+    "codec_table": {
+      "XAVC-I HD 59.94p (013)": "7=8,9=0,11=1,12=1,13=1,14=9,16=0",
+      "XAVC-L UHD 59.94p (014)": "7=4,9=11,11=5,12=0,13=0,14=13,16=1",
+      "MPEG HD422 HD 59.94i (015)": "4=0,7=8,9=3,11=0,12=0,13=1,14=0,16=2",
+      "RAW (016)": "16=6",
+      "RAW & XAVC-I (017)": "16=7 (also 002.ALL, HD 25p, field 18 = 1)",
+      "RAW & XAVC-L (018)": "16=8 (fields 7=4, 9=11, 11=5, 12=1, 13=1, 14=0), internal HD 59.94p",
+      "RAW & MPEG HD422 (019)": "16=9 (fields 7=8, 9=3, 11=0, 12=0, 13=1, 14=0), internal 1280x720 59.94p",
+      "ProRes 422 HQ (020)": "16=10 (fields 7=8, 9=14, 10=4, 11=6, 12=1, 13=1, 14=18), internal 1920x1080 29.97p",
+      "ProRes 422 (021)": "16=11 (same fields, 14=19)",
+      "XAVC-L Full HD 59.94p (029)": "16=1 (fields 7=4, 9=11, 11=5, 12=1, 13=1, 14=0)"
+    },
+    "widget": {
+      "type": "multichoice",
+      "note": "Choose the codec first, then the format (resolution/frame rate); the list shows only the formats known for the codec. When the codec changes, a format with the same resolution and frame rate is chosen, otherwise the first one in the list. With RAW the RAW is stored externally only; the resolution here is the internally recorded format. Choosing a format also sets the values that move with it (e.g. Imager Scan Mode) from the sample files. Not every combination is possible on the camera; only formats known from files are offered. The RAW output is a position in the list of the camera menu (NTSC); with PAL (50p/25p) the same number means the PAL counterpart. Formats marked '– assumption' come from the menu lists of the manuals (NTSC and PAL; the 35/25 Mbps bit-rate variants are missing); only resolution, frame rate and scan are set, the format index (field 14) and the companion values (00175 etc.) are not checked.",
+      "selectors": [
+        {
+          "label": "Codec",
+          "on_pick": "format_for_codec",
+          "options": [
+            {
+              "label": "XAVC-I",
+              "values": {
+                "16": "0"
+              }
+            },
+            {
+              "label": "XAVC-L",
+              "values": {
+                "16": "1"
+              }
+            },
+            {
+              "label": "MPEG HD422",
+              "values": {
+                "16": "2"
+              }
+            },
+            {
+              "label": "RAW (external only)",
+              "values": {
+                "16": "6"
+              },
+              "requires": [
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ]
+            },
+            {
+              "label": "RAW & XAVC-I",
+              "values": {
+                "16": "7"
+              },
+              "requires": [
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ]
+            },
+            {
+              "label": "RAW & XAVC-L",
+              "values": {
+                "16": "8"
+              },
+              "requires": [
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ]
+            },
+            {
+              "label": "RAW & MPEG HD422",
+              "values": {
+                "16": "9"
+              },
+              "requires": [
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ]
+            },
+            {
+              "label": "ProRes 422 HQ",
+              "values": {
+                "16": "10"
+              }
+            },
+            {
+              "label": "ProRes 422",
+              "values": {
+                "16": "11"
+              }
+            }
+          ],
+          "raw_field": "16"
+        },
+        {
+          "label": "Format",
+          "options": [
+            {
+              "label": "3 – 4096×2160 59.94p",
+              "values": {
+                "14": "3",
+                "0": "4096",
+                "1": "2160",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "2",
+                  "42": "0",
+                  "43": "0",
+                  "44": "0",
+                  "49": "1",
+                  "51": "0",
+                  "52": "1"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "2"
+                },
+                "00282": {
+                  "0": "0",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ],
+              "key": "3 – 4096×2160 59.94p XAVC-I"
+            },
+            {
+              "label": "4096×2160 50p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "3",
+                "0": "4096",
+                "1": "2160",
+                "2": "1",
+                "3": "50",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "4 – 4096×2160 29.97p",
+              "values": {
+                "14": "4",
+                "0": "4096",
+                "1": "2160",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "2",
+                  "42": "0",
+                  "43": "0",
+                  "44": "0",
+                  "49": "1",
+                  "51": "1",
+                  "52": "1"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "2"
+                },
+                "00282": {
+                  "0": "1",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ],
+              "key": "4 – 4096×2160 29.97p XAVC-I"
+            },
+            {
+              "label": "4096×2160 25p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "3",
+                "0": "4096",
+                "1": "2160",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "4096×2160 24.00p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "3",
+                "0": "4096",
+                "1": "2160",
+                "2": "1",
+                "3": "24",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "4096×2160 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "3",
+                "0": "4096",
+                "1": "2160",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "3840×2160 59.94p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "3",
+                "0": "3840",
+                "1": "2160",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "3840×2160 50p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "3",
+                "0": "3840",
+                "1": "2160",
+                "2": "1",
+                "3": "50",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "6 – 3840×2160 29.97p",
+              "values": {
+                "14": "6",
+                "0": "3840",
+                "1": "2160",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "0",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "5",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "0"
+                },
+                "00340": {
+                  "0": "2"
+                },
+                "00282": {
+                  "0": "5",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ],
+              "key": "6 – 3840×2160 29.97p XAVC-I"
+            },
+            {
+              "label": "5 – 3840×2160 25p",
+              "values": {
+                "14": "5",
+                "0": "3840",
+                "1": "2160",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "0",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "4",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "0"
+                },
+                "00340": {
+                  "0": "2"
+                },
+                "00282": {
+                  "0": "3",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ],
+              "key": "5 – 3840×2160 25p XAVC-I"
+            },
+            {
+              "label": "3840×2160 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "3",
+                "0": "3840",
+                "1": "2160",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "9 – 1920×1080 59.94p",
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "0",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "0"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "key": "9 – 1920×1080 59.94p XAVC-I"
+            },
+            {
+              "label": "1920×1080 59.94i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "0",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 50p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "50",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 50i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "50",
+                "4": "0",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 29.97p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 25p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "13 – 3840×2160 59.94p",
+              "values": {
+                "14": "13",
+                "0": "3840",
+                "1": "2160",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "0",
+                "13": "0",
+                "16": "1",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "1",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "0"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ],
+              "key": "13 – 3840×2160 59.94p XAVC-L"
+            },
+            {
+              "label": "3840×2160 50p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "13",
+                "0": "3840",
+                "1": "2160",
+                "2": "1",
+                "3": "50",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "0",
+                "13": "0",
+                "16": "1",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "3840×2160 29.97p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "13",
+                "0": "3840",
+                "1": "2160",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "0",
+                "13": "0",
+                "16": "1",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "3840×2160 25p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "13",
+                "0": "3840",
+                "1": "2160",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "0",
+                "13": "0",
+                "16": "1",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "3840×2160 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "13",
+                "0": "3840",
+                "1": "2160",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "0",
+                "13": "0",
+                "16": "1",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
+                }
+              ]
+            },
+            {
+              "label": "0 – 1920×1080 59.94p (Full HD, 50 Mbps lt. Auftrag)",
+              "values": {
+                "14": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "1",
+                "13": "1",
+                "16": "1"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "1",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "0"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "3"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "key": "0 – 1920×1080 59.94p XAVC-L (Full HD, 50 Mbps lt. Auftrag)"
+            },
+            {
+              "label": "1920×1080 59.94i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "0",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "1",
+                "13": "1",
+                "16": "1"
+              }
+            },
+            {
+              "label": "1920×1080 50p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "50",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "1",
+                "13": "1",
+                "16": "1"
+              }
+            },
+            {
+              "label": "1920×1080 50i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "50",
+                "4": "0",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "1",
+                "13": "1",
+                "16": "1"
+              }
+            },
+            {
+              "label": "1920×1080 29.97p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "1",
+                "13": "1",
+                "16": "1"
+              }
+            },
+            {
+              "label": "1920×1080 25p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "1",
+                "13": "1",
+                "16": "1"
+              }
+            },
+            {
+              "label": "1920×1080 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "18": "0",
+                "10": "0",
+                "17": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "1",
+                "13": "1",
+                "16": "1"
+              }
+            },
+            {
+              "label": "0 – 1920×1080 59.94i",
+              "values": {
+                "14": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "0",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "2",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "0"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "key": "0 – 1920×1080 59.94i MPEG HD422"
+            },
+            {
+              "label": "1920×1080 50i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "50",
+                "4": "0",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 29.97p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "0 – 1920×1080 25p",
+              "values": {
+                "14": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "2",
+                  "42": "2",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "4",
+                  "52": "6"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "6",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "1"
+                },
+                "00407": {
+                  "0": "1"
+                }
+              },
+              "key": "0 – 1920×1080 25p MPEG HD422 (Mk2, 50 Mbit)"
+            },
+            {
+              "label": "1920×1080 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1280×720 59.94p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "0": "1280",
+                "1": "720",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1280×720 50p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "0": "1280",
+                "1": "720",
+                "2": "1",
+                "3": "50",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1280×720 29.97p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "0": "1280",
+                "1": "720",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1280×720 25p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "0": "1280",
+                "1": "720",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1280×720 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "0",
+                "0": "1280",
+                "1": "720",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "2",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              }
+            },
+            {
+              "label": "9 – 1920×1080 59.94p (RAW 4096×2160 59.94p external)",
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "6",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "6",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "RAW 4096×2160 only with Scan Mode Normal"
+                },
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ],
+              "key": "9 – 1920×1080 59.94p RAW (RAW 4096×2160 59.94p external)"
+            },
+            {
+              "label": "9 – 1920×1080 59.94p (RAW 2048×1080 59.94p external, Scan 2K Center)",
+              "values": {
+                "14": "9",
+                "18": "0",
+                "10": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "6",
+                "17": "3"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "6",
+                  "43": "3",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "1",
+                    "2"
+                  ],
+                  "reason": "only with Imager Scan Mode 2K Full or 2K Center"
+                },
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ],
+              "key": "9 – 1920×1080 59.94p RAW (RAW 2048×1080 59.94p external, Scan 2K Center)"
+            },
+            {
+              "label": "8 – 1920×1080 29.97p (RAW 4096×2160 29.97p external)",
+              "values": {
+                "14": "8",
+                "18": "0",
+                "10": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "6",
+                "17": "1"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "6",
+                  "43": "1",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "RAW 4096×2160 only with Scan Mode Normal"
+                },
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ],
+              "key": "8 – 1920×1080 29.97p RAW (RAW 4096×2160 29.97p external)"
+            },
+            {
+              "label": "9 – 1920×1080 59.94p (RAW 4096×2160 59.94p external)",
+              "values": {
+                "14": "9",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "8",
+                "9": "0",
+                "11": "1",
+                "12": "1",
+                "13": "1",
+                "16": "7",
+                "18": "0",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "7",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "RAW 4096×2160 only with Scan Mode Normal"
+                },
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ],
+              "key": "9 – 1920×1080 59.94p RAW & XAVC-I (RAW 4096×2160 59.94p external)"
+            },
+            {
+              "label": "8 – 1920×1080 25p (RAW-variant, field 18 = 1)",
+              "values": {
+                "14": "8",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "16": "7",
+                "18": "1",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "2",
+                  "42": "7",
+                  "43": "0",
+                  "44": "1",
+                  "49": "1",
+                  "51": "4",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "3",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "RAW 4096×2160 only with Scan Mode Normal"
+                },
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ],
+              "key": "8 – 1920×1080 25p RAW & XAVC-I (RAW-variant, field 18 = 1)"
+            },
+            {
+              "label": "0 – 1920×1080 59.94p (RAW 4096×2160 59.94p external)",
+              "values": {
+                "14": "0",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "4",
+                "9": "11",
+                "11": "5",
+                "12": "1",
+                "13": "1",
+                "16": "8",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "8",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "RAW 4096×2160 only with Scan Mode Normal"
+                },
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ],
+              "key": "0 – 1920×1080 59.94p RAW & XAVC-L (RAW 4096×2160 59.94p external)"
+            },
+            {
+              "label": "0 – 1280×720 59.94p (RAW 4096×2160 59.94p external)",
+              "values": {
+                "14": "0",
+                "18": "0",
+                "0": "1280",
+                "1": "720",
+                "2": "1001",
+                "3": "60000",
+                "4": "1",
+                "7": "8",
+                "9": "3",
+                "11": "0",
+                "12": "0",
+                "13": "1",
+                "16": "9",
+                "10": "0",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "9",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "2"
+                },
+                "00426": {
+                  "0": "1"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              },
+              "requires": [
+                {
+                  "id": "00338",
+                  "field": 0,
+                  "in": [
+                    "0"
+                  ],
+                  "reason": "RAW 4096×2160 only with Scan Mode Normal"
+                },
+                {
+                  "id": "00418",
+                  "field": 0,
+                  "in": [
+                    "1"
+                  ],
+                  "reason": "RAW only in Cine EI mode"
+                }
+              ],
+              "key": "0 – 1280×720 59.94p RAW & MPEG HD422 (RAW 4096×2160 59.94p external)"
+            },
+            {
+              "label": "1920×1080 59.94i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "18",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "0",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "10",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 50i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "18",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "50",
+                "4": "0",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "10",
+                "17": "0"
+              }
+            },
+            {
+              "label": "18 – 1920×1080 29.97p",
+              "values": {
+                "14": "18",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "10",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "10",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "0"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "1"
+                },
+                "00407": {
+                  "0": "1"
+                }
+              },
+              "key": "18 – 1920×1080 29.97p ProRes 422 HQ"
+            },
+            {
+              "label": "1920×1080 25p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "18",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "10",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "18",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "10",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 59.94i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "19",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "60000",
+                "4": "0",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "11",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 50i – assumption",
+              "assumed": true,
+              "values": {
+                "14": "19",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "50",
+                "4": "0",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "11",
+                "17": "0"
+              }
+            },
+            {
+              "label": "19 – 1920×1080 29.97p",
+              "values": {
+                "14": "19",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "30000",
+                "4": "1",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "11",
+                "17": "0"
+              },
+              "companions": {
+                "00175": {
+                  "40": "0",
+                  "42": "11",
+                  "43": "0",
+                  "44": "0",
+                  "49": "0",
+                  "51": "7",
+                  "52": "3"
+                },
+                "00454": {
+                  "1": "1"
+                },
+                "00426": {
+                  "0": "0"
+                },
+                "00340": {
+                  "0": "1"
+                },
+                "00282": {
+                  "0": "7",
+                  "1": "0"
+                },
+                "00173": {
+                  "1": "1"
+                },
+                "00407": {
+                  "0": "1"
+                }
+              },
+              "key": "19 – 1920×1080 29.97p ProRes 422"
+            },
+            {
+              "label": "1920×1080 25p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "19",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1",
+                "3": "25",
+                "4": "1",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "11",
+                "17": "0"
+              }
+            },
+            {
+              "label": "1920×1080 23.98p – assumption",
+              "assumed": true,
+              "values": {
+                "14": "19",
+                "18": "0",
+                "0": "1920",
+                "1": "1080",
+                "2": "1001",
+                "3": "24000",
+                "4": "1",
+                "7": "8",
+                "9": "14",
+                "10": "4",
+                "11": "6",
+                "12": "1",
+                "13": "1",
+                "16": "11",
+                "17": "0"
+              }
+            }
+          ],
+          "filter_field": "16",
+          "width": 340
+        },
+        {
+          "label": "External RAW output (field 17, NTSC list)",
+          "readonly": true,
+          "only_when": {
+            "field": "16",
+            "values": [
+              "6",
+              "7",
+              "8",
+              "9"
+            ],
+            "label": "– (no RAW)"
+          },
+          "options": [
+            {
+              "label": "0 – 4096×2160 59.94p",
+              "values": {
+                "17": "0"
+              }
+            },
+            {
+              "label": "1 – 4096×2160 29.97p",
+              "values": {
+                "17": "1"
+              }
+            },
+            {
+              "label": "2 – 4096×2160 23.98p (abgeleitet)",
+              "values": {
+                "17": "2"
+              }
+            },
+            {
+              "label": "3 – 2048×1080 59.94p",
+              "values": {
+                "17": "3"
+              }
+            },
+            {
+              "label": "4 – 2048×1080 29.97p (abgeleitet)",
+              "values": {
+                "17": "4"
+              }
+            },
+            {
+              "label": "5 – 2048×1080 23.98p (abgeleitet)",
+              "values": {
+                "17": "5"
+              }
+            }
+          ]
+        }
+      ],
+      "autoset": [
+        {
+          "set": {
+            "14": "0"
+          },
+          "when": {
+            "0": "1280",
+            "1": "720",
+            "11": "0",
+            "12": "0",
+            "13": "1",
+            "16": "9",
+            "2": "1001",
+            "3": "60000",
+            "4": "1",
+            "7": "8",
+            "9": "3"
+          }
+        },
+        {
+          "set": {
+            "14": "0"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "11": "0",
+            "12": "0",
+            "13": "1",
+            "16": "2",
+            "2": "1001",
+            "3": "60000",
+            "4": "0",
+            "7": "8",
+            "9": "3"
+          }
+        },
+        {
+          "set": {
+            "14": "0"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "11": "5",
+            "12": "1",
+            "13": "1",
+            "16": "1",
+            "2": "1001",
+            "3": "60000",
+            "4": "1",
+            "7": "4",
+            "9": "11"
+          }
+        },
+        {
+          "set": {
+            "14": "0"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "11": "5",
+            "12": "1",
+            "13": "1",
+            "16": "8",
+            "2": "1001",
+            "3": "60000",
+            "4": "1",
+            "7": "4",
+            "9": "11"
+          }
+        },
+        {
+          "set": {
+            "14": "13"
+          },
+          "when": {
+            "0": "3840",
+            "1": "2160",
+            "11": "5",
+            "12": "0",
+            "13": "0",
+            "16": "1",
+            "2": "1001",
+            "3": "60000",
+            "4": "1",
+            "7": "4",
+            "9": "11"
+          }
+        },
+        {
+          "set": {
+            "14": "18"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "10": "4",
+            "11": "6",
+            "12": "1",
+            "13": "1",
+            "16": "10",
+            "2": "1001",
+            "3": "30000",
+            "4": "1",
+            "7": "8",
+            "9": "14"
+          }
+        },
+        {
+          "set": {
+            "14": "19"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "10": "4",
+            "11": "6",
+            "12": "1",
+            "13": "1",
+            "16": "11",
+            "2": "1001",
+            "3": "30000",
+            "4": "1",
+            "7": "8",
+            "9": "14"
+          }
+        },
+        {
+          "set": {
+            "14": "3"
+          },
+          "when": {
+            "0": "4096",
+            "1": "2160",
+            "11": "1",
+            "12": "1",
+            "13": "1",
+            "16": "0",
+            "2": "1001",
+            "3": "60000",
+            "4": "1",
+            "7": "8",
+            "9": "0"
+          }
+        },
+        {
+          "set": {
+            "14": "4"
+          },
+          "when": {
+            "0": "4096",
+            "1": "2160",
+            "11": "1",
+            "12": "1",
+            "13": "1",
+            "16": "0",
+            "2": "1001",
+            "3": "30000",
+            "4": "1",
+            "7": "8",
+            "9": "0"
+          }
+        },
+        {
+          "set": {
+            "14": "5"
+          },
+          "when": {
+            "0": "3840",
+            "1": "2160",
+            "11": "1",
+            "12": "1",
+            "13": "1",
+            "16": "0",
+            "2": "1",
+            "3": "25",
+            "4": "1",
+            "7": "8",
+            "9": "0"
+          }
+        },
+        {
+          "set": {
+            "14": "6"
+          },
+          "when": {
+            "0": "3840",
+            "1": "2160",
+            "11": "1",
+            "12": "1",
+            "13": "1",
+            "16": "0",
+            "2": "1001",
+            "3": "30000",
+            "4": "1",
+            "7": "8",
+            "9": "0"
+          }
+        },
+        {
+          "set": {
+            "14": "8"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "11": "1",
+            "12": "1",
+            "13": "1",
+            "16": "6",
+            "17": "1",
+            "2": "1001",
+            "3": "30000",
+            "4": "1",
+            "7": "8",
+            "9": "0"
+          }
+        },
+        {
+          "set": {
+            "14": "8"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "16": "7",
+            "2": "1",
+            "3": "25",
+            "4": "1"
+          }
+        },
+        {
+          "set": {
+            "14": "9"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "11": "1",
+            "12": "1",
+            "13": "1",
+            "16": "0",
+            "2": "1001",
+            "3": "60000",
+            "4": "1",
+            "7": "8",
+            "9": "0"
+          }
+        },
+        {
+          "set": {
+            "14": "9"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "11": "1",
+            "12": "1",
+            "13": "1",
+            "16": "6",
+            "17": "3",
+            "2": "1001",
+            "3": "60000",
+            "4": "1",
+            "7": "8",
+            "9": "0"
+          }
+        },
+        {
+          "set": {
+            "14": "9"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "16": "6",
+            "2": "1001",
+            "3": "60000",
+            "4": "1"
+          }
+        },
+        {
+          "set": {
+            "14": "9"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "16": "7",
+            "2": "1001",
+            "3": "60000",
+            "4": "1"
+          }
+        },
+        {
+          "set": {
+            "14": "0"
+          },
+          "when": {
+            "0": "1920",
+            "1": "1080",
+            "2": "1",
+            "3": "25",
+            "4": "1",
+            "7": "8",
+            "9": "3",
+            "11": "0",
+            "12": "0",
+            "13": "1",
+            "16": "2"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "type": "interlaced_max_fps",
+          "fps": 30,
+          "scan_field": 4,
+          "interlaced_value": "0",
+          "den_field": 2,
+          "num_field": 3,
+          "message": "Implausible: frame rates up to and including 30p do not exist interlaced."
+        },
+        {
+          "type": "raw_output_needs_scan",
+          "codec_field": 16,
+          "raw_codecs": [
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "raw_field": 17,
+          "k4_values": [
+            "0",
+            "1",
+            "2"
+          ],
+          "k2_values": [
+            "3",
+            "4",
+            "5"
+          ],
+          "scan_id": "00338",
+          "normal": "0",
+          "message_4k": "Implausible: RAW 4096×2160 requires Imager Scan Mode Normal.",
+          "message_2k": "Implausible: RAW 2048×1080 requires Imager Scan Mode 2K Full or 2K Center."
+        }
+      ],
+      "per_row": 1
+    },
+    "group": "video",
+    "subgroup": "System › Codec / Rec Format"
+  },
+  "00285": {
+    "name": "Clipname (Title Prefix)",
+    "status": "confirmed",
+    "group": "misc",
+    "subgroup": "File › Clip",
+    "order": 1,
+    "evidence": "Text values (user clip names) and the default (derived from the serial number, manual: Clip > Title Prefix). Clip name = title prefix + clip number when Auto Naming is 'Title'."
+  },
+  "00192": {
+    "name": "White memory (R gain, B gain, colour temp K) (?)",
+    "status": "likely",
+    "scene_equivalent": "00164",
+    "fields": [
+      "R gain",
+      "B gain",
+      "colour temp K"
+    ],
+    "evidence": "591,2394,3112 / 593,2595,3100 (3100-3200 K) / 6198,-20281,4985 (4985 K): same structure as scene 00164 (R, B, colour temperature)",
+    "group": "video",
+    "subgroup": "White"
+  },
+  "00020": {
+    "name": "Multi Matrix Setting (On/Off)",
+    "status": "confirmed",
+    "scene_equivalent": "00002",
+    "evidence": "Aligned with scene 00002 (monotone alignment, 78/90 votes) FS7M2 round 7 (2026-10-09): Multi Matrix Off changes only 00020 1 -> 0 (round 8: On again). Matrix Off blocks changes of the multi matrix on the camera. Equals scene 00002 (id_map).",
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Multi Matrix active",
+      "note": "With Off, the multi matrix is greyed out. With Matrix Off it cannot be changed on the camera either."
+    },
+    "order": 5
+  },
+  "00043": {
+    "name": "Step Gamma (0.35 to 0.90, file value x 100)",
+    "status": "likely",
+    "scene_equivalent": "00021",
+    "evidence": "45 = Step Gamma 0.45 (manual default); aligned with scene 00021 Constant 45 in all files, also with User gamma (FS7M2 007.ALL): not the user gamma number. User (2026-10-08): the camera menu 'Step Gamma' stands at 0.45 -> 45 in the file. User (2026-10-08): interpreted as 0.45, range 0.35-0.90 (manual: steps of 0.05).",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 35,
+      "max": 90,
+      "scale": 0.01,
+      "decimals": 2,
+      "small": 5,
+      "large": 10,
+      "snap": 5,
+      "note": "Step Gamma 0.35 to 0.90 in steps of 0.05 (manual), default 0.45. The file holds the value times 100 (45 = 0.45). The buttons change by 0.05 and 0.10."
+    },
+    "order": 20
+  },
+  "00015": {
+    "name": "INPUT1 MIC Reference (dB) (?)",
+    "status": "hypothesis",
+    "evidence": "-40 (manual: -60/-50/-40 dB); 00016 = INPUT2 MIC Reference",
+    "group": "audio",
+    "subgroup": "Audio › Input"
+  },
+  "00016": {
+    "name": "INPUT2 MIC Reference (dB) (?)",
+    "status": "hypothesis",
+    "evidence": "See 00015",
+    "group": "audio",
+    "subgroup": "Audio › Input"
+  },
+  "00079": {
+    "name": "Knee Point (x0.001 %) or shutter angle x500 (?)",
+    "status": "hypothesis",
+    "scene_equivalent": "00057",
+    "evidence": "90000 constant; scene 00057",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip"
+  },
+  "00085": {
+    "name": "Knee Point (x0.001 %) or shutter angle x500 (?)",
+    "status": "hypothesis",
+    "scene_equivalent": "00057",
+    "evidence": "90000 constant; scene 00057",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip"
+  },
+  "00105": {
+    "name": "Knee Point (x0.001 %) or shutter angle x500 (?)",
+    "status": "hypothesis",
+    "scene_equivalent": "00057",
+    "evidence": "90000 constant; scene 00057",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip"
+  },
+  "00097": {
+    "name": "Detail Frequency (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 7,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail Frequency -> 4940 (+15 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1. Equals scene 00053 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Frequency"
+        }
+      ]
+    }
+  },
+  "00225": {
+    "name": "ISO / EI value (?)",
+    "status": "hypothesis",
+    "scene_equivalent": "00084",
+    "evidence": "2000 constant; equals scene 00084 (FS7 base sensitivity)",
+    "group": "video",
+    "subgroup": "Camera"
+  },
+  "00362": {
+    "name": "Level 115.00 % (?)",
+    "status": "hypothesis",
+    "evidence": "11500 (x0.01 %); related values 00001/00002 (11500/11000, 12500/12000, 14000/13500), 00363=11800, 00365/00366/00368=11000, 00367=11500: some set of level thresholds around 110-140 %, meaning unknown",
+    "group": "misc",
+    "subgroup": "Other"
+  },
+  "00324": {
+    "name": "User Box width (?)",
+    "status": "hypothesis",
+    "evidence": "240 and 135 (00325) have a 16:9 ratio; manual VF > Marker > User Box Width/Height",
+    "group": "misc",
+    "subgroup": "VF › Zebra / Marker"
+  },
+  "00325": {
+    "name": "User Box height (?)",
+    "status": "hypothesis",
+    "evidence": "See 00324",
+    "group": "misc",
+    "subgroup": "VF › Zebra / Marker"
+  },
+  "00031": {
+    "name": "Black Setting (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Black",
+    "order": 1,
+    "evidence": "FS7M2 011.ALL vs 010.ALL (Custom, Black Setting On -> Off): only change 00031 0 -> 1; 012.ALL (Setting On again): 1 -> 0. Value 1 = Off. The Cine EI switch sets it to 1 as well (the Paint menu is greyed out there), so it was first taken for a mode flag. Mode switch Custom -> Cine EI on the same camera state (004.ALL -> 010.ALL, 14 differing IDs); same direction in all Cine EI files (002, 005, 006, 010): 0 -> 1. Candidate for the Shooting Mode switch (00418 behaves identically). Sits in the early Camera/Paint block (near scene 00009-00011), so probably a camera item that follows the mode (gain mode ISO/dB -> EI)",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "0",
+      "off": "1",
+      "text": "Black Setting active",
+      "note": "With Off, the other black settings are greyed out (as with gamma; an assumption, the camera display in the Off state was not checked). In Cine EI mode the camera sets Off."
+    }
+  },
+  "00418": {
+    "name": "Shooting Mode (Custom / Cine EI)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › Base Setting",
+    "order": 1,
+    "evidence": "0 in all Custom files, 1 in all Cine EI files (002, 005, 006, 010-029). The block 00418-00426 looks like System > Base Setting. Switching Custom -> Cine EI (004.ALL -> 010.ALL) also changes 00031 0 -> 1, 00423 (colour space) 0 -> 4, 00023 1 -> 0, 00028 (master black) -> 0, 00069 (aperture) 1 -> 0, 00499 2 -> 0, and the gamma flag 00041 -> 0. The values that the switch replaces come back when switching back (memory). FS7M2: 002.ALL (Cine EI) vs 001.ALL (Custom) shows the same differences plus 00020, 00057, 00125 (1 -> 0). 003.ALL = 002.ALL switched back to Custom: 00020, 00023, 00028, 00031, 00057, 00340, 00423, 00499 return to the Custom values of 001 (camera remembers them per mode), 00041 and 00125 stay 0; 00194 (field 2: 3200 -> 5600) and 00494 (0 -> 1) changed as well (cause unknown).",
+    "widget": {
+      "type": "choice",
+      "note": "On the switch the camera sets Master Black 0, Aperture off, Matrix off and the color space; switching back restores the old values.",
+      "choices": {
+        "0": "Custom",
+        "1": "Cine EI"
+      },
+      "companions": {
+        "0": {
+          "00031": {
+            "0": "0"
+          },
+          "00423": {
+            "0": "0"
+          },
+          "00499": {
+            "0": "2"
+          },
+          "00023": {
+            "0": "1"
+          }
+        },
+        "1": {
+          "00031": {
+            "0": "1"
+          },
+          "00423": {
+            "0": "4"
+          },
+          "00499": {
+            "0": "0"
+          },
+          "00023": {
+            "0": "0"
+          },
+          "00028": {
+            "0": "0"
+          },
+          "00041": {
+            "0": "0"
+          },
+          "00069": {
+            "0": "0"
+          },
+          "00020": {
+            "0": "0"
+          },
+          "00057": {
+            "0": "0"
+          },
+          "00125": {
+            "0": "0"
+          }
+        }
+      },
+      "remember": {
+        "0": [
+          "00023",
+          "00031",
+          "00423",
+          "00499"
+        ],
+        "1": [
+          "00020",
+          "00023",
+          "00028",
+          "00031",
+          "00057",
+          "00069",
+          "00423",
+          "00499"
+        ]
+      }
+    }
+  },
+  "00423": {
+    "name": "Color Space",
+    "status": "confirmed",
+    "evidence": "Mode switch Custom -> Cine EI on the same camera state (004.ALL -> 010.ALL, 14 differing IDs); same direction in all Cine EI files (002, 005, 006, 010): 0 -> 4 (manual: in Custom Color Space is Matrix, in Cine EI S-Gamut/SLog2, S-Gamut3.Cine/SLog3, S-Gamut3/SLog3). Next to 00418 in the System > Base Setting block. Test files in Cine EI: 011.ALL (S-Gamut/SLog2) = 2, 012.ALL (S-Gamut3/SLog3) = 5, 010.ALL = 4 (confirmed by the user: S-Gamut3.Cine/SLog3); 0 = Matrix in Custom mode; 1 and 3 unknown | Custom mode: Color Space is Matrix (0); Cine EI mode: S-Gamut variants (manual).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Matrix (Custom mode)",
+        "2": "S-Gamut/SLog2",
+        "4": "S-Gamut3.Cine/SLog3",
+        "5": "S-Gamut3/SLog3"
+      },
+      "requires": {
+        "0": [
+          {
+            "id": "00418",
+            "field": 0,
+            "in": [
+              "0"
+            ],
+            "reason": "Matrix only in Custom mode"
+          }
+        ],
+        "2": [
+          {
+            "id": "00418",
+            "field": 0,
+            "in": [
+              "1"
+            ],
+            "reason": "only in Cine EI mode"
+          }
+        ],
+        "4": [
+          {
+            "id": "00418",
+            "field": 0,
+            "in": [
+              "1"
+            ],
+            "reason": "only in Cine EI mode"
+          }
+        ],
+        "5": [
+          {
+            "id": "00418",
+            "field": 0,
+            "in": [
+              "1"
+            ],
+            "reason": "only in Cine EI mode"
+          }
+        ]
+      }
+    },
+    "group": "video",
+    "subgroup": "System › Base Setting",
+    "order": 2
+  },
+  "00023": {
+    "name": "Matrix Setting (On/Off)",
+    "status": "confirmed",
+    "scene_equivalent": "00005",
+    "evidence": "FS7M2 round 6 (2026-10-09): Matrix Off changes only ALL 00023 1 -> 0 (the other file type: scene 00005). Cine EI also sets it to 0. Mode switch Custom -> Cine EI on the same camera state (004.ALL -> 010.ALL, 14 differing IDs); same direction in all Cine EI files (002, 005, 006, 010): 1 -> 0 (matrix correction is not available in Cine EI); aligned with scene 00005",
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 1,
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Matrix active",
+      "note": "With Off, Preset Matrix and User Matrix are greyed out (Multi Matrix has its own switch)."
+    }
+  },
+  "00499": {
+    "name": "Cine EI related (2 -> 0) (?)",
+    "status": "hypothesis",
+    "evidence": "Mode switch Custom -> Cine EI on the same camera state (004.ALL -> 010.ALL, 14 differing IDs); same direction in all Cine EI files (002, 005, 006, 010): 2 -> 0, meaning unknown",
+    "group": "video",
+    "subgroup": "System › Base Setting",
+    "order": 6
+  },
+  "00044": {
+    "name": "S-Log2 gamma category flag (?)",
+    "status": "likely",
+    "scene_equivalent": "00022",
+    "evidence": "Only change besides Color Space between 010.ALL (S-Gamut3.Cine/SLog3) and 011.ALL (S-Gamut/SLog2): 0 -> 1; 012.ALL (S-Gamut3/SLog3) keeps 0. Aligned with scene 00022 (66/66 votes) FS7M2 004.ALL (S-Log2/S-Log2) vs 003.ALL: 0 -> 1 (00042 unchanged), 005.ALL (STD) back to 0.",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "covered_by": "00039"
+  },
+  "00041": {
+    "name": "HG gamma category flag (?)",
+    "status": "likely",
+    "scene_equivalent": "00019",
+    "evidence": "1 only in the HG8 file (004.ALL); 0 in the S-Log3 files and after the Cine EI switch; aligned with scene 00019 FS7M2: 1 in 001 (Custom), 0 in Cine EI (002, camera shows Gamma S-Log3) and still 0 after switching back to Custom (003): the camera does not restore it. User: the gamma menu has the categories STD, HG, User, S-Log2, S-Log3; HG1-HG8 are sub-options of HG.",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "covered_by": "00039"
+  },
+  "00454": {
+    "name": "Frame rate class flag (second field: 2 = more than 30 frames/s, 1 = up to 30 frames/s incl. 60i) (?)",
+    "status": "hypothesis",
+    "fields": [
+      "?",
+      "frame rate class"
+    ],
+    "evidence": "Second field 2 in the 59.94p files (006.ALL, 013.ALL, 014.ALL), 1 in all 25p/29.97p files and in 015.ALL (59.94i = 29.97 frames/s). Rule holds in all 14 ALL files: 2 if frames/s (field rate / 2 for interlaced) > 30, else 1",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "00340": {
+    "name": "Format related flag (not resolution) (?)",
+    "status": "hypothesis",
+    "evidence": "1 in 002.ALL (HD 25p) and 013.ALL/014.ALL (HD 59.94p, then UHD 59.94p XAVC-L), 2 in the other files. Not the resolution: 014.ALL is UHD but keeps 1; possibly depends on the codec/format family (XAVC-I HD vs. others). 2 for XAVC-I UHD/DCI formats, 1 for HD formats and XAVC-L (014)",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "00282": {
+    "name": "Output format / monitor format list (first field) (?)",
+    "status": "hypothesis",
+    "evidence": "First field follows the recording format: UHD 25p 3, HD 25p 3, UHD 29.97p 5, DCI 29.97p 1, DCI 59.94p 0, HD 59.94p (013) 7. Possibly SDI/HDMI output format",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "00175": {
+    "name": "Recording format descriptor (list of 55 values)",
+    "status": "likely",
+    "evidence": "Position 42 (0-based) always equals field 16 of 00150 (codec index: 0 XAVC-I, 1 XAVC-L, 2 MPEG HD422, 6 RAW, 7 RAW & XAVC-I, 8 RAW & XAVC-L, 9 RAW & MPEG HD422, 10 ProRes 422 HQ, 11 ProRes 422) in all 14 ALL files; position 51 follows the frame rate/format (UHD/HD 25p 4, UHD 29.97p 5, HD or UHD 59.94 7, DCI 29.97p 1, DCI 59.94p 0); positions 40, 44, 49, 52 differ for DCI and the RAW-variant file 002. Position 43 mirrors field 17 of 00150 (RAW output format index: 0, 1, 3 seen)",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "00170": {
+    "name": "Format index pair (fields 2 and 3) (?)",
+    "status": "hypothesis",
+    "evidence": "Fields 2/3: 32,5 (UHD 29.97p) -> 17,7 (HD 59.94p) -> 8,8 (HD 59.94i MPEG HD422); follows resolution/frame rate/codec. Not a pure format value: it also depends on the previous setting (e.g. 013 -> 014 unchanged, 018 -> 019 (8,8) -> (30,32)); possibly the SDI/HDMI output format that the camera adapts",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "_models": [
+    "PXW-FS7",
+    "PXW-FS7M2"
+  ],
+  "00426": {
+    "name": "DCI 4096 / RAW flag (?)",
+    "status": "hypothesis",
+    "evidence": "1 in 002 (RAW & XAVC-I), 005, 006 (DCI 4096x2160), 016 (RAW) and 017 (RAW & XAVC-I); 0 in all other files",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "00407": {
+    "name": "ProRes flag (?)",
+    "status": "hypothesis",
+    "evidence": "0 in all files except 020.ALL and 021.ALL (ProRes 422 HQ / 422): 1",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "00283": {
+    "name": "History dependent value (not format related) (?)",
+    "status": "hypothesis",
+    "evidence": "1 until the ProRes files; 0 from 020.ALL on and it stayed 0 in 022.ALL (RAW) although ProRes was left: changed once, did not change back",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "00173": {
+    "name": "Pair of flags, second field 1 for ProRes (?)",
+    "status": "hypothesis",
+    "fields": [
+      "?",
+      "ProRes flag"
+    ],
+    "evidence": "2,0 in all files except 020.ALL and 021.ALL (ProRes): 2,1",
+    "group": "video",
+    "subgroup": "System › Rec Format (companion values)"
+  },
+  "00151": {
+    "name": "S&Q Motion: frame rate (fps); second field ? (2 in all files)",
+    "status": "confirmed",
+    "group": "video",
+    "fields": [
+      "S&Q frame rate [fps]",
+      "? (2)"
+    ],
+    "evidence": "026.ALL (025 with S&Q Frame Rate 24): 60,2 -> 24,2; 027.ALL (026 with Frame Rate 48): 24,2 -> 48,2. 60 is the default; the default depends on the format (120 with RAW 2048x1080 / Imager Scan Mode 2K Center, 024.ALL). Field 22 of 00150 holds that default (it did not change with the frame rate). The second field is possibly the High Frame Rate Mode (planned test block 2).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 1,
+      "max": 180,
+      "unit": "fps",
+      "note": "List according to the manual: 1 to 60 fps, with High Frame Rate Mode (XAVC-L) 72 to 180 fps (PAL up to 150), RAW only 2K with 120/240 (NTSC) or 100/200 (PAL), XAVC-I only up to 60. Which values are possible in the current state is not modelled yet."
+    },
+    "subgroup": "Recording › S&Q Motion",
+    "order": 2
+  },
+  "00338": {
+    "name": "Imager Scan Mode (0 Normal, 1 2K Full, 2 2K Center)",
+    "status": "confirmed",
+    "group": "video",
+    "evidence": "024.ALL: 0 -> 2 (2K Center, user); 028.ALL: 0 -> 1 (2K Full). Changes by itself nothing else except the S&Q default frame rate and 00175 position 43/00150 field 17 (RAW output). | Editable with availability rules: 2K modes only for formats up to 2K width (manual: recording resolution limited to 2K; 028.ALL), RAW 4096 only with Normal, RAW 2048 only with 2K Full/Center (manual); companions from 013 (Normal), 028 (2K Full), 024 (2K Center).",
+    "widget": {
+      "type": "choice",
+      "note": "Impossible entries are greyed out (depending on recording format and RAW output). On the switch the camera sets default values (e.g. the S&Q frame rate).",
+      "choices": {
+        "0": "Normal",
+        "1": "2K Full",
+        "2": "2K Center"
+      },
+      "requires": {
+        "0": [
+          {
+            "id": "00150",
+            "field": 17,
+            "in": [
+              "0",
+              "1",
+              "2"
+            ],
+            "when": [
+              {
+                "id": "00150",
+                "field": 16,
+                "in": [
+                  "6",
+                  "7",
+                  "8",
+                  "9"
+                ]
+              }
+            ],
+            "reason": "RAW 2048×1080 requires 2K Full or 2K Center"
+          }
+        ],
+        "1": [
+          {
+            "id": "00150",
+            "field": 0,
+            "max": 2048,
+            "reason": "recording format 2K (Full HD) at most"
+          },
+          {
+            "id": "00150",
+            "field": 17,
+            "in": [
+              "3",
+              "4",
+              "5"
+            ],
+            "when": [
+              {
+                "id": "00150",
+                "field": 16,
+                "in": [
+                  "6",
+                  "7",
+                  "8",
+                  "9"
+                ]
+              }
+            ],
+            "reason": "RAW 4096×2160 requires Scan Mode Normal"
+          }
+        ],
+        "2": [
+          {
+            "id": "00150",
+            "field": 0,
+            "max": 2048,
+            "reason": "recording format 2K (Full HD) at most"
+          },
+          {
+            "id": "00150",
+            "field": 17,
+            "in": [
+              "3",
+              "4",
+              "5"
+            ],
+            "when": [
+              {
+                "id": "00150",
+                "field": 16,
+                "in": [
+                  "6",
+                  "7",
+                  "8",
+                  "9"
+                ]
+              }
+            ],
+            "reason": "RAW 4096×2160 requires Scan Mode Normal"
+          }
+        ]
+      },
+      "companions": {
+        "0": {
+          "00446": {
+            "0": "0"
+          },
+          "00151": {
+            "0": "60"
+          },
+          "00150": {
+            "22": "60"
+          }
+        },
+        "1": {
+          "00446": {
+            "0": "0"
+          },
+          "00151": {
+            "0": "120"
+          },
+          "00150": {
+            "22": "60"
+          }
+        },
+        "2": {
+          "00446": {
+            "0": "2"
+          },
+          "00151": {
+            "0": "120"
+          },
+          "00150": {
+            "22": "120"
+          }
+        }
+      }
+    },
+    "subgroup": "System › Base Setting",
+    "order": 3
+  },
+  "00446": {
+    "name": "Related to RAW 2K Center (0/2) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "evidence": "0 -> 2 in 024.ALL (RAW 2048x1080 with Imager Scan Mode 2K Center) but unchanged (0) in 028.ALL with Imager Scan Mode 2K Full: therefore not a copy of 00338, as assumed before.",
+    "subgroup": "System › Base Setting",
+    "order": 4
+  },
+  "_groups": {
+    "video": "Video (Bild, Format, Codec, Farbe, Belichtung)",
+    "audio": "Audio",
+    "misc": "Sonstiges (Sucher, Zebra, Namen, Marker ...)",
+    "unknown": "Unknown (IDs without a database entry)"
+  },
+  "00152": {
+    "name": "S&Q Motion Setting (On/Off); second field unknown (0 in all files)",
+    "status": "confirmed",
+    "group": "video",
+    "fields": [
+      "S&Q Motion Setting (0 Off, 1 On)",
+      "? (0)"
+    ],
+    "evidence": "025.ALL (013.ALL with S&Q Motion Setting = On, nothing else): 0,0 -> 1,0. When switched on the camera itself changes 00150 field 17 (RAW output format index) 0 -> 3 (= 2048x1080 59.94p; the manual: RAW S&Q is only supported in 2K), its mirror 00175 position 43 0 -> 3, and 00158 4 -> 2 (meaning of 00158 unknown). Switching S&Q off again was not recorded.",
+    "widget": {
+      "type": "fields",
+      "note": "When switched on, the camera itself changes: RAW output to 2048×1080 59.94p (index 3) and ID 00158 to 2 (from 025.ALL).",
+      "fields": [
+        {
+          "index": 0,
+          "choices": {
+            "0": "S&Q Motion Off",
+            "1": "S&Q Motion On"
+          }
+        }
+      ],
+      "companions": {
+        "1": {
+          "00150": {
+            "17": "3"
+          },
+          "00175": {
+            "43": "3"
+          },
+          "00158": {
+            "0": "2"
+          }
+        }
+      }
+    },
+    "subgroup": "Recording › S&Q Motion",
+    "order": 1
+  },
+  "_availability": "Options can carry 'requires': a list of conditions {id, field, in|not_in|max|min, reason, when: [conditions]}; an option is greyed out (and not selectable) when a requirement does not hold; 'when' conditions gate a requirement. Single-choice widgets use 'requires' as {choice value: [conditions]}.",
+  "_locks": [
+    {
+      "subgroup_prefix": "Paint ›",
+      "when": {
+        "id": "00418",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "greyed out in Cine EI mode"
+    },
+    {
+      "subgroup_prefix": "Paint › Gamma",
+      "when": {
+        "id": "00045",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "except": [
+        "00045"
+      ],
+      "reason": "Gamma is Off"
+    },
+    {
+      "subgroup_prefix": "Paint › Black",
+      "when": {
+        "id": "00031",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "except": [
+        "00031"
+      ],
+      "reason": "Black Setting is Off"
+    },
+    {
+      "subgroup_prefix": "Paint › White Clip",
+      "when": {
+        "id": "00125",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "except": [
+        "00125"
+      ],
+      "reason": "White Clip is Off"
+    },
+    {
+      "subgroup_prefix": "Paint › Detail",
+      "when": {
+        "id": "00088",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "except": [
+        "00088"
+      ],
+      "reason": "Detail is Off"
+    },
+    {
+      "ids": [
+        "00086"
+      ],
+      "when": {
+        "id": "00087",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Level Depend is Off"
+    },
+    {
+      "ids": [
+        "00092"
+      ],
+      "when": {
+        "id": "00093",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Knee Aperture is Off"
+    },
+    {
+      "ids": [
+        "00068"
+      ],
+      "when": {
+        "id": "00069",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Aperture is Off"
+    },
+    {
+      "ids": [
+        "00024",
+        "00025",
+        "00020",
+        "00178",
+        "00307"
+      ],
+      "when": {
+        "id": "00023",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Matrix is Off"
+    },
+    {
+      "ids": [
+        "00178"
+      ],
+      "when": {
+        "id": "00020",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Multi Matrix is Off"
+    },
+    {
+      "ids": [
+        "00125"
+      ],
+      "when": {
+        "id": "00044",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "not adjustable with S-Log2/S-Log3"
+    },
+    {
+      "ids": [
+        "00125"
+      ],
+      "when": {
+        "id": "00494",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "not adjustable with S-Log2/S-Log3"
+    }
+  ],
+  "_locks_comment": "Sub-groups whose widgets are greyed out (not editable, values stay visible) while the condition holds. Source: user (Cine EI mode: the whole Paint menu is greyed out).",
+  "00181": {
+    "name": "Camera ID (ASCII code, 65 = A)",
+    "status": "likely",
+    "group": "misc",
+    "subgroup": "File › Clip",
+    "order": 2,
+    "evidence": "65 in all files = 'A' (manual: Clip > Camera ID A to Z); 00181-00183 follow the order of the manual: Camera ID, Reel Number, Camera Position"
+  },
+  "00182": {
+    "name": "Reel Number (001 to 999)",
+    "status": "likely",
+    "group": "misc",
+    "subgroup": "File › Clip",
+    "order": 3,
+    "evidence": "1 in all files (manual: Clip > Reel Number 001 to 999); between Camera ID and Camera Position"
+  },
+  "00183": {
+    "name": "Camera Position (ASCII code, 67 = C)",
+    "status": "likely",
+    "group": "misc",
+    "subgroup": "File › Clip",
+    "order": 4,
+    "evidence": "67 in all files = 'C' (manual: Clip > Camera Position C/L/R)"
+  },
+  "00039": {
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 19,
+    "name": "Gamma Category (STD / HG / User / S-Log2 / S-Log3)",
+    "status": "likely",
+    "evidence": "FS7M2 005.ALL (gamma category STD, STD5) vs 004.ALL (S-Log2): 0 -> 1, 00044 1 -> 0; 0 in all Mk1 files (none was in category STD). The dropdown combines the flags 00039 (STD), 00041 (HG), 00044 (S-Log2) (all 0 = S-Log3); picking also sets 00125 (FS7M2: 1 with STD/HG) and 00494 (1 with S-Log3 in Custom mode). The User category is not decoded yet. User: 00190 = 1 (FS7M2 007.ALL, User/User4).",
+    "widget": {
+      "type": "derived",
+      "options": [
+        {
+          "label": "STD",
+          "match": {
+            "00039": {
+              "0": "1"
+            },
+            "00041": {
+              "0": "0"
+            },
+            "00044": {
+              "0": "0"
+            },
+            "00190": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00039": {
+              "0": "1"
+            },
+            "00041": {
+              "0": "0"
+            },
+            "00044": {
+              "0": "0"
+            },
+            "00190": {
+              "0": "0"
+            },
+            "00494": {
+              "0": "0"
+            },
+            "00125": {
+              "0": "1"
+            }
+          }
+        },
+        {
+          "label": "HG",
+          "match": {
+            "00039": {
+              "0": "0"
+            },
+            "00041": {
+              "0": "1"
+            },
+            "00044": {
+              "0": "0"
+            },
+            "00190": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00039": {
+              "0": "0"
+            },
+            "00041": {
+              "0": "1"
+            },
+            "00044": {
+              "0": "0"
+            },
+            "00190": {
+              "0": "0"
+            },
+            "00494": {
+              "0": "0"
+            },
+            "00125": {
+              "0": "1"
+            }
+          }
+        },
+        {
+          "label": "User",
+          "match": {
+            "00039": {
+              "0": "0"
+            },
+            "00041": {
+              "0": "0"
+            },
+            "00044": {
+              "0": "0"
+            },
+            "00190": {
+              "0": "1"
+            }
+          },
+          "set": {
+            "00039": {
+              "0": "0"
+            },
+            "00041": {
+              "0": "0"
+            },
+            "00044": {
+              "0": "0"
+            },
+            "00190": {
+              "0": "1"
+            },
+            "00494": {
+              "0": "0"
+            },
+            "00125": {
+              "0": "1"
+            }
+          }
+        },
+        {
+          "label": "S-Log2",
+          "match": {
+            "00039": {
+              "0": "0"
+            },
+            "00041": {
+              "0": "0"
+            },
+            "00044": {
+              "0": "1"
+            },
+            "00190": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00039": {
+              "0": "0"
+            },
+            "00041": {
+              "0": "0"
+            },
+            "00044": {
+              "0": "1"
+            },
+            "00190": {
+              "0": "0"
+            },
+            "00494": {
+              "0": "0"
+            },
+            "00125": {
+              "0": "0"
+            }
+          }
+        },
+        {
+          "label": "S-Log3",
+          "match": {
+            "00039": {
+              "0": "0"
+            },
+            "00041": {
+              "0": "0"
+            },
+            "00044": {
+              "0": "0"
+            },
+            "00190": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00039": {
+              "0": "0"
+            },
+            "00041": {
+              "0": "0"
+            },
+            "00044": {
+              "0": "0"
+            },
+            "00190": {
+              "0": "0"
+            },
+            "00494": {
+              "0": "0"
+            },
+            "00125": {
+              "0": "0"
+            }
+          },
+          "set_if": [
+            {
+              "cond": {
+                "id": "00418",
+                "field": 0,
+                "in": [
+                  "0"
+                ]
+              },
+              "set": {
+                "00494": {
+                  "0": "1"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "note": "In the file the gamma category consists of several flags (00039 STD, 00041 HG, 00190 User, 00044 S-Log2; all 0 = S-Log3). The sub-selection has its own IDs per category (00040 STD, 00042 HG, 00191 User); S-Log2/S-Log3 have none.",
+      "label": "Category",
+      "select_label": "Gamma Select",
+      "selects": {
+        "STD": {
+          "id": "00040",
+          "field": 0,
+          "choices": {
+            "0": "STD1 DVW",
+            "1": "STD2 x4.5",
+            "2": "STD3 x3.5",
+            "3": "STD4 240M",
+            "4": "STD5 R709",
+            "5": "STD6 x5.0"
+          }
+        },
+        "HG": {
+          "id": "00042",
+          "field": 0,
+          "choices": {
+            "0": "HG1 3250G36",
+            "1": "HG2 4600G30",
+            "2": "HG3 3259G40",
+            "3": "HG4 4609G33",
+            "4": "HG7 8009G40",
+            "5": "HG8 8009G33"
+          }
+        },
+        "User": {
+          "id": "00191",
+          "field": 0,
+          "choices": {
+            "0": "User 1",
+            "1": "User 2",
+            "2": "User 3",
+            "3": "User 4",
+            "4": "User 5"
+          }
+        }
+      }
+    }
+  },
+  "00125": {
+    "name": "White Clip Setting (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › White Clip",
+    "order": 1,
+    "evidence": "FS7M2 015.ALL vs 014.ALL (White Clip On -> Off): only change 00125 1 -> 0. Equals scene 00068. Earlier taken for a gamma category flag: the camera switches White Clip off with S-Log2/S-Log3 (and in Cine EI), on again with STD/HG/User (FS7M2 files 001, 003-007). Mk1 confirmed: 031.ALL (HG8, White Clip On, 109 %) vs 032.ALL (Off): only 00125 1 -> 0; 00126 = 1090 in both.",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "White Clip active",
+      "note": "With Off, the White Clip level is greyed out. With S-Log2/S-Log3 the camera switches the setting off."
+    },
+    "scene_equivalent": "00068"
+  },
+  "00494": {
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 20,
+    "name": "Gamma category flag: S-Log3 (Custom mode) (?)",
+    "status": "likely",
+    "evidence": "1 in 003.ALL (FS7M2 after Cine EI -> Custom, gamma S-Log3 stays) and in the two Mk1 Custom files with S-Log3 (001, 003); 0 with HG (Mk1 004), S-Log2 (Mk2 004), STD (Mk2 005) and in all Cine EI files. Equals scene 00143 (S-Log3 flag): pairs Mk1 003 / 004 .SCENE and .ALL agree.",
+    "covered_by": "00039"
+  },
+  "00040": {
+    "name": "Gamma Select: STD (index STD1-STD6)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 21,
+    "evidence": "FS7M2 006.ALL vs 005.ALL (gamma category STD, STD5 -> STD2): only change, 4 -> 1. Index coding like scene 00085 (STD1 = 0 ... STD6 = 5). The select of each category has its own ID: 00040 STD, 00042 HG.",
+    "widget": {
+      "type": "choice",
+      "note": "Applies while the gamma category is STD (category flag 00039).",
+      "choices": {
+        "0": "STD1 DVW",
+        "1": "STD2 x4.5",
+        "2": "STD3 x3.5",
+        "3": "STD4 240M",
+        "4": "STD5 R709",
+        "5": "STD6 x5.0"
+      }
+    },
+    "covered_by": "00039"
+  },
+  "00190": {
+    "name": "Gamma category flag: User (?)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 22,
+    "evidence": "FS7M2 007.ALL (gamma category User, User4) vs 006.ALL (STD2): 00039 1 -> 0, 00190 0 -> 1, 00191 0 -> 3; 00125 stays 1.",
+    "covered_by": "00039"
+  },
+  "00191": {
+    "name": "Gamma Select: User (index User1-...)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 23,
+    "evidence": "FS7M2 007.ALL: User4 -> 3 (index starts at 0 like the HG/STD selects; other User numbers not seen).",
+    "widget": {
+      "type": "choice",
+      "note": "Only User 4 (= 3) is confirmed by a file; User 1 to 5 = 0 to 4 is assumed from the order in the manual.",
+      "choices": {
+        "0": "User 1",
+        "1": "User 2",
+        "2": "User 3",
+        "3": "User 4",
+        "4": "User 5"
+      }
+    },
+    "covered_by": "00039"
+  },
+  "00045": {
+    "name": "Gamma (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 18,
+    "evidence": "FS7M2 008.ALL (007.ALL with Gamma Off): only change 00045 1 -> 0; gamma category and selects stay as they were.",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Gamma active",
+      "note": "With Off, all other gamma settings are greyed out; category and selection stay in the file."
+    }
+  },
+  "00046": {
+    "name": "Master Gamma (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 24,
+    "evidence": "FS7M2 009.ALL (STD/STD2, Master Gamma -10) vs 006.ALL (STD/STD2): 00046 0 -> -3293 (= -10 x 329.33, the same step scale as Aperture Level and the matrix). Range and limit (+-32767 at +-99) assumed like the other step values.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Master Gamma"
+        }
+      ]
+    }
+  },
+  "00491": {
+    "name": "R Gamma (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 25,
+    "evidence": "FS7M2 010.ALL vs 009.ALL: R Gamma +99 (maximum) -> 32767.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gamma"
+        }
+      ]
+    }
+  },
+  "00492": {
+    "name": "G Gamma (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 26,
+    "evidence": "FS7M2 010.ALL vs 009.ALL: G Gamma -5 -> -1647 (= -5 x 329.33).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "G Gamma"
+        }
+      ]
+    }
+  },
+  "00493": {
+    "name": "B Gamma (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Gamma",
+    "order": 27,
+    "evidence": "FS7M2 010.ALL vs 009.ALL: B Gamma -99 (minimum) -> -32768 (note: -32768, not -32767: the minimum is stored asymmetrically).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "B Gamma"
+        }
+      ]
+    }
+  },
+  "00029": {
+    "name": "R Black (menu step -99..+99)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Paint › Black",
+    "order": 3,
+    "evidence": "FS7M2 012.ALL: R Black -25 -> -8254 (scale 330.16 per step from this single point; the limit values +-99 were not recorded).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Black"
+        }
+      ]
+    }
+  },
+  "00030": {
+    "name": "B Black (menu step -99..+99)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Paint › Black",
+    "order": 4,
+    "evidence": "FS7M2 012.ALL: B Black +25 -> +8254 (same scale as R Black).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "B Black"
+        }
+      ]
+    }
+  },
+  "00178": {
+    "name": "Multi Matrix (hue and saturation per axis)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 6,
+    "evidence": "Equals scene 00074 (id_map; same 32-value shape, e.g. 6586 at position 17 in the same files). FS7M2 round 8 (2026-10-09): Hue +10 on axis B- changes position 15 to 3293, Saturation -10 changes position 31 to -3293: positions 0-15 = hue per axis, 16-31 = saturation per axis (axis order of the menu: B, B+, MG-, MG, MG+, R, R+, YL-, YL, YL+, G-, G, G+, CY, CY+, B-). Area Indication and the selected axis are not stored.",
+    "widget": {
+      "type": "axis_pairs",
+      "axes": [
+        "B",
+        "B+",
+        "MG–",
+        "MG",
+        "MG+",
+        "R",
+        "R+",
+        "YL–",
+        "YL",
+        "YL+",
+        "G–",
+        "G",
+        "G+",
+        "CY",
+        "CY+",
+        "B–"
+      ],
+      "hue_start": 0,
+      "sat_start": 16,
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "note": "32 values: the first 16 are the hue per axis, the last 16 the saturation per axis (order as in the camera menu: B, B+, MG–, MG, MG+, R, R+, YL–, YL, YL+, G–, G, G+, CY, CY+, B–). Area Indication and the selected axis are not stored in the file. ● marks axes with a value."
+    }
+  },
+  "00108": {
+    "name": "Knee flag (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip",
+    "order": 5,
+    "evidence": "Equals scene 00060 (id_map); 0 in all ALL files."
+  },
+  "00087": {
+    "name": "Detail Level Depend (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 5,
+    "evidence": "FS7M2 round 2 (2026-10-09): Level Depend Off -> On: scene 00043 0 -> 1 (ALL 00087). Earlier taken for an HG-only flag.",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Level Depend active",
+      "note": "With Off, Level Depend Level is greyed out."
+    }
+  },
+  "00088": {
+    "name": "Detail Setting (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 1,
+    "evidence": "FS7M2 round 1 (2026-10-09): Detail Setting Off -> On changes only ALL 00088 0 -> 1 (and scene 00044 0 -> 1, same pair). Equals scene 00044 (id_map).",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Detail active",
+      "note": "With Off, the other detail settings are greyed out (an assumption, as with gamma, black and white clip)."
+    }
+  },
+  "00089": {
+    "name": "Detail Level (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 2,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail Level -> 329 (+1 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1. Equals scene 00045 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Detail Level"
+        }
+      ]
+    }
+  },
+  "00058": {
+    "name": "Detail Level (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 22,
+    "evidence": "Changed together with ALL 00089 in the same pair (same raw value 329); a second copy of the detail value (per gamma or mode?), no scene equivalent."
+  },
+  "00090": {
+    "name": "Detail H/V Ratio (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 3,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail H/V Ratio -> 659 (+2 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1. Equals scene 00046 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "H/V Ratio"
+        }
+      ]
+    }
+  },
+  "00059": {
+    "name": "Detail H/V Ratio (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 23,
+    "evidence": "Changed together with ALL 00090 in the same pair (same raw value 659); a second copy of the detail value (per gamma or mode?), no scene equivalent."
+  },
+  "00091": {
+    "name": "Detail Crispening (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 4,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail Crispening -> 988 (+3 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1. Equals scene 00047 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Crispening"
+        }
+      ]
+    }
+  },
+  "00060": {
+    "name": "Detail Crispening (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 24,
+    "evidence": "Changed together with ALL 00091 in the same pair (same raw value 988); a second copy of the detail value (per gamma or mode?), no scene equivalent."
+  },
+  "00086": {
+    "name": "Detail Level Depend Level (menu step -99..+99)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 6,
+    "evidence": "FS7M2 round 2 (2026-10-09): Detail Level Depend Level -> -329 (-1 steps x 329.33) in the pair 001.SCENE/001.ALL vs round 1. Equals scene 00042 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Level Depend Level"
+        }
+      ]
+    }
+  },
+  "00055": {
+    "name": "Detail Level Depend Level (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 26,
+    "evidence": "Changed together with ALL 00086 in the same pair (same raw value -329); a second copy of the detail value (per gamma or mode?), no scene equivalent."
+  },
+  "00070": {
+    "name": "Detail Frequency (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 27,
+    "evidence": "Changed together with ALL 00097 in the same pair (same raw value 4940); a second copy of the detail value (per gamma or mode?), no scene equivalent."
+  },
+  "00093": {
+    "name": "Detail Knee Aperture (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 8,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail Knee Aperture (On/Off) Off -> On = 1 (pair 001.SCENE/001.ALL vs round 2). Equals scene 00049 (id_map).",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Knee Aperture active",
+      "note": "With Off, Knee Aperture Level is greyed out."
+    }
+  },
+  "00062": {
+    "name": "Detail Knee Aperture (On/Off) (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 28,
+    "evidence": "Changed together with ALL 00093 in the same pair (same raw value); second copy of the detail value, no scene equivalent."
+  },
+  "00092": {
+    "name": "Detail Knee Aperture Level",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 9,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail Knee Aperture Level +5 = 1647 (pair 001.SCENE/001.ALL vs round 2). Equals scene 00048 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Knee Aperture Level"
+        }
+      ]
+    }
+  },
+  "00061": {
+    "name": "Detail Knee Aperture Level (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 29,
+    "evidence": "Changed together with ALL 00092 in the same pair (same raw value); second copy of the detail value, no scene equivalent."
+  },
+  "00096": {
+    "name": "Detail Limit",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 10,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail Limit -5 = -1647 (pair 001.SCENE/001.ALL vs round 2). Equals scene 00052 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Limit"
+        }
+      ]
+    }
+  },
+  "00072": {
+    "name": "Detail Limit (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 30,
+    "evidence": "Changed together with ALL 00096 in the same pair (same raw value); second copy of the detail value, no scene equivalent."
+  },
+  "00094": {
+    "name": "Detail White Limit",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 11,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail White Limit +10 = 3293 (pair 001.SCENE/001.ALL vs round 2). Equals scene 00050 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "White Limit"
+        }
+      ]
+    }
+  },
+  "00063": {
+    "name": "Detail White Limit (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 31,
+    "evidence": "Changed together with ALL 00094 in the same pair (same raw value); second copy of the detail value, no scene equivalent."
+  },
+  "00095": {
+    "name": "Detail Black Limit",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 12,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail Black Limit -10 = -3293 (pair 001.SCENE/001.ALL vs round 2). Equals scene 00051 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Black Limit"
+        }
+      ]
+    }
+  },
+  "00064": {
+    "name": "Detail Black Limit (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 32,
+    "evidence": "Changed together with ALL 00095 in the same pair (same raw value); second copy of the detail value, no scene equivalent."
+  },
+  "00098": {
+    "name": "Detail V Black Limit",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 13,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail V Black Limit +15 = 4940 (pair 001.SCENE/001.ALL vs round 2). Equals scene 00054 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "fields": [
+        {
+          "index": 0,
+          "label": "V Black Limit"
+        }
+      ]
+    }
+  },
+  "00073": {
+    "name": "Detail V Black Limit (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 33,
+    "evidence": "Changed together with ALL 00098 in the same pair (same raw value); second copy of the detail value, no scene equivalent."
+  },
+  "00099": {
+    "name": "Detail V Detail Creation",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 14,
+    "evidence": "FS7M2 round 3 (2026-10-09): Detail V Detail Creation Y -> NAM = 3 -> 0 (pair 001.SCENE/001.ALL vs round 2). Equals scene 00055 (id_map). Round 4: V Detail Creation G = 1.",
+    "widget": {
+      "type": "choice",
+      "note": "NAM = 0, G = 1 (FS7M2 round 4), Y = 3 (round 3); G+R is therefore probably 2.",
+      "choices": {
+        "0": "NAM",
+        "1": "G",
+        "2": "G+R (derived)",
+        "3": "Y"
+      }
+    }
+  },
+  "00071": {
+    "name": "Detail V Detail Creation (second copy) (?)",
+    "status": "hypothesis",
+    "group": "video",
+    "subgroup": "Paint › Detail",
+    "order": 34,
+    "evidence": "Changed together with ALL 00099 in the same pair (same raw value); second copy of the detail value, no scene equivalent."
+  },
+  "00054": {
+    "name": "Skin Detail (Setting, Level, Saturation, Hue, Width)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Skin Detail",
+    "order": 1,
+    "evidence": "FS7M2 round 4 (2026-10-09): Skin Detail Off -> On, Level +5 (1647), Saturation -5 (-1647), Hue 10 (-1820 = -10 x 182.04), Width 30 (5461 = 30 x 182.04): '0,0,0,0,7282' -> '1,1647,-1647,-1820,5461' (default width 40 = 7282). Equals scene 00025 (id_map).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "note": "Skin Detail: level and saturation -99 to +99 (329.33 per step), hue 0 to 359 degrees (stored as -degrees x 182.04, the colour next to it), width 0 to 90 (degrees x 182.04).",
+      "fields": [
+        {
+          "index": 0,
+          "label": "Setting",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Level"
+        },
+        {
+          "index": 2,
+          "label": "Saturation"
+        },
+        {
+          "index": 3,
+          "label": "Hue (°)",
+          "range": [
+            0,
+            359
+          ],
+          "unit": 182.04444444444445,
+          "sign": -1,
+          "swatch": "hue"
+        },
+        {
+          "index": 4,
+          "label": "Width (°)",
+          "range": [
+            0,
+            90
+          ],
+          "unit": 182.04444444444445
+        }
+      ]
+    }
+  },
+  "00307": {
+    "name": "Adaptive Matrix (On/Off)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "Paint › Matrix",
+    "order": 2,
+    "evidence": "FS7M2 round 9 (2026-10-09): Adaptive Matrix On -> Off changes only ALL 00307 1 -> 0 (and scene 00115 in the other file type). Equals scene 00115 (id_map).",
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Adaptive Matrix active",
+      "note": "Cannot be changed with Matrix Off (assumed like the other matrix items)."
+    }
+  },
+  "00422": {
+    "name": "Preset White (K) per ND slot (?)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "White",
+    "order": 20,
+    "evidence": "Equals scene 00158 (id_map; unique value match in two FS7M2 pairs). The camera writes its own preset white values when a scene file is loaded."
+  },
+  "00193": {
+    "name": "White memory B: R gain, B gain, colour temp K (?)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "White",
+    "order": 21,
+    "evidence": "Equals scene 00165 (id_map; unique value match in two FS7M2 pairs); overwritten by the camera when a scene file is loaded (scene white data)."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "_comment": "Neutral values for new files (button 'Neu'): only items for which the manual gives a default of +-0, set on top of the model's template (a real camera file). This is NOT a factory dump: the manual and the web publish no complete default scene file. Keys are SCENE IDs; zeros = all fields 0, zeros_keep_first = first field kept.",
+  "scene": {
+    "00007": "zeros_keep_first",
+    "00008": "zeros",
+    "00036": "zeros",
+    "00074": "zeros"
+  }
+}
