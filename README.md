@@ -48,7 +48,7 @@ Cine EI note: scene files exist only in Custom mode; in Cine EI mode only ALL fi
 
 ## Status of the decoding
 
-IDs are decoded by comparing files and the manuals. Each entry in `scene_parameters.json` / `all_parameters.json` carries a status (`confirmed`, `likely`, `hypothesis`); dropdown entries taken only from the manuals are marked "assumption". Camera test reports and sample files are welcome.
+IDs are decoded by comparing files and the manuals. Each entry in `scene_parameters.json` / `all_parameters.json` carries a status (`confirmed`, `likely`, `hypothesis`); dropdown entries taken only from the manuals are marked "assumption". What is known and how it was found: [docs/FINDINGS.md](docs/FINDINGS.md); menu dependencies from the manuals: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md). Camera test reports and sample files are welcome.
 
 ## Build an executable
 
@@ -58,6 +58,10 @@ IDs are decoded by comparing files and the manuals. Each entry in `scene_paramet
 ## Translations
 
 `python -X utf8 -I tools/i18n_keys.py --missing` lists texts without translation. A new language is a new file `translations/<code>.json` (the English texts in the code are the keys; see `translations/de.json`).
+
+## Development
+
+Developed with the help of an AI coding assistant (Claude by Anthropic); all changes were reviewed and tested by the author.
 
 ## Contact
 

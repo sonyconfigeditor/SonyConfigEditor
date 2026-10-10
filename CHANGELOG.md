@@ -5,6 +5,7 @@ The version stays at 0.1.0 for now (development state).
 
 ## [0.1.0] - 2026-10-07
 ### Added
+- the project notes (English summary of everything known about the file formats and parameters) and the project notes (translated) are part of the public documentation.
 - Spanish and Italian catalogs (`translations/es.json`, `it.json`); the decoding status in brackets ([likely], [hypothesis]) is translated; the e-mail address in the About dialog opens the mail program.
 - Speed: opening a file of the same type and model updates the existing table in place instead of rebuilding about 1000 widgets (6-9 s -> 0.4-2 s); `tools/run_checks.py` runs single test blocks (`--only`) and prints the time per block; every profile (type, model) keeps its built table, so switching between SCENE/ALL and between the models only updates values (about 2 s instead of 8); the full test run dropped from 17 to under 7 minutes.
 - Logo (`assets/sonyconfigeditor.png`) in the About dialog (transparent margin cropped, scales with the display scaling) and in the README; bundled by `build_exe.bat` / `build_app.sh`.
