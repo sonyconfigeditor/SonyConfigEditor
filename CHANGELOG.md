@@ -5,6 +5,7 @@ The version stays at 0.1.0 for now (development state).
 
 ## [0.1.0] - 2026-10-07
 ### Added
+- `THIRD_PARTY_NOTICES.md` (licenses of customtkinter, Pillow, Python/Tk, PyInstaller) and a download section in the README for the Windows build.
 - A file with a wrong checksum (probably edited by hand in a text editor) now shows a hint when it is opened; saving with the program repairs the checksum.
 - French (`fr`) and Portuguese catalogs: European (`pt`) and Brazilian (`pt_BR`); the system language is matched with the region (`match_language`: pt_BR to Brazil, other Portuguese to Portugal, fr_CA to French).
 - `CODE_OF_CONDUCT.md`; `CONTRIBUTING.md` (how to make before/after test files, translations, code notes) and GitHub issue forms for camera test reports and bug reports.

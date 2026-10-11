@@ -26,7 +26,11 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 - Languages switchable at run time (View > Language): English (default), German, Spanish, French, Italian and Portuguese (Portugal and Brazil); High-DPI aware; dark theme.
 - Files are loaded defensively: size, line, ID and value limits reject malformed or hostile files.
 
-## Installation
+## Download (Windows)
+
+A ready-to-run Windows build is attached to each [release](../../releases): download the ZIP, unpack it and start `SonyConfigEditor.exe`. The program is not code-signed, so Windows SmartScreen may warn ("More info" > "Run anyway"), and a few virus scanners flag unsigned PyInstaller programs as suspicious (false positives). The release page lists the SHA-256 checksum so that you can verify the download, and the complete source code is in this repository.
+
+## Installation from source
 
 Python 3.10+ with Tkinter (included in the python.org installers; Debian/Ubuntu: `sudo apt install python3-tk`).
 
@@ -74,4 +78,4 @@ Questions, camera test reports and sample files: sonyconfigeditor@gmail.com
 
 ## License
 
-MIT, see [LICENSE](LICENSE). Copyright (c) 2026 Lukas Himmelswanderer.
+MIT, see [LICENSE](LICENSE). Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Copyright (c) 2026 Lukas Himmelswanderer.
