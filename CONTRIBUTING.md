@@ -16,7 +16,7 @@ How to make a pair:
 
 Before you send files:
 
-- **Remove personal text.** ALL files contain text values such as the clip name (title prefix) and the camera ID. The editor shows them; change them to something neutral before saving.
+- **Remove personal text.** ALL files contain text values such as the clip name (title prefix) and the camera ID. The editor shows them; change them to something neutral in the editor (clip name field) and save with it, not in a text editor: the editor recalculates the checksum in the first line of the file, and plain ASCII characters are safest.
 - **Send only your own settings.** Do not send scene files from paid look packs or other people's files without their permission.
 - Files are published with the issue. Do not attach anything you do not want to be public.
 

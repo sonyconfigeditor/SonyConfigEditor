@@ -5,6 +5,7 @@ The version stays at 0.1.0 for now (development state).
 
 ## [0.1.0] - 2026-10-07
 ### Added
+- A file with a wrong checksum (probably edited by hand in a text editor) now shows a hint when it is opened; saving with the program repairs the checksum.
 - French (`fr`) and Portuguese catalogs: European (`pt`) and Brazilian (`pt_BR`); the system language is matched with the region (`match_language`: pt_BR to Brazil, other Portuguese to Portugal, fr_CA to French).
 - `CODE_OF_CONDUCT.md`; `CONTRIBUTING.md` (how to make before/after test files, translations, code notes) and GitHub issue forms for camera test reports and bug reports.
 - **Compare / difference view** (File > Compare…, Ctrl+D, and the "Show differences" button of the import dialog): current file against another file in two columns with readable menu paths (no IDs), changed rows coloured, next/previous difference (Alt+Down / Alt+Up, F8 / Shift+F8), full files (Ctrl+1) or only differences (Ctrl+2). Fix: an f-string with nested quotes in the import dialog needed Python 3.12; the test suite now checks this.

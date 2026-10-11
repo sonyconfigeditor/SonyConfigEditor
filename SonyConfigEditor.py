@@ -1755,6 +1755,10 @@ class App(ctk.CTk):
                 model=self.scene.model, models=", ".join(models)))
         else:
             self.lbl_switch.configure(text=tr("The model {model} does not support a model switch.").format(model=repr(self.scene.model)))
+        if not self.scene.checksum_ok:      # a file edited by hand: say so, saving with the program repairs it
+            note = tr("Checksum wrong: the file was probably edited by hand. It is repaired when you save.")
+            current = self.lbl_switch.cget("text")
+            self.lbl_switch.configure(text=f"{note}\n{current}" if current else note)
         self._saved = None
         if self._can_refresh_in_place():
             self._refresh_in_place(reset_original=True)

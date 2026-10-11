@@ -209,5 +209,6 @@
   "Difference {n} of {total}": "Diferencia {n} de {total}",
   "Compare…": "Comparar…",
   "Previous difference": "Diferencia anterior",
-  "Next difference": "Diferencia siguiente"
+  "Next difference": "Diferencia siguiente",
+  "Checksum wrong: the file was probably edited by hand. It is repaired when you save.": "Suma de verificación incorrecta: el archivo probablemente se editó a mano. Se repara al guardar."
 }
