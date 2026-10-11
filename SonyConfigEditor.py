@@ -247,6 +247,30 @@ def translate_db(node):
     return node
 
 
+WINDOWS_LANGUAGE_NAMES = {"german": "de", "english": "en", "spanish": "es", "italian": "it", "french": "fr", "portuguese": "pt"}
+
+
+def match_language(name: str, available) -> str | None:
+    """Catalog code for an operating-system locale name such as 'pt_BR', 'fr_CA', 'de-DE' or 'Portuguese_Brazil' (None if there is none).
+    Portuguese: Brazil (pt_BR) has its own catalog, every other region and the bare 'pt' use the European one ('pt') if it exists
+    (the bare 'pt' without a region goes to Brazil, which has far more speakers)."""
+    if not name:
+        return None
+    name = name.replace("-", "_")
+    base, _sep, region = name.partition("_")
+    base = WINDOWS_LANGUAGE_NAMES.get(base.lower(), base.lower())
+    region = region.split(".")[0].upper()
+    if region in ("BRAZIL", "BRASIL"):
+        region = "BR"
+    if base == "pt":
+        if region == "BR" or not region:
+            return "pt_BR" if "pt_BR" in available else ("pt" if "pt" in available else None)
+        return "pt" if "pt" in available else ("pt_BR" if "pt_BR" in available else None)
+    if name in available:
+        return name
+    return base if base in available else None
+
+
 def initial_language() -> str:
     """Saved choice, else the language of the operating system if there is a catalog for it, else English."""
     code = None
@@ -258,9 +282,9 @@ def initial_language() -> str:
         code = code if isinstance(code, str) else None
         if code is None:
             try:
-                code = (locale.getlocale()[0] or "")[:2].lower()
+                code = match_language(locale.getlocale()[0] or "", available_languages())
             except (ValueError, TypeError):
-                code = ""
+                code = None
     return code if code in available_languages() else DEFAULT_LANGUAGE if DEFAULT_LANGUAGE in available_languages() else SOURCE_LANGUAGE
 
 

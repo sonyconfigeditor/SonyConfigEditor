@@ -26,7 +26,7 @@ Open an [issue](../../issues/new/choose). Please include the version (About dial
 
 ## 3. Translations
 
-Texts are translated through catalogs in `translations/` (`de.json`, `es.json`, `it.json`). The English texts in the code are the keys. To add a language, copy a catalog to `translations/<code>.json`, set `_name` and translate the values; keep placeholders such as `{n}` or `{model}` unchanged. `python -X utf8 -I tools/i18n_keys.py --missing` lists texts that have no translation yet.
+The translations were made with AI assistance and are not reviewed by native speakers; corrections are very welcome. Texts are translated through catalogs in `translations/` (`de.json`, `es.json`, `fr.json`, `it.json`, `pt.json` = European, `pt_BR.json` = Brazilian Portuguese). The English texts in the code are the keys. To add a language, copy a catalog to `translations/<code>.json`, set `_name` and translate the values; keep placeholders such as `{n}` or `{model}` unchanged. `python -X utf8 -I tools/i18n_keys.py --missing` lists texts that have no translation yet.
 
 ## 4. Code and documents
 

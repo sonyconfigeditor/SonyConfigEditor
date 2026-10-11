@@ -23,7 +23,7 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 - **Compare** (File > Compare…, Ctrl+D, or "Show differences" in the import dialog): side-by-side view of the current file and another file with readable menu paths such as `Paint/White Clip/White Clip Level` instead of IDs. Changed rows are coloured; Alt+Down / Alt+Up (or F8 / Shift+F8) jump to the next / previous difference, Ctrl+1 shows the full files, Ctrl+2 only the differences.
 - **New** (Ctrl+N): neutral starting point for either model (not a factory reset).
 - Undo/redo, changed values are marked, title bar shows unsaved changes.
-- Languages switchable at run time (View > Language): English (default), German, Spanish and Italian; High-DPI aware; dark theme.
+- Languages switchable at run time (View > Language): English (default), German, Spanish, French, Italian and Portuguese (Portugal and Brazil); High-DPI aware; dark theme.
 - Files are loaded defensively: size, line, ID and value limits reject malformed or hostile files.
 
 ## Installation
@@ -58,7 +58,7 @@ IDs are decoded by comparing files and the manuals. Each entry in `scene_paramet
 
 ## Translations
 
-`python -X utf8 -I tools/i18n_keys.py --missing` lists texts without translation. A new language is a new file `translations/<code>.json` (the English texts in the code are the keys; see `translations/de.json`).
+`python -X utf8 -I tools/i18n_keys.py --missing` lists texts without translation. The translations (all except English) were made with AI assistance; review by native speakers is welcome. A new language is a new file `translations/<code>.json` (the English texts in the code are the keys; see `translations/de.json`).
 
 ## Contributing
 
