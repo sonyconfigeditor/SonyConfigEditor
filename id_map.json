@@ -1,5 +1,5 @@
 {
-  "_comment": "Mapping of SCENE IDs to ALL IDs (PXW-FS7, PXW-FS7M2). Derived by aligning two ALL files with the SCENE files they contain (Universal-1 -> 001.ALL, B-Roll-1 -> 004.ALL); entries are kept where both alignments agree (monotone, shapes equal) plus the IDs fixed by scene_equivalent in all_parameters.json. Zero/one flags in constant runs are the least certain part.",
+  "_comment": "Mapping of SCENE IDs to ALL IDs (PXW-FS7, PXW-FS7M2). Derived by aligning two ALL files with the SCENE files they contain (sample look -> 001.ALL, sample look -> 004.ALL); entries are kept where both alignments agree (monotone, shapes equal) plus the IDs fixed by scene_equivalent in all_parameters.json. Zero/one flags in constant runs are the least certain part.",
   "PXW-FS7": {
     "scene_to_all": {
       "00002": "00020",
@@ -76,6 +76,7 @@
       "00111": "00299",
       "00112": "00300",
       "00115": "00307",
+      "00118": "00312",
       "00123": "00389",
       "00124": "00390",
       "00125": "00391",
@@ -98,9 +99,11 @@
       "00143": "00494",
       "00146": "00498",
       "00148": "00500",
+      "00149": "00501",
       "00150": "00502",
       "00151": "00504",
       "00152": "00505",
+      "00154": "00508",
       "00155": "00509",
       "00157": "00510",
       "00164": "00192"
@@ -200,6 +203,7 @@
       "00111": "00299",
       "00112": "00300",
       "00115": "00307",
+      "00118": "00312",
       "00123": "00389",
       "00124": "00390",
       "00125": "00391",
@@ -222,9 +226,11 @@
       "00143": "00494",
       "00146": "00498",
       "00148": "00500",
+      "00149": "00501",
       "00150": "00502",
       "00151": "00504",
       "00152": "00505",
+      "00154": "00508",
       "00155": "00509",
       "00157": "00510",
       "00158": "00422",

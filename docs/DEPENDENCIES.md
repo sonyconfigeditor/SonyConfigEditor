@@ -7,8 +7,10 @@ State 2026-10-09. Sources: the manuals of the FS7 (Mk1) and FS7 II (Mk2) as text
 |---|---|---|---|
 | Shooting Mode = Cine EI | whole Paint menu locked; gain, SCENE file and lens file cannot be set | manual, test | done (Paint lock) |
 | Gamma Setting = Off | all other gamma settings locked | test (gamma round 1) | done |
-| Gamma Category is not STD | **Knee Setting** and **Black Gamma Setting** not active | manual (Mk1 and Mk2) | open (ID: knee / black gamma, rounds 11/12) |
-| Knee Saturation = On | **Black Gamma** cannot be used at the same time (and the other way round) | manual | open (ID) |
+| Gamma Category is not STD | **Knee Setting** (and with it the other knee items) not active | manual (Mk1 and Mk2), test (round 11) | done for Knee and Black Gamma (round 13) |
+| Knee Setting = Off | Auto Knee, Knee Point and Knee Slope locked | assumption as with gamma/black | done (not checked on the camera) |
+| Gamma Category changes (S-Log3 -> STD) | the camera itself sets Preset Matrix On (it was Off before) and White Clip On | test (round 11, observed once for Preset Matrix) | White Clip done; Preset Matrix open (model) |
+| Knee Saturation = On | **Black Gamma** cannot be used at the same time (and the other way round) | manual | done: Knee Saturation (round 12) and Black Gamma (round 13) lock each other; both assumed from the manual, not checked on the camera |
 | Gamma Category = S-Log2 or S-Log3 | **White Clip Setting** cannot be set (the camera switches it off) | manual, test | done (lock of the setting; choosing the category sets it) |
 | White Clip Setting = Off | White Clip Level locked | test | done |
 | White Clip Setting | returns to On when the camera is switched off; permanently off = level 109 % | manual | hint text only |
@@ -21,6 +23,8 @@ State 2026-10-09. Sources: the manuals of the FS7 (Mk1) and FS7 II (Mk2) as text
 | Aperture Setting = Off | Aperture Level locked | assumption | done |
 | Multi Matrix Setting = Off | Multi Matrix (hue/saturation per axis) locked | assumption | done |
 | Black Setting = Off | Master/R/B Black locked | assumption as with gamma | done |
+| WHT BAL switch on Preset | the whole **Offset White** menu is greyed out (it only acts on white memory A, B or ATW) | test (round 14) | not modelled: the switch position is not stored in the file |
+| Offset White <A> / <B> = Off | Warm Cool and Warm Cool Balance of that memory locked | assumption | done for A, B and ATW (confirmed by the flag values; the lock itself is an assumption) |
 
 ## System / Video
 | If ... | then ... | Source | Status |

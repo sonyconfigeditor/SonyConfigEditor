@@ -47,7 +47,7 @@ DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a block (parameters get "subgroup" in the databases; others: "Other")
 SUBGROUP_ORDER = [
     "System › Base Setting", "System › Codec / Rec Format",
-    "Camera", "Paint › Black", "Paint › Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
+    "Camera", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
     "White", "Recording › S&Q Motion", "System › Rec Format (companion values)", "Audio › Input", "VF › Zebra / Marker", "File › Clip",
 ]
 FILTER_DELAY_MS = 150
@@ -703,6 +703,15 @@ def import_candidates(src: SceneFile, src_kind: str, dst_params: dict, dst_kind:
     return items, ""
 
 
+def raw_to_step(raw: int, unit: float, sign: int = 1, trunc: bool = False) -> int:
+    """Menu step of a raw value. With trunc the raw value may lie between two steps (the wheel is finer than the display): the camera then
+    shows the step cut towards zero (a small tolerance keeps values we wrote ourselves, step x unit rounded, on their step)."""
+    x = sign * raw / unit
+    if trunc:
+        return int(abs(x) + 0.05) * (1 if x >= 0 else -1)
+    return round(x)
+
+
 def clean_name(name: str) -> str:
     """Menu name without the trailing explanations of the database names ('(menu step -99..+99)', '(?)')."""
     previous = None
@@ -747,7 +756,7 @@ def describe_value(info: dict | None, raw: str, params: dict) -> str:
                     text = f["choices"].get(value, value)
                 else:
                     lo, hi = f["range"] if "range" in f else widget["range"]
-                    step = max(lo, min(hi, round(f.get("sign", 1) * int(value) / f.get("unit", widget["unit"]))))
+                    step = max(lo, min(hi, raw_to_step(int(value), f.get("unit", widget["unit"]), f.get("sign", 1), f.get("trunc", False))))
                     text = f"{step:+d}" if lo < 0 else str(step)
                 out.append(f"{f['label']} {text}" if len(widget["fields"]) > 1 and "choices" not in f else text)
             return ", ".join(out)
@@ -2615,7 +2624,7 @@ class App(ctk.CTk):
             own_range = "range" in f      # fields can have their own unit, range and sign (e.g. hue 0..359 degrees)
             flo, fhi = f["range"] if own_range else (lo, hi)
             funit, fsign = f.get("unit", unit), f.get("sign", 1)
-            shown = lambda: str(max(flo, min(fhi, round(fsign * int(var.get().split(",")[idx]) / funit))))
+            shown = lambda: str(max(flo, min(fhi, raw_to_step(int(var.get().split(",")[idx]), funit, fsign, f.get("trunc", False)))))
             row = ctk.CTkFrame(cell, fg_color="transparent")
             row.pack()
             entry = ctk.CTkEntry(row, width=52, justify="center")
@@ -2723,7 +2732,7 @@ class App(ctk.CTk):
                 changed.append(key)
         for key in self.vars:
             self._on_edit(key)
-        self._refresh_availability()      # unlock rows before their text is set: a greyed-out entry ignores new text
+        self._unlock_all_rows()               # a greyed-out entry ignores new text: unlock every row first, lock again afterwards
         for key in changed:
             refresh = getattr(self.entries.get(key), "_refresh", None)
             if refresh:
@@ -2956,6 +2965,21 @@ class App(ctk.CTk):
                 w.configure(state=w._state_before_lock)
                 del w._state_before_lock
 
+    @staticmethod
+    def _lock_matches(lock: dict, subgroup: str) -> bool:
+        """A group lock names a sub-group exactly ("subgroup") or by its beginning ("subgroup_prefix", e.g. the whole Paint menu)."""
+        if "subgroup" in lock:
+            return subgroup == lock["subgroup"]
+        return subgroup.startswith(lock["subgroup_prefix"])
+
+    def _unlock_all_rows(self):
+        """Make every locked row usable again (the next _apply_locks locks what the current values lock)."""
+        for row in self._rows.values():
+            if row.get("locked"):
+                row["locked"] = False
+                self._set_enabled(row["widget"], True)
+                row["label"].configure(fg=self._c["label"])
+
     def _apply_locks(self):
         """Grey out whole sub-groups while a lock condition holds (e.g. the Paint menu in Cine EI mode, Gamma while it is Off).
 
@@ -2972,26 +2996,26 @@ class App(ctk.CTk):
                     if key in self._rows:
                         row_reason.setdefault(key, lock["reason"])
                 continue
-            prefix, exempt = lock["subgroup_prefix"], set(lock.get("except", []))
+            exempt = set(lock.get("except", []))
             for key, row in self._rows.items():
                 info = row["info"]
-                if info and info.get("subgroup", "").startswith(prefix) and key not in exempt:
+                if info and self._lock_matches(lock, info.get("subgroup", "")) and key not in exempt:
                     row_reason.setdefault(key, lock["reason"])
             for sub in self._subheads:
-                if sub["title"].startswith(prefix):
+                if self._lock_matches(lock, sub["title"]):
                     sub_reason.setdefault(sub["title"], lock["reason"])
-        prefixes = [lock["subgroup_prefix"] for lock in self.locks if "subgroup_prefix" in lock]
+        group_locks = [lock for lock in self.locks if "subgroup_prefix" in lock or "subgroup" in lock]
         lock_ids = {key for lock in self.locks for key in lock.get("ids", [])}
         for key, row in self._rows.items():
             locked = key in row_reason
             info = row["info"]
-            if not info or not (key in lock_ids or any(info.get("subgroup", "").startswith(x) for x in prefixes)) or bool(row.get("locked")) == locked:
+            if not info or not (key in lock_ids or any(self._lock_matches(lock, info.get("subgroup", "")) for lock in group_locks)) or bool(row.get("locked")) == locked:
                 continue
             row["locked"] = locked
             self._set_enabled(row["widget"], not locked)
             row["label"].configure(fg="#7a7a7a" if locked else self._c["label"])
         for sub in self._subheads:
-            if any(sub["title"].startswith(x) for x in prefixes):
+            if any(self._lock_matches(lock, sub["title"]) for lock in group_locks):
                 reason = sub_reason.get(sub["title"])
                 sub["suffix"] = f"   –   {reason}" if reason else ""
                 self._set_sub_text(sub)

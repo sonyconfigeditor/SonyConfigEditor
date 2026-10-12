@@ -3,7 +3,7 @@
   "00024": {
     "name": "Preset Matrix",
     "status": "confirmed",
-    "evidence": "Values 1,3 / 1,4 equal the SCENE file values (Universal/Interviews = Cinema, B-Roll = F55 709 Like); same coding as scene 00006 FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. Manual (FS7M2): BT.2020 can only be selected when the recording format is 4K or QFHD (greyed out with the HD formats of the test files).",
+    "evidence": "Values 1,3 / 1,4 equal the SCENE file values (Universal/sample look = Cinema, sample look = F55 709 Like); same coding as scene 00006 FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. Manual (FS7M2): BT.2020 can only be selected when the recording format is 4K or QFHD (greyed out with the HD formats of the test files).",
     "scene_equivalent": "00006",
     "widget": {
       "type": "fields",
@@ -135,7 +135,7 @@
   "00028": {
     "name": "Master Black (non-linear scale)",
     "status": "likely",
-    "evidence": "-1075 (Universal-1, MB -2), -1654 (B-Roll-1, MB -5), 0 in the Cine EI files; same values as scene 00008. Cine EI switch sets it to 0 (Master Black is not available in Cine EI) FS7M2 ALL: -3 -> -992 (010.ALL), -4 -> -1613 (012.ALL); with the Mk1 and the Mk2 scene value for -3 (-1158, -786) this shows that the stored value depends on another camera setting, not only on the menu step.",
+    "evidence": "-1075 (sample look, MB -2), -1654 (sample look, MB -5), 0 in the Cine EI files; same values as scene 00008. Cine EI switch sets it to 0 (Master Black is not available in Cine EI) FS7M2 ALL: -3 -> -992 (010.ALL), -4 -> -1613 (012.ALL); with the Mk1 and the Mk2 scene value for -3 (-1158, -786) this shows that the stored value depends on another camera setting, not only on the menu step.",
     "scene_equivalent": "00008",
     "group": "video",
     "subgroup": "Paint › Black",
@@ -144,7 +144,7 @@
   "00042": {
     "name": "Gamma Select: HG (index HG1-HG8)",
     "status": "likely",
-    "evidence": "4 in S-Log3 files, 5 in the HG8 file (B-Roll-1); same coding as scene 00085. No dropdown: the category (HG/STD/S-Log) is a separate ID User: HG1-HG8 / STD1-STD6 are sub-options of the categories HG / STD (menu: STD, HG, User, S-Log2, S-Log3). FS7M2 (003-006): stays 1 (HG2) although the category changes, because the STD select has its own ID (00040, FS7M2 006.ALL).",
+    "evidence": "4 in S-Log3 files, 5 in the HG8 file (sample look); same coding as scene 00085. No dropdown: the category (HG/STD/S-Log) is a separate ID User: HG1-HG8 / STD1-STD6 are sub-options of the categories HG / STD (menu: STD, HG, User, S-Log2, S-Log3). FS7M2 (003-006): stays 1 (HG2) although the category changes, because the STD select has its own ID (00040, FS7M2 006.ALL).",
     "scene_equivalent": "00085",
     "group": "video",
     "subgroup": "Paint › Gamma",
@@ -165,7 +165,7 @@
   "00068": {
     "name": "Aperture Level",
     "status": "confirmed",
-    "evidence": "2964 (+9) and 6586 (+20) equal sample set A Universal-1 / B-Roll-1; same coding as scene 00036",
+    "evidence": "2964 (+9) and 6586 (+20) equal sample set A sample look / sample look; same coding as scene 00036",
     "scene_equivalent": "00036",
     "widget": {
       "type": "stepfields",
@@ -234,7 +234,7 @@
   "00133": {
     "name": "Zebra 2 (On/Off, Level %)",
     "status": "likely",
-    "evidence": "1,62 in the Universal-1 ALL file and 1,90 in the B-Roll-1 ALL file: sample set A PDF names Zebra 2 @ 62 % / 90 %; 00481 holds a copy",
+    "evidence": "1,62 in the sample look ALL file and 1,90 in the sample look ALL file: sample set A PDF names Zebra 2 @ 62 % / 90 %; 00481 holds a copy",
     "fields": [
       "on/off",
       "level %"
@@ -2879,28 +2879,39 @@
     "subgroup": "Audio › Input"
   },
   "00079": {
-    "name": "Knee Point (x0.001 %) or shutter angle x500 (?)",
+    "name": "Knee Point, other copy (?)",
     "status": "hypothesis",
-    "scene_equivalent": "00057",
-    "evidence": "90000 constant; scene 00057",
+    "evidence": "95000 in FS7M2 round 11 while 00105 (the real Knee Point, 90000 -> 80000) changes; probably the knee points of other gamma groups or modes (hypothesis)",
     "group": "video",
     "subgroup": "Paint › Knee / White Clip"
   },
   "00085": {
-    "name": "Knee Point (x0.001 %) or shutter angle x500 (?)",
+    "name": "Knee Point, other copy (?)",
     "status": "hypothesis",
-    "scene_equivalent": "00057",
-    "evidence": "90000 constant; scene 00057",
+    "evidence": "95000 in FS7M2 round 11 while 00105 (the real Knee Point, 90000 -> 80000) changes; probably the knee points of other gamma groups or modes (hypothesis)",
     "group": "video",
     "subgroup": "Paint › Knee / White Clip"
   },
   "00105": {
-    "name": "Knee Point (x0.001 %) or shutter angle x500 (?)",
-    "status": "hypothesis",
-    "scene_equivalent": "00057",
-    "evidence": "90000 constant; scene 00057",
+    "name": "Knee Point",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): 90000 -> 80000 (= 80.0 %, file value x 1000). Manual: 75 to 109 %, default 90 %. The button steps (1 %) are an assumption.",
     "group": "video",
-    "subgroup": "Paint › Knee / White Clip"
+    "subgroup": "Paint › Knee / White Clip",
+    "order": 3,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 75000,
+      "max": 109000,
+      "unit": "%",
+      "scale": 0.001,
+      "decimals": 1,
+      "small": 1000,
+      "large": 5000,
+      "note": "Manual: Knee Point 75 to 109 %, default 90 %. The file holds the value times 1000."
+    },
+    "scene_equivalent": "00057"
   },
   "00097": {
     "name": "Detail Frequency (menu step -99..+99)",
@@ -3468,7 +3479,6 @@
       "reason": "Gamma is Off"
     },
     {
-      "subgroup_prefix": "Paint › Black",
       "when": {
         "id": "00031",
         "field": 0,
@@ -3479,7 +3489,8 @@
       "except": [
         "00031"
       ],
-      "reason": "Black Setting is Off"
+      "reason": "Black Setting is Off",
+      "subgroup": "Paint › Black"
     },
     {
       "subgroup_prefix": "Paint › White Clip",
@@ -3603,6 +3614,137 @@
         ]
       },
       "reason": "not adjustable with S-Log2/S-Log3"
+    },
+    {
+      "ids": [
+        "00104",
+        "00105",
+        "00106",
+        "00109",
+        "00107"
+      ],
+      "when": {
+        "id": "00108",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Knee is Off"
+    },
+    {
+      "ids": [
+        "00108",
+        "00104",
+        "00105",
+        "00106",
+        "00109",
+        "00107",
+        "00037",
+        "00036",
+        "00032"
+      ],
+      "when": {
+        "id": "00039",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "only with gamma category STD"
+    },
+    {
+      "ids": [
+        "00107"
+      ],
+      "when": {
+        "id": "00109",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Knee Saturation is Off"
+    },
+    {
+      "ids": [
+        "00036",
+        "00032"
+      ],
+      "when": {
+        "id": "00037",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Black Gamma is Off"
+    },
+    {
+      "ids": [
+        "00037"
+      ],
+      "when": {
+        "id": "00109",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "Black Gamma cannot be used with Knee Saturation"
+    },
+    {
+      "ids": [
+        "00109",
+        "00107"
+      ],
+      "when": {
+        "id": "00037",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "Knee Saturation cannot be used with Black Gamma"
+    },
+    {
+      "ids": [
+        "00502"
+      ],
+      "when": {
+        "id": "00501",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Offset White is Off"
+    },
+    {
+      "ids": [
+        "00508"
+      ],
+      "when": {
+        "id": "00501",
+        "field": 1,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Offset White is Off"
+    },
+    {
+      "ids": [
+        "00505"
+      ],
+      "when": {
+        "id": "00501",
+        "field": 2,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Offset White is Off"
     }
   ],
   "_locks_comment": "Sub-groups whose widgets are greyed out (not editable, values stay visible) while the condition holds. Source: user (Cine EI mode: the whole Paint menu is greyed out).",
@@ -4159,12 +4301,21 @@
     }
   },
   "00108": {
-    "name": "Knee flag (?)",
-    "status": "hypothesis",
+    "name": "Knee Setting (On/Off)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): only this ID changes 0 -> 1 for Knee Setting On. (An earlier reading as one of three STD flags was wrong: STD is the category flag, the third one the White Clip setting.)",
     "group": "video",
     "subgroup": "Paint › Knee / White Clip",
-    "order": 5,
-    "evidence": "Equals scene 00060 (id_map); 0 in all ALL files."
+    "order": 1,
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Knee active",
+      "note": "With Off, the other knee settings are greyed out (assumed like gamma, black and white clip; the camera display in the Off state was not checked). The manual says Knee is active with gamma category STD only."
+    },
+    "scene_equivalent": "00060"
   },
   "00087": {
     "name": "Detail Level Depend (On/Off)",
@@ -4632,5 +4783,294 @@
     "subgroup": "White",
     "order": 21,
     "evidence": "Equals scene 00165 (id_map; unique value match in two FS7M2 pairs); overwritten by the camera when a SCENE file is loaded (scene white data)."
+  },
+  "00104": {
+    "name": "Auto Knee",
+    "status": "likely",
+    "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): 1,0 -> 1,1, so field 1 is Auto Knee (0 = On, 1 = Off). Field 0 (1 in all files) is unknown.",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip",
+    "order": 2,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 1,
+          "choices": {
+            "0": "Auto Knee On",
+            "1": "Auto Knee Off"
+          }
+        }
+      ]
+    },
+    "scene_equivalent": "00056"
+  },
+  "00106": {
+    "name": "Knee Slope (menu step -99..+99)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): 0 -> 1647 (= 5 x 329.33, same scale as the other menu steps).",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip",
+    "order": 4,
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "Knee Slope"
+        }
+      ],
+      "max_raw": 32767
+    },
+    "scene_equivalent": "00058"
+  },
+  "00109": {
+    "name": "Knee Saturation Setting (On/Off)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 12 (Knee Saturation On -> Off, Knee Saturation Level 0 -> +10 before it was switched Off): 1 -> 0 (1 = On, the camera default).",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip",
+    "order": 5,
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Knee Saturation active",
+      "note": "With Off, the Knee Saturation level is greyed out (the file keeps the value). The manual says Black Gamma cannot be used together with Knee Saturation."
+    },
+    "scene_equivalent": "00061"
+  },
+  "00107": {
+    "name": "Knee Saturation Level (menu step -99..+99)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 12 (Knee Saturation On -> Off, Knee Saturation Level 0 -> +10 before it was switched Off): 0 -> 3293 (= 10 x 329.33); the value stays in the file when the setting is Off.",
+    "group": "video",
+    "subgroup": "Paint › Knee / White Clip",
+    "order": 6,
+    "widget": {
+      "type": "stepfields",
+      "unit": 329.32663316582915,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "Knee Saturation Level"
+        }
+      ],
+      "max_raw": 32767
+    },
+    "scene_equivalent": "00059"
+  },
+  "00037": {
+    "name": "Black Gamma Setting (On/Off)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 13 (Black Gamma Setting Off -> On, Range -> Low, Master Black Gamma 0 -> +5; gamma category STD, Knee Saturation Off): 0 -> 1 (1 = On).",
+    "group": "video",
+    "subgroup": "Paint › Black Gamma",
+    "order": 1,
+    "widget": {
+      "type": "checkbox",
+      "index": 0,
+      "on": "1",
+      "off": "0",
+      "text": "Black Gamma active",
+      "note": "With Off, Range and Master Black Gamma are greyed out (assumed like the other settings). The manual says Black Gamma works with gamma category STD only and cannot be used together with Knee Saturation."
+    },
+    "scene_equivalent": "00016"
+  },
+  "00036": {
+    "name": "Black Gamma Range",
+    "status": "likely",
+    "evidence": "FS7M2 round 13 (Black Gamma Setting Off -> On, Range -> Low, Master Black Gamma 0 -> +5; gamma category STD, Knee Saturation Off): 1 -> 3 (Low = 3). 1 is the value in all other files (probably Mid, the default); High unknown.",
+    "group": "video",
+    "subgroup": "Paint › Black Gamma",
+    "order": 2,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "1": "Mid",
+        "3": "Low"
+      },
+      "note": "Low is confirmed (3); 1 is the value in every other file and probably Mid (the default). High is not known and therefore not offered."
+    },
+    "scene_equivalent": "00015"
+  },
+  "00032": {
+    "name": "Master Black Gamma (menu step -99..+99)",
+    "status": "likely",
+    "evidence": "FS7M2 round 13 (Black Gamma Setting Off -> On, Range -> Low, Master Black Gamma 0 -> +5; gamma category STD, Knee Saturation Off): 0 -> 5; the value is the menu step itself, not step x 329.33 (single data point, negative values unverified).",
+    "group": "video",
+    "subgroup": "Paint › Black Gamma",
+    "order": 3,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": -99,
+      "max": 99,
+      "unit": "",
+      "small": 1,
+      "large": 10,
+      "note": "+5 is stored as 5 (not multiplied by 329.33 like most menu steps); negative values are assumed to be stored the same way (not verified)."
+    },
+    "scene_equivalent": "00011"
+  },
+  "00501": {
+    "name": "Offset White On/Off (field 0: <A>, field 1: <B>, field 2: <ATW>)",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 14, 15 and 17: 0,0,0 -> 1,0,0 (<A> On) -> 1,1,0 (<B> On) -> 1,1,1 (<ATW> On). In the sample look sample files the value is 1,1,0 (A and B On).",
+    "group": "video",
+    "subgroup": "Paint › Offset White",
+    "order": 1,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "Offset White <A>",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Offset White <B>",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "index": 2,
+          "label": "Offset White <ATW>",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        }
+      ]
+    },
+    "scene_equivalent": "00149"
+  },
+  "00502": {
+    "name": "Warm Cool <A>, Warm Cool Balance <A> (menu step -99..+99)",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 14 and 15 (white switch on A, then B: Offset White Off -> On, Warm Cool 0 -> +5 / +10, Warm Cool Balance 0 -> -5 / -10): 0,0 -> 1651,-1816 for +5 and -5; the sample look sample files hold -8254,3467 and -8419,3302 (-25 and +10 as displayed). Scale 330.16 per step like R/B Black.",
+    "group": "video",
+    "subgroup": "Paint › Offset White",
+    "order": 2,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Warm Cool <A>",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "Warm Cool Balance <A>",
+          "trunc": true
+        }
+      ],
+      "note": "Warm Cool and Balance are stored finer than the menu step; the camera shows the step cut towards zero (1651 = +5, -1816 = -5). Offset White <A> works on white memory A only: with the WHT BAL switch on Preset the menu is greyed out on the camera (the switch position is not stored in the file)."
+    },
+    "scene_equivalent": "00150"
+  },
+  "00508": {
+    "name": "Warm Cool <B>, Warm Cool Balance <B> (menu step -99..+99)",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 14 and 15 (white switch on A, then B: Offset White Off -> On, Warm Cool 0 -> +5 / +10, Warm Cool Balance 0 -> -5 / -10): 0,0 -> 3302,-3302 for +10 and -10 (10 x 330.16).",
+    "group": "video",
+    "subgroup": "Paint › Offset White",
+    "order": 3,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Warm Cool <B>",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "Warm Cool Balance <B>",
+          "trunc": true
+        }
+      ]
+    },
+    "scene_equivalent": "00154"
+  },
+  "00505": {
+    "name": "Warm Cool <ATW>, Warm Cool Balance <ATW> (menu step -99..+99)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 16: 0,0 -> 4952,-5282 for +15 and -16 (x 330.16), set while the Offset White <ATW> flag was Off; round 17 turned the flag On (third field of the flags value). The camera keeps the values while the flag is Off.",
+    "group": "video",
+    "subgroup": "Paint › Offset White",
+    "order": 4,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "max_raw": 32767,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Warm Cool <ATW>",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "Warm Cool Balance <ATW>",
+          "trunc": true
+        }
+      ]
+    },
+    "scene_equivalent": "00152"
+  },
+  "00312": {
+    "name": "White Switch<B> (Memory / ATW)",
+    "status": "likely",
+    "evidence": "FS7M2 round 16 (White Switch<B> Memory -> ATW, Warm Cool <ATW> 0 -> +15, Balance <ATW> 0 -> -16; the Offset White <ATW> flag was left Off): 0 -> 1 when White Switch<B> was changed from Memory to ATW (the only unexplained change besides the ATW values).",
+    "group": "video",
+    "subgroup": "White",
+    "order": 9,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Memory",
+        "1": "ATW"
+      }
+    },
+    "scene_equivalent": "00118"
   }
 }

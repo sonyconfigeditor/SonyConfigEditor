@@ -27,7 +27,7 @@ for k in ids:
 
 print("\n# Pairwise diffs within PXW-FS7M2 (known by description)")
 fs = sets["PXW-FS7M2"]
-pairs = [(0, 1, "HG4 vs HG3 neutral"), (2, 3, "Filmlike1 vs 2 (HG7 vs HG8)"), (4, 5, "Vibrant HG3 vs HG4"), (6, 7, "Kodak 3200 vs 5600")]
+pairs = [(0, 1, "HG4 vs HG3 neutral"), (2, 3, "sample look vs 2 (HG7 vs HG8)"), (4, 5, "sample look HG3 vs HG4"), (6, 7, "Kodak 3200 vs 5600")]
 for a, b, label in pairs:
     d = [(k, fs[a].params.get(k), fs[b].params.get(k)) for k in ids if fs[a].params.get(k) != fs[b].params.get(k)]
     print(f"\n{fs[a].name} vs {fs[b].name}  [{label}]")
