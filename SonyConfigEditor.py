@@ -43,6 +43,7 @@ CHANGED_COLOR = "#f0ad4e"
 WARNING_COLOR = "#e57373"
 # collapsible blocks of the parameter table; the block of a parameter comes from "group" in the parameter database
 GROUPS = [("video", "Video"), ("audio", "Audio"), ("misc", "Miscellaneous"), ("unknown", "Unknown")]
+GROUP_ICONS = {"video": "🎬", "audio": "🔊", "misc": "⚙", "unknown": "❓"}     # Unicode symbols (no image files needed), shown in the block header and the jump buttons
 DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a block (parameters get "subgroup" in the databases; others: "Other")
 SUBGROUP_ORDER = [
@@ -1696,6 +1697,15 @@ class App(ctk.CTk):
         ctk.CTkButton(filt, text=tr("Collapse all"), width=self._tr_width("Collapse all", 100), height=26, command=self.collapse_all).pack(side="left", padx=2)
         self.lbl_filter = ctk.CTkLabel(filt, text="", text_color="gray")
         self.lbl_filter.pack(side="right", padx=12)
+        jump = ctk.CTkFrame(self, fg_color="transparent")      # jump buttons: no long scrolling between the blocks
+        jump.pack(fill="x", padx=8, pady=(0, 2))
+        ctk.CTkLabel(jump, text=tr("Go to"), text_color="gray").pack(side="left", padx=(10, 6))
+        self.jump_buttons = {}
+        jump_width = max(self._tr_width(title, 90) for _g, title in GROUPS) + 24      # all buttons as wide as the longest one
+        for group, title in GROUPS:
+            label = f"{GROUP_ICONS[group]}  {tr(title)}"
+            self.jump_buttons[group] = ctk.CTkButton(jump, text=label, width=jump_width, height=26, command=lambda g=group: self.jump_to(g))
+            self.jump_buttons[group].pack(side="left", padx=2)
 
         self._tables: dict[tuple, dict] = {}     # built tables of the profiles (type, model) that are not shown at the moment
         self._active_key: tuple | None = None
@@ -2111,7 +2121,7 @@ class App(ctk.CTk):
     def _apply_group_state(self, group: str):
         info = self._groups[group]
         collapsed = self._collapsed.get(group, group in DEFAULT_COLLAPSED)
-        info["header"].configure(text=f"{'▶' if collapsed else '▼'}   {info['title']}   ({info['count']})")
+        info["header"].configure(text=f"{'▶' if collapsed else '▼'}   {GROUP_ICONS[group]}  {info['title']}   ({info['count']})")
         if collapsed:
             info["container"].grid_remove()
         else:
@@ -2180,7 +2190,7 @@ class App(ctk.CTk):
             info["visible"] = visible
             if active:
                 count_text = tr("{n} of {total}").format(n=visible, total=info["count"])      # no nested quotes in the f-string (Python < 3.12)
-                info["header"].configure(text=f"▼   {info['title']}   ({count_text})")
+                info["header"].configure(text=f"▼   {GROUP_ICONS[group]}  {info['title']}   ({count_text})")
                 for part in (info["sep"], info["header"], info["container"]):
                     if part is not None:
                         part.grid() if visible else part.grid_remove()
@@ -2250,6 +2260,21 @@ class App(ctk.CTk):
         for sub in self._subheads:
             self._set_sub_text(sub)
         self._apply_filter()
+
+    def jump_to(self, group: str):
+        """Open a block (if it is closed) and scroll the table so that its header is at the top."""
+        if not self.scene or group not in self._groups:
+            return
+        if not self._filter_active() and self._collapsed.get(group, group in DEFAULT_COLLAPSED):
+            self._collapsed[group] = False
+            self._ensure_built(group)
+            self._apply_group_state(group)
+        header = self._groups[group]["header"]
+        if not header.winfo_manager():
+            return      # the block has no match for the current filter
+        self.update_idletasks()
+        total = max(1, self.table.winfo_height())
+        self.table._parent_canvas.yview_moveto(max(0.0, (header.winfo_y() - self._sc(4)) / total))
 
     def _toggle_group(self, group: str):
         if self._filter_active():

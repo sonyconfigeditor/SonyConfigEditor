@@ -231,5 +231,6 @@
   "Offset White is Off": "Offset White est sur Off",
   "Warm Cool and Balance are stored finer than the menu step; the camera shows the step cut towards zero (1651 = +5, -1816 = -5). Offset White <A> works on white memory A only: with the WHT BAL switch on Preset the menu is greyed out on the camera (the switch position is not stored in the file).": "Warm Cool et Balance sont enregistrés plus finement que le pas du menu ; la caméra affiche le pas tronqué vers zéro (1651 = +5, -1816 = -5). Offset White <A> n'agit que sur la mémoire de blanc A : avec le commutateur WHT BAL sur Preset, le menu est grisé sur la caméra (la position du commutateur n'est pas enregistrée dans le fichier).",
   "Expand all": "Tout développer",
-  "Collapse all": "Tout réduire"
+  "Collapse all": "Tout réduire",
+  "Go to": "Aller à"
 }
