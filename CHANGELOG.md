@@ -5,6 +5,7 @@ The version stays at 0.1.0 for now (development state).
 
 ## [0.1.0] - 2026-10-07
 ### Added
+- Fix: switching to "System" built the window in the colours of the previous mode (dark menu bar text on a dark bar after Day -> System): the system mode is detected at once now, and the window follows when the system switches between light and dark while "System" is selected.
 - **Day / night mode:** View > Appearance > System / Day / Night (default Night); the choice is saved in the settings file. The window is rebuilt on a change, because the plain tk widgets and menus do not follow by themselves.
 - **Jump buttons** ("Go to": Video, Audio, Miscellaneous, Unknown) below the filter row open their block and scroll to its header; the block headers and the buttons carry small Unicode icons (no image files). Buttons of blocks the shown file does not have (Audio and Miscellaneous in SCENE files) are greyed out and come back with ALL.
 - **Clearer layout:** every sub-group sits in its own rounded card with a slightly different fill; dark, thick lines separate the main blocks (Video, Audio, ...) and the Paint category, light, thin lines separate the sub-groups.

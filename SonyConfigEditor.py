@@ -30,6 +30,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox
 
 import customtkinter as ctk
+from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.1.0"
 _date = "2026-10-07"
@@ -1350,7 +1351,7 @@ class App(ctk.CTk):
         super().__init__()
         init_language()
         self.appearance = initial_appearance()
-        ctk.set_appearance_mode(self.appearance)
+        self._apply_appearance(self.appearance)
         ctk.set_default_color_theme("blue")
         self.title(f"{APP_NAME} v{_version}")
         scale = ctk.ScalingTracker.get_window_scaling(self)
@@ -1400,6 +1401,8 @@ class App(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_close)
         self._row_parent = self.table   # parent of the widgets of the current block while the table is built
         self._c = self._theme_colors()
+        self._window_mode = ctk.get_appearance_mode()        # the colours the window was built with
+        AppearanceModeTracker.add(lambda _mode: self.after_idle(self._follow_system))
         # customtkinter scales its own widgets (and follows monitor changes); the plain tk widgets of the parameter
         # table are scaled here
         ctk.ScalingTracker.add_widget(self._on_scaling_changed, self)
@@ -1617,8 +1620,21 @@ class App(ctk.CTk):
             return
         self.appearance = mode
         save_settings(appearance=mode)
-        ctk.set_appearance_mode(mode)
+        self._apply_appearance(mode)
         self._rebuild_window()
+
+    @staticmethod
+    def _apply_appearance(mode: str):
+        """Set the customtkinter mode. "system" only marks the mode as system-controlled, the tracker looks at the system a moment later
+        (polling): detect it now, otherwise the window would be built with the colours of the previous mode."""
+        ctk.set_appearance_mode(mode)
+        if mode == "system":
+            AppearanceModeTracker.init_appearance_mode()
+
+    def _follow_system(self, *_args):
+        """The system switched between light and dark while the mode is "system": build the window again with the new colours."""
+        if self.appearance == "system" and self._window_mode != ctk.get_appearance_mode():
+            self._rebuild_window()
 
     def _rebuild_window(self):
         """Build all widgets again (new language or colours) and show the current file in them."""
@@ -1627,6 +1643,7 @@ class App(ctk.CTk):
             widget.destroy()
         self._build()
         self._c = self._theme_colors()
+        self._window_mode = ctk.get_appearance_mode()
         self._row_parent = self.table
         self.var_search.set(keep[0])
         self.var_changed.set(keep[1])
