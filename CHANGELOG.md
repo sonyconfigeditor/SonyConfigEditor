@@ -5,6 +5,7 @@ The version stays at 0.1.0 for now (development state).
 
 ## [0.1.0] - 2026-10-07
 ### Added
+- **Clearer layout:** every sub-group sits in its own rounded card with a slightly different fill; dark, thick lines separate the main blocks (Video, Audio, ...) and the Paint category, light, thin lines separate the sub-groups.
 - **Expand all / Collapse all** (View menu, Ctrl+Shift+Down / Ctrl+Shift+Up, and two buttons next to the filter): opens or closes every block, category and sub-group; expanding builds the block of unknown parameters.
 - All sub-groups of the camera's Paint menu sit under one collapsible heading "Paint" (the sub-group headings are indented and show the part after "Paint ›"); a filter keeps matches visible while Paint is collapsed. Offset White now follows Matrix in the menu order.
 - **Offset White** <A> and <B> (FS7M2 rounds 14 and 15): On/Off flags (scene `00149` / ALL `00501`), Warm Cool / Balance <A> (`00150` / `00502`) and <B> (`00154` / `00508`) in the new sub-group "Paint › Offset White", scale 330.16 per step, shown cut towards zero like the camera (new `trunc` option of step fields); locked with their On/Off flag. ID map extended. FS7M2 round 16: Warm Cool / Balance <ATW> (`00152` / `00505`) and White Switch<B> Memory / ATW (`00118` / `00312`); the <ATW> flag (third field of `00149`) was confirmed in round 17 and locks the <ATW> values; Offset White is complete.

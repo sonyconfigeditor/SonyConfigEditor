@@ -1451,14 +1451,33 @@ class App(ctk.CTk):
         if self.scene:
             self.after_idle(lambda: self._populate(reset_original=False))
 
+    def _blend(self, color: str, target: str, amount: float) -> str:
+        """`color` moved by `amount` (0..1) towards `target`, both any Tk colour; result as #rrggbb."""
+        (r1, g1, b1), (r2, g2, b2) = self.winfo_rgb(color), self.winfo_rgb(target)
+        mix = lambda a, b: round((a + (b - a) * amount) / 257)
+        return f"#{mix(r1, r2):02x}{mix(g1, g2):02x}{mix(b1, b2):02x}"
+
+    def _separator(self, parent, kind: str, **grid):
+        """Thin horizontal line: "main" = dark and thick (between blocks and categories), "sub" = light and thin (between sub-groups)."""
+        line = tk.Frame(parent, bg=self._c["sep_" + kind], height=self._sc(2 if kind == "main" else 1))
+        line.grid(sticky="ew", **grid)
+        return line
+
     def _theme_colors(self) -> dict:
         """Colours for the plain tk widgets of the parameter table (far faster than customtkinter widgets)."""
         theme = ctk.ThemeManager.theme
         mode = 1 if ctk.get_appearance_mode() == "Dark" else 0
         pick = lambda v: v[mode] if isinstance(v, (list, tuple)) else v
         bg = self.table._apply_appearance_mode(self.table.cget("fg_color"))
+        # structure: sub-group cards are a little lighter (dark mode) / darker (light mode) than the table, main separators clearly darker,
+        # sub-group separators a little lighter than the table
+        dark = mode == 1
         return {
             "bg": bg,
+            "card": self._blend(bg, "#ffffff" if dark else "#000000", 0.06),
+            "card_border": self._blend(bg, "#ffffff" if dark else "#000000", 0.14),
+            "sep_main": self._blend(bg, "#000000", 0.75 if dark else 0.45),
+            "sep_sub": self._blend(bg, "#ffffff" if dark else "#000000", 0.16),
             "entry": pick(theme["CTkEntry"]["fg_color"]),
             "text": pick(theme["CTkEntry"]["text_color"]),
             "border": pick(theme["CTkEntry"]["border_color"]),
@@ -1914,18 +1933,19 @@ class App(ctk.CTk):
             items = sorted(by_group[group], key=sort_key)
             if not items:
                 continue
+            sep = self._separator(self.table, "main", row=table_row, column=0, pady=(self._sc(10), 0)) if table_row else None
             header = ctk.CTkButton(
                 self.table, text="", anchor="w", height=32, corner_radius=6,
                 fg_color=("gray75", "gray25"), hover_color=("gray70", "gray30"), text_color=("gray10", "gray90"),
                 command=lambda g=group: self._toggle_group(g),
             )
-            header.grid(row=table_row, column=0, sticky="ew", padx=self._sc(2), pady=(self._sc(6), self._sc(2)))
+            header.grid(row=table_row + 1, column=0, sticky="ew", padx=self._sc(2), pady=(self._sc(6), self._sc(2)))
             container = tk.Frame(self.table, bg=self._c["bg"])
-            container.grid(row=table_row + 1, column=0, sticky="ew")
+            container.grid(row=table_row + 2, column=0, sticky="ew")
             container.grid_columnconfigure(0, minsize=self._sc(310))
             container.grid_columnconfigure(1, weight=1)
             self._groups[group] = {"title": tr(title), "header": header, "container": container, "count": len(items),
-                                   "keys": [k for k, _v, _i in items], "visible": len(items)}
+                                   "keys": [k for k, _v, _i in items], "visible": len(items), "sep": sep}
             self._row_parent = container
             row, current_sub, sub_info = 0, None, None
             if group == "unknown" and self._collapsed.get(group, group in DEFAULT_COLLAPSED):
@@ -1937,51 +1957,67 @@ class App(ctk.CTk):
                     self._rows[key] = {"label": None, "widget": None, "sub": None, "info": None, "lazy": True}
                 self._lazy_groups.add(group)
                 self._apply_group_state(group)
-                table_row += 2
+                table_row += 3
                 continue
+            card, card_row, first_sub = container, 0, True
             for key, value, info in items:
                 sub = (info.get("subgroup", "Other") if info else None)
                 if sub is not None and sub != current_sub:
                     category = sub.split(" › ")[0] if " › " in sub and sub.split(" › ")[0] in CATEGORIES else None
                     if category and not any(c["title"] == category for c in self._cats):
+                        cat_sep = self._separator(container, "main", row=row, column=0, columnspan=2, pady=(self._sc(12), 0))
                         cat_label = tk.Label(container, text="", anchor="w", bg=self._c["bg"], fg=self._c["label"], font=self._font_bold, cursor="hand2")
-                        cat_label.grid(row=row, column=0, columnspan=2, sticky="w", padx=self._sc(5), pady=(self._sc(14), self._sc(2)))
-                        cat_info = {"label": cat_label, "title": category, "subs": []}
+                        cat_label.grid(row=row + 1, column=0, columnspan=2, sticky="w", padx=self._sc(5), pady=(self._sc(6), self._sc(2)))
+                        cat_info = {"label": cat_label, "sep": cat_sep, "title": category, "subs": []}
                         cat_label.bind("<Button-1>", lambda _e, ci=cat_info: self._toggle_cat(ci))
                         self._set_cat_text(cat_info)
                         self._cats.append(cat_info)
-                        row += 1
-                    heading = tk.Label(container, text=sub, anchor="w", bg=self._c["bg"], fg=self._c["accent"], font=self._font_bold, cursor="hand2")
-                    heading.grid(row=row, column=0, columnspan=2, sticky="w", padx=self._sc(24 if category else 5), pady=(self._sc(10), self._sc(2)))
-                    sub_info = {"label": heading, "keys": [], "title": sub, "suffix": "", "category": category,
+                        row += 2
+                        first_sub = True
+                    # every sub-group is a rounded card (slightly different fill); a thin light line separates it from the previous one
+                    wrap = tk.Frame(container, bg=self._c["bg"])
+                    wrap.grid(row=row, column=0, columnspan=2, sticky="ew", padx=(self._sc(24 if category else 5), self._sc(5)))
+                    wrap.grid_columnconfigure(0, weight=1)
+                    if not first_sub:
+                        self._separator(wrap, "sub", row=0, column=0, pady=(self._sc(5), self._sc(5)))
+                    first_sub = False
+                    card = ctk.CTkFrame(wrap, corner_radius=10, fg_color=self._c["card"], border_width=1, border_color=self._c["card_border"])
+                    card.grid(row=1, column=0, sticky="ew", ipady=self._sc(3))
+                    card.grid_columnconfigure(0, minsize=self._sc(300))
+                    card.grid_columnconfigure(1, weight=1)
+                    heading = tk.Label(card, text=sub, anchor="w", bg=self._c["card"], fg=self._c["accent"], font=self._font_bold, cursor="hand2")
+                    heading.grid(row=0, column=0, columnspan=2, sticky="w", padx=self._sc(10), pady=(self._sc(6), self._sc(2)))
+                    sub_info = {"label": heading, "outer": wrap, "keys": [], "title": sub, "suffix": "", "category": category,
                                 "display": sub.split(" › ", 1)[1] if category else sub}
                     if category:
                         next(c for c in self._cats if c["title"] == category)["subs"].append(sub_info)
                     heading.bind("<Button-1>", lambda _e, si=sub_info: self._toggle_sub(si))
                     self._set_sub_text(sub_info)
                     self._subheads.append(sub_info)
-                    current_sub, row = sub, row + 1
-                name_label = self._row_label(container, key, info)
-                name_label.grid(row=row, column=0, padx=self._sc(5), pady=self._sc(1), sticky="w")
+                    current_sub, row, card_row = sub, row + 1, 1
+                parent, prow = (card, card_row) if sub is not None else (container, row)
+                self._row_parent = parent
+                name_label = self._row_label(parent, key, info, self._c["card"] if sub is not None else None)
+                name_label.grid(row=prow, column=0, padx=self._sc(10 if sub is not None else 5), pady=self._sc(1), sticky="w")
                 var = tk.StringVar(value=value)
                 var.trace_add("write", lambda *_a, k=key: self._on_edit(k))
                 widget = self._build_choice_widget(key, var, info.get("widget") if info else None)
                 if widget is None:
                     widget = tk.Entry(
-                        container, textvariable=var, bg=self._c["entry"], fg=self._c["text"], insertbackground=self._c["text"],
+                        parent, textvariable=var, bg=self._c["entry"], fg=self._c["text"], insertbackground=self._c["text"],
                         relief="flat", highlightthickness=self._sc(1), highlightbackground=self._c["border"],
                         highlightcolor=self._c["focus"], font=self._c["font"],
                     )
-                    widget.grid(row=row, column=1, padx=self._sc(5), pady=self._sc(2), sticky="ew", ipady=self._sc(2))
+                    widget.grid(row=prow, column=1, padx=self._sc(5), pady=self._sc(2), sticky="ew", ipady=self._sc(2))
                     outer = None
                 elif hasattr(widget, "_mark"):
-                    widget.grid(row=row, column=1, padx=5, pady=2, sticky="w")
+                    widget.grid(row=prow, column=1, padx=5, pady=2, sticky="w")
                     outer = None
                 else:
                     # widgets whose children fill the whole frame (step fields, multi-choice) get an outer frame for the yellow "changed" border:
                     # a border on the widget itself would be covered by its own children
-                    outer = ctk.CTkFrame(container, fg_color="transparent", border_width=2, border_color=self._c["bg"], corner_radius=4)
-                    outer.grid(row=row, column=1, padx=3, pady=2, sticky="w")
+                    outer = ctk.CTkFrame(parent, fg_color="transparent", border_width=2, border_color=self._c["card"], corner_radius=4)
+                    outer.grid(row=prow, column=1, padx=3, pady=2, sticky="w")
                     widget.grid(in_=outer, row=0, column=0, padx=5, pady=5, sticky="w")
                     widget.lift()
                     widget._mark = outer
@@ -1989,9 +2025,11 @@ class App(ctk.CTk):
                 self._rows[key] = {"label": name_label, "widget": widget, "outer": outer, "sub": sub_info if sub is not None else None, "info": info}
                 if sub is not None:
                     sub_info["keys"].append(key)
-                row += 1
+                    card_row += 1
+                else:
+                    row += 1
             self._apply_group_state(group)
-            table_row += 2
+            table_row += 3
         self._row_parent = self.table
         for widget in self.entries.values():
             deps = getattr(widget, "_derived_deps", None)
@@ -2036,7 +2074,7 @@ class App(ctk.CTk):
             return minimum
         return max(minimum, round(self._font.measure(max(labels, key=len)) / self._scale) + 56)
 
-    def _row_label(self, container, key: str, info: dict | None) -> "RowLabel":
+    def _row_label(self, container, key: str, info: dict | None, bg: str | None = None) -> "RowLabel":
         """Name of a row: decoded text (with status) and the ID in grey brackets behind it; rows without a name show the ID."""
         if info and SHOW_RAW_VALUES:
             text = info["name"] + (f" [{tr_status(info.get('status'))}]" if info.get("status") != "confirmed" else "")
@@ -2046,7 +2084,7 @@ class App(ctk.CTk):
             ident = ""
         else:
             text, ident = key, ""
-        return RowLabel(container, text, ident, self._c["bg"], self._c["label"], self._c["font"], self._sc(235 if ident else 300))
+        return RowLabel(container, text, ident, bg or self._c["bg"], self._c["label"], self._c["font"], self._sc(235 if ident else 300))
 
     def _ensure_built(self, group: str):
         """Build the rows of a block that was left unbuilt while it was collapsed."""
@@ -2143,21 +2181,21 @@ class App(ctk.CTk):
             if active:
                 count_text = tr("{n} of {total}").format(n=visible, total=info["count"])      # no nested quotes in the f-string (Python < 3.12)
                 info["header"].configure(text=f"▼   {info['title']}   ({count_text})")
-                if visible:
-                    info["header"].grid()
-                    info["container"].grid()
-                else:
-                    info["header"].grid_remove()
-                    info["container"].grid_remove()
+                for part in (info["sep"], info["header"], info["container"]):
+                    if part is not None:
+                        part.grid() if visible else part.grid_remove()
             else:
+                if info["sep"] is not None:
+                    info["sep"].grid()
                 info["header"].grid()
                 self._apply_group_state(group)
         for sub in self._subheads:
             hidden = (active and not any(k in shown_keys for k in sub["keys"])) or (not active and sub.get("category") in self._cat_collapsed)
-            sub["label"].grid_remove() if hidden else sub["label"].grid()
+            sub["outer"].grid_remove() if hidden else sub["outer"].grid()
         for cat in self._cats:
             shown = any(k in shown_keys for sub in cat["subs"] for k in sub["keys"]) if active else True
-            cat["label"].grid() if shown else cat["label"].grid_remove()
+            for part in (cat["sep"], cat["label"]):
+                part.grid() if shown else part.grid_remove()
             self._set_cat_text(cat)
         total = sum(1 for row in self._rows.values() if not (row["info"] and row["info"].get("covered_by")))   # rows of combined dropdowns are not listed
         self.lbl_filter.configure(text=tr("{n} of {total}").format(n=len(shown_keys) if active else total, total=total))
@@ -2555,7 +2593,7 @@ class App(ctk.CTk):
 
         The border is always 2 px wide (only its colour changes) and the controls are padded so they do not cover it.
         """
-        mark = ctk.CTkFrame(frame, fg_color="transparent", border_width=2, border_color=self._c["bg"], corner_radius=4)
+        mark = ctk.CTkFrame(frame, fg_color="transparent", border_width=2, border_color=self._c["card"], corner_radius=4)
         mark.pack(anchor="w")
         frame._mark = mark
         row = ctk.CTkFrame(mark, fg_color="transparent")
@@ -3487,7 +3525,7 @@ class App(ctk.CTk):
         if widget is None:      # row of a collapsed block that is not built yet (marked when it is built)
             return
         if isinstance(widget, ctk.CTkFrame) and hasattr(widget, "_mark"):
-            widget._mark.configure(border_color=CHANGED_COLOR if changed else self._c["bg"])
+            widget._mark.configure(border_color=CHANGED_COLOR if changed else self._c["card"])
         elif isinstance(widget, ctk.CTkFrame):
             widget.configure(border_width=2 if changed else 0)
         else:
