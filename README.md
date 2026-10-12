@@ -19,6 +19,7 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 - **Options that are impossible in the current state are greyed out** (e.g. RAW 4096 needs Imager Scan Mode Normal, Detail settings with Detail Off, BT.2020 only on the FS7M2 with a 4K format) and implausible combinations raise a warning.
 - **Type switch SCENE / ALL** and **model switch FS7 / FS7M2** in the header: only mapped values are carried over, everything else stays stored and returns when you switch back.
 - **Expand all / Collapse all** (View menu, Ctrl+Shift+Down / Up, or the buttons next to the filter) for the blocks, the Paint category and the sub-groups.
+- **Appearance** (View menu): System, Day or Night mode, remembered between runs.
 - **Jump buttons** (Video, Audio, Miscellaneous, Unknown) below the filter row scroll straight to a block and open it if it is closed.
 - **Search and filter** (Ctrl+F): by name, ID or value; "changed only" shows everything that differs from the loaded file, "known only" hides undecoded IDs.
 - **Import** (File > Import, Ctrl+I): take over all known differing values from any SCENE/ALL file of either model, or pick single parameters from a list. One undo step.

@@ -232,5 +232,9 @@
   "Warm Cool and Balance are stored finer than the menu step; the camera shows the step cut towards zero (1651 = +5, -1816 = -5). Offset White <A> works on white memory A only: with the WHT BAL switch on Preset the menu is greyed out on the camera (the switch position is not stored in the file).": "Warm Cool e Balance são gravados com mais finura do que o passo do menu; a câmera mostra o passo truncado em direção a zero (1651 = +5, -1816 = -5). O Offset White <A> só atua na memória de branco A: com a chave WHT BAL em Preset o menu fica desativado na câmera (a posição da chave não é gravada no arquivo).",
   "Expand all": "Expandir tudo",
   "Collapse all": "Recolher tudo",
-  "Go to": "Ir para"
+  "Go to": "Ir para",
+  "Appearance": "Aparência",
+  "System": "Sistema",
+  "Day": "Dia",
+  "Night": "Noite"
 }

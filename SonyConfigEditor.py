@@ -357,6 +357,16 @@ def save_language(code: str) -> None:
     save_settings(language=code)
 
 
+APPEARANCES = ("system", "light", "dark")      # customtkinter appearance modes: follow Windows / day / night
+DEFAULT_APPEARANCE = "dark"
+
+
+def initial_appearance() -> str:
+    """Saved choice (the settings file is user-editable input: anything else is ignored), else night mode."""
+    mode = load_settings().get("appearance")
+    return mode if isinstance(mode, str) and mode in APPEARANCES else DEFAULT_APPEARANCE
+
+
 SHOW_RAW_VALUES = True      # IDs and raw values in brackets behind the decoded text (the tests switch it off to keep their texts short)
 RAW_COLOR = "#8a8a8a"
 
@@ -1339,7 +1349,8 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         init_language()
-        ctk.set_appearance_mode("dark")
+        self.appearance = initial_appearance()
+        ctk.set_appearance_mode(self.appearance)
         ctk.set_default_color_theme("blue")
         self.title(f"{APP_NAME} v{_version}")
         scale = ctk.ScalingTracker.get_window_scaling(self)
@@ -1545,6 +1556,11 @@ class App(ctk.CTk):
         add(view_menu, "collapse_all", "Collapse all", self.collapse_all, "Ctrl+Shift+Up")
         view_menu.add_separator()
         view_menu.add_cascade(label=tr("Language"), menu=lang_menu)
+        look_menu = new_menu(view_menu)
+        self.var_appearance = tk.StringVar(value=self.appearance)
+        for mode, label in (("system", tr("System")), ("light", tr("Day")), ("dark", tr("Night"))):
+            look_menu.add_radiobutton(label=label, value=mode, variable=self.var_appearance, command=lambda m=mode: self.set_appearance(m))
+        view_menu.add_cascade(label=tr("Appearance"), menu=look_menu)
         cascade(tr("View"), view_menu)
 
         help_menu = new_menu(bar)
@@ -1593,10 +1609,24 @@ class App(ctk.CTk):
             return
         LANG = code
         save_language(code)
+        self._rebuild_window()
+
+    def set_appearance(self, mode: str):
+        """Switch between system setting, day and night mode: the plain tk widgets and menus do not follow by themselves, so the window is rebuilt."""
+        if mode not in APPEARANCES or mode == self.appearance:
+            return
+        self.appearance = mode
+        save_settings(appearance=mode)
+        ctk.set_appearance_mode(mode)
+        self._rebuild_window()
+
+    def _rebuild_window(self):
+        """Build all widgets again (new language or colours) and show the current file in them."""
         keep = (self.var_search.get(), self.var_changed.get(), self.var_known.get())
         for widget in self.winfo_children():
             widget.destroy()
         self._build()
+        self._c = self._theme_colors()
         self._row_parent = self.table
         self.var_search.set(keep[0])
         self.var_changed.set(keep[1])
@@ -1706,6 +1736,7 @@ class App(ctk.CTk):
             label = f"{GROUP_ICONS[group]}  {tr(title)}"
             self.jump_buttons[group] = ctk.CTkButton(jump, text=label, width=jump_width, height=26, command=lambda g=group: self.jump_to(g))
             self.jump_buttons[group].pack(side="left", padx=2)
+            self.jump_buttons[group].configure(state="disabled")      # enabled once the shown file has such a block
 
         self._tables: dict[tuple, dict] = {}     # built tables of the profiles (type, model) that are not shown at the moment
         self._active_key: tuple | None = None
@@ -1821,7 +1852,7 @@ class App(ctk.CTk):
 
     def _look(self) -> tuple:
         """What the built widgets depend on besides the values: a table built for another look must be rebuilt."""
-        return (SHOW_RAW_VALUES, LANG, self._scale)
+        return (SHOW_RAW_VALUES, LANG, self._scale, ctk.get_appearance_mode())
 
     def _table_key(self) -> tuple:
         return (self.kind, self.scene.model)
@@ -2066,6 +2097,8 @@ class App(ctk.CTk):
         self._busy = True
         self._update_clip_row()
         self._apply_filter()
+        for group, button in self.jump_buttons.items():       # SCENE files have no Audio / Miscellaneous parameters: their buttons are greyed out
+            button.configure(state="normal" if group in self._groups else "disabled")
         self.btn_save.configure(state="normal")
         self.btn_save_as.configure(state="normal")
         self.btn_import.configure(state="normal")

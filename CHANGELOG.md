@@ -5,7 +5,8 @@ The version stays at 0.1.0 for now (development state).
 
 ## [0.1.0] - 2026-10-07
 ### Added
-- **Jump buttons** ("Go to": Video, Audio, Miscellaneous, Unknown) below the filter row open their block and scroll to its header; the block headers and the buttons carry small Unicode icons (no image files).
+- **Day / night mode:** View > Appearance > System / Day / Night (default Night); the choice is saved in the settings file. The window is rebuilt on a change, because the plain tk widgets and menus do not follow by themselves.
+- **Jump buttons** ("Go to": Video, Audio, Miscellaneous, Unknown) below the filter row open their block and scroll to its header; the block headers and the buttons carry small Unicode icons (no image files). Buttons of blocks the shown file does not have (Audio and Miscellaneous in SCENE files) are greyed out and come back with ALL.
 - **Clearer layout:** every sub-group sits in its own rounded card with a slightly different fill; dark, thick lines separate the main blocks (Video, Audio, ...) and the Paint category, light, thin lines separate the sub-groups.
 - **Expand all / Collapse all** (View menu, Ctrl+Shift+Down / Ctrl+Shift+Up, and two buttons next to the filter): opens or closes every block, category and sub-group; expanding builds the block of unknown parameters.
 - All sub-groups of the camera's Paint menu sit under one collapsible heading "Paint" (the sub-group headings are indented and show the part after "Paint ›"); a filter keeps matches visible while Paint is collapsed. Offset White now follows Matrix in the menu order.
