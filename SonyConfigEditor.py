@@ -47,9 +47,10 @@ DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a block (parameters get "subgroup" in the databases; others: "Other")
 SUBGROUP_ORDER = [
     "System › Base Setting", "System › Codec / Rec Format",
-    "Camera", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
+    "Camera", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Offset White",
     "White", "Recording › S&Q Motion", "System › Rec Format (companion values)", "Audio › Input", "VF › Zebra / Marker", "File › Clip",
 ]
+CATEGORIES = ("Paint",)      # menu categories with their own collapsible heading above their sub-groups ("Paint › Gamma", "Paint › Matrix", ...)
 FILTER_DELAY_MS = 150
 BASE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))  # _MEIPASS: bundled by PyInstaller
 # SCENE and ALL files share the container format but use different parameter IDs -> one database per file type
@@ -1088,7 +1089,7 @@ class MenuItem:
 
 
 MENU_TEXTS = ["New…", "Open…", "Save", "Save As…", "Import…", "Exit", "Undo", "Redo", "Find", "File", "Edit",
-              "Language", "View", "Help", "About {app}…", "All", "None", "Invert selection", "Known only", "Miscellaneous", "Unknown", "Compare…", "Previous difference", "Next difference"]   # texts that tr() gets through variables
+              "Language", "View", "Help", "About {app}…", "All", "None", "Invert selection", "Known only", "Miscellaneous", "Unknown", "Compare…", "Previous difference", "Next difference", "Expand all", "Collapse all"]   # texts that tr() gets through variables
 ABOUT_TEXTS = [
     "Reads, converts and writes configuration files (SCENE and ALL files) of the Sony PXW-FS7 and PXW-FS7M2 cameras.",
     "Copyright (c) 2026 Lukas Himmelswanderer. Published under the MIT License.",
@@ -1369,6 +1370,7 @@ class App(ctk.CTk):
             self._last_dir = Path(saved_dir)
         self._collapsed: dict[str, bool] = {}   # block -> collapsed (kept while the app runs)
         self._sub_collapsed: set[str] = set()   # collapsed sub-groups (by title, kept while the app runs)
+        self._cat_collapsed: set[str] = set()   # collapsed categories ("Paint")
         self._groups: dict[str, dict] = {}
         self._lazy_groups: set[str] = set()   # blocks whose rows are not built yet
         self._reflow: list = []               # widgets whose fields wrap to the width of the window (see _reflow_all)
@@ -1519,6 +1521,9 @@ class App(ctk.CTk):
         self.var_lang = tk.StringVar(value=LANG)
         for code, name in available_languages().items():
             lang_menu.add_radiobutton(label=name, value=code, variable=self.var_lang, command=lambda c=code: self.set_language(c))
+        add(view_menu, "expand_all", "Expand all", self.expand_all, "Ctrl+Shift+Down")
+        add(view_menu, "collapse_all", "Collapse all", self.collapse_all, "Ctrl+Shift+Up")
+        view_menu.add_separator()
         view_menu.add_cascade(label=tr("Language"), menu=lang_menu)
         cascade(tr("View"), view_menu)
 
@@ -1528,7 +1533,8 @@ class App(ctk.CTk):
 
         self._menu_bar = bar
         self._menu_commands = {"new": self.new_file, "open": self.open_file, "save": self.save, "save_as": self.save_as, "import": self.import_file, "compare": self.compare_file,
-                               "exit": self.on_close, "undo": self.undo, "redo": self.redo, "about": self.show_about}
+                               "exit": self.on_close, "undo": self.undo, "redo": self.redo, "about": self.show_about,
+                               "expand_all": self.expand_all, "collapse_all": self.collapse_all}
         for key, state in self._menu_state.items():
             self._set_menu_state(key, state)
         # the former toolbar buttons: the code (and the tests) still enable / disable them by name
@@ -1550,7 +1556,7 @@ class App(ctk.CTk):
     def _bind_shortcuts(self):
         for seq, key in (("<Control-n>", "new"), ("<Control-N>", "new"), ("<Control-o>", "open"), ("<Control-O>", "open"), ("<Control-s>", "save"),
                          ("<Control-S>", "save_as"), ("<Control-Shift-s>", "save_as"), ("<Control-Shift-S>", "save_as"), ("<Control-i>", "import"),
-                         ("<Control-I>", "import"), ("<Control-d>", "compare"), ("<Control-D>", "compare"), ("<Control-q>", "exit"), ("<Control-Q>", "exit"), ("<F1>", "about")):
+                         ("<Control-I>", "import"), ("<Control-d>", "compare"), ("<Control-D>", "compare"), ("<Control-Shift-Down>", "expand_all"), ("<Control-Shift-Up>", "collapse_all"), ("<Control-q>", "exit"), ("<Control-Q>", "exit"), ("<F1>", "about")):
             self.bind(seq, lambda _e, k=key: self._shortcut(k))
 
     def show_about(self, invisible: bool = False):
@@ -1667,6 +1673,8 @@ class App(ctk.CTk):
         ctk.CTkCheckBox(filt, text=tr("changed only"), variable=self.var_changed, command=self._schedule_filter, width=20, checkbox_width=20, checkbox_height=20).pack(side="left", padx=(12, 4))
         ctk.CTkCheckBox(filt, text=tr("known only"), variable=self.var_known, command=self._schedule_filter, width=20, checkbox_width=20, checkbox_height=20).pack(side="left", padx=(8, 4))
         ctk.CTkButton(filt, text="✕", width=30, height=26, command=self._clear_filter).pack(side="left", padx=(8, 4))
+        ctk.CTkButton(filt, text=tr("Expand all"), width=self._tr_width("Expand all", 100), height=26, command=self.expand_all).pack(side="left", padx=(20, 2))
+        ctk.CTkButton(filt, text=tr("Collapse all"), width=self._tr_width("Collapse all", 100), height=26, command=self.collapse_all).pack(side="left", padx=2)
         self.lbl_filter = ctk.CTkLabel(filt, text="", text_color="gray")
         self.lbl_filter.pack(side="right", padx=12)
 
@@ -1779,7 +1787,7 @@ class App(ctk.CTk):
                 error=PARAM_DB_ERRORS[kind]))
         return True
 
-    TABLE_STATE = ("table", "entries", "vars", "_groups", "_rows", "_subheads", "_lazy_groups", "_reflow",
+    TABLE_STATE = ("table", "entries", "vars", "_groups", "_rows", "_subheads", "_cats", "_lazy_groups", "_reflow",
                    "_built_model", "_built_kind", "_built_db", "_built_look")
 
     def _look(self) -> tuple:
@@ -1887,6 +1895,7 @@ class App(ctk.CTk):
         self._groups = {}
         self._rows = {}
         self._subheads = []
+        self._cats = []
         self._lazy_groups = set()
         self._reflow = []
         by_group = {g: [] for g, _title in GROUPS}
@@ -1933,9 +1942,21 @@ class App(ctk.CTk):
             for key, value, info in items:
                 sub = (info.get("subgroup", "Other") if info else None)
                 if sub is not None and sub != current_sub:
+                    category = sub.split(" › ")[0] if " › " in sub and sub.split(" › ")[0] in CATEGORIES else None
+                    if category and not any(c["title"] == category for c in self._cats):
+                        cat_label = tk.Label(container, text="", anchor="w", bg=self._c["bg"], fg=self._c["label"], font=self._font_bold, cursor="hand2")
+                        cat_label.grid(row=row, column=0, columnspan=2, sticky="w", padx=self._sc(5), pady=(self._sc(14), self._sc(2)))
+                        cat_info = {"label": cat_label, "title": category, "subs": []}
+                        cat_label.bind("<Button-1>", lambda _e, ci=cat_info: self._toggle_cat(ci))
+                        self._set_cat_text(cat_info)
+                        self._cats.append(cat_info)
+                        row += 1
                     heading = tk.Label(container, text=sub, anchor="w", bg=self._c["bg"], fg=self._c["accent"], font=self._font_bold, cursor="hand2")
-                    heading.grid(row=row, column=0, columnspan=2, sticky="w", padx=self._sc(5), pady=(self._sc(10), self._sc(2)))
-                    sub_info = {"label": heading, "keys": [], "title": sub, "suffix": ""}
+                    heading.grid(row=row, column=0, columnspan=2, sticky="w", padx=self._sc(24 if category else 5), pady=(self._sc(10), self._sc(2)))
+                    sub_info = {"label": heading, "keys": [], "title": sub, "suffix": "", "category": category,
+                                "display": sub.split(" › ", 1)[1] if category else sub}
+                    if category:
+                        next(c for c in self._cats if c["title"] == category)["subs"].append(sub_info)
                     heading.bind("<Button-1>", lambda _e, si=sub_info: self._toggle_sub(si))
                     self._set_sub_text(sub_info)
                     self._subheads.append(sub_info)
@@ -2110,7 +2131,7 @@ class App(ctk.CTk):
                     visible += 1       # not built yet (collapsed block, no filter): nothing to show or hide
                     continue
                 sub = row["sub"]
-                show = self._row_matches(key, tokens, changed_only, known_only) if active else not (sub and sub["title"] in self._sub_collapsed)
+                show = self._row_matches(key, tokens, changed_only, known_only) if active else not (sub and (sub["title"] in self._sub_collapsed or sub.get("category") in self._cat_collapsed))
                 if row["info"] and row["info"].get("covered_by") and not (tokens and show):
                     show = False   # part of a combined dropdown (e.g. Gamma Category): visible only when searched for explicitly
                 for widget in (row["label"], row.get("outer") or row["widget"]):
@@ -2132,13 +2153,28 @@ class App(ctk.CTk):
                 info["header"].grid()
                 self._apply_group_state(group)
         for sub in self._subheads:
-            sub["label"].grid() if (not active or any(k in shown_keys for k in sub["keys"])) else sub["label"].grid_remove()
+            hidden = (active and not any(k in shown_keys for k in sub["keys"])) or (not active and sub.get("category") in self._cat_collapsed)
+            sub["label"].grid_remove() if hidden else sub["label"].grid()
+        for cat in self._cats:
+            shown = any(k in shown_keys for sub in cat["subs"] for k in sub["keys"]) if active else True
+            cat["label"].grid() if shown else cat["label"].grid_remove()
+            self._set_cat_text(cat)
         total = sum(1 for row in self._rows.values() if not (row["info"] and row["info"].get("covered_by")))   # rows of combined dropdowns are not listed
         self.lbl_filter.configure(text=tr("{n} of {total}").format(n=len(shown_keys) if active else total, total=total))
 
     def _set_sub_text(self, sub: dict):
         arrow = "▶" if sub["title"] in self._sub_collapsed else "▼"
-        sub["label"].configure(text=f"{arrow}  {sub['title']}{sub['suffix']}")
+        sub["label"].configure(text=f"{arrow}  {sub.get('display', sub['title'])}{sub['suffix']}")
+
+    def _set_cat_text(self, cat: dict):
+        arrow = "▶" if cat["title"] in self._cat_collapsed and not self._filter_active() else "▼"
+        cat["label"].configure(text=f"{arrow}  {cat['title']}")
+
+    def _toggle_cat(self, cat: dict):
+        if self._filter_active():
+            return   # matches stay visible while a filter is active
+        self._cat_collapsed ^= {cat["title"]}
+        self._apply_filter()
 
     def _toggle_sub(self, sub: dict):
         if self._filter_active():
@@ -2147,6 +2183,34 @@ class App(ctk.CTk):
         for sinfo in self._subheads:
             if sinfo["title"] == sub["title"]:
                 self._set_sub_text(sinfo)
+        self._apply_filter()
+
+    def expand_all(self):
+        """Open every block, category and sub-group (the collapsed block of unknown parameters is built now)."""
+        if not self.scene:
+            return
+        self._cat_collapsed.clear()
+        self._sub_collapsed.clear()
+        for group in self._groups:
+            self._collapsed[group] = False
+            self._ensure_built(group)
+        self._after_fold_change()
+
+    def collapse_all(self):
+        """Close every block, category and sub-group."""
+        if not self.scene:
+            return
+        self._cat_collapsed |= {cat["title"] for cat in self._cats}
+        self._sub_collapsed |= {sub["title"] for sub in self._subheads}
+        for group in self._groups:
+            self._collapsed[group] = True
+        self._after_fold_change()
+
+    def _after_fold_change(self):
+        for cat in self._cats:
+            self._set_cat_text(cat)
+        for sub in self._subheads:
+            self._set_sub_text(sub)
         self._apply_filter()
 
     def _toggle_group(self, group: str):
