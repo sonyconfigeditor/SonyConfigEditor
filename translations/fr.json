@@ -236,5 +236,11 @@
   "Appearance": "Apparence",
   "System": "Système",
   "Day": "Jour",
-  "Night": "Nuit"
+  "Night": "Nuit",
+  "Wheel clicks": "Crans de la molette",
+  "Camera menu shows: {value}": "Le menu de la caméra affiche : {value}",
+  "The small buttons move the wheel by one click, the large buttons by a whole menu step ({n} clicks). The camera menu shows the number of clicks divided by {n}, cut towards zero: around zero {zero} clicks all show 0.": "Les petits boutons tournent la molette d'un cran, les grands d'un palier complet du menu ({n} crans). Le menu de la caméra affiche le nombre de crans divisé par {n}, tronqué vers zéro : autour de zéro, {zero} crans affichent tous 0.",
+  "Confirmed on the FS7M2: High = 1 (default), Mid = 2, Low = 3.": "Confirmé sur la FS7M2 : High = 1 (par défaut), Mid = 2, Low = 3.",
+  "Confirmed on the FS7M2: the menu step is stored as it is (+5 as 5, -7 as -7), not multiplied by 329.33 like most menu steps. The limits of ±99 are assumed.": "Confirmé sur la FS7M2 : le palier du menu est enregistré tel quel (+5 comme 5, -7 comme -7), sans multiplication par 329,33 comme la plupart des paliers. Les limites de ±99 sont supposées.",
+  "User 1 (0), User 4 (3) and User 5 (4) are confirmed by files; User 2 and 3 (1, 2) follow from the order.": "User 1 (0), User 4 (3) et User 5 (4) sont confirmés par des fichiers ; User 2 et 3 (1, 2) découlent de l'ordre."
 }

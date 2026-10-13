@@ -236,5 +236,11 @@
   "Appearance": "Aspetto",
   "System": "Sistema",
   "Day": "Giorno",
-  "Night": "Notte"
+  "Night": "Notte",
+  "Wheel clicks": "Scatti della rotella",
+  "Camera menu shows: {value}": "Il menu della camera mostra: {value}",
+  "The small buttons move the wheel by one click, the large buttons by a whole menu step ({n} clicks). The camera menu shows the number of clicks divided by {n}, cut towards zero: around zero {zero} clicks all show 0.": "I pulsanti piccoli girano la rotella di uno scatto, quelli grandi di un passo intero del menu ({n} scatti). Il menu della camera mostra il numero di scatti diviso {n}, troncato verso lo zero: intorno allo zero {zero} scatti mostrano 0.",
+  "Confirmed on the FS7M2: High = 1 (default), Mid = 2, Low = 3.": "Confermato sulla FS7M2: High = 1 (predefinito), Mid = 2, Low = 3.",
+  "Confirmed on the FS7M2: the menu step is stored as it is (+5 as 5, -7 as -7), not multiplied by 329.33 like most menu steps. The limits of ±99 are assumed.": "Confermato sulla FS7M2: il passo del menu viene salvato così com'è (+5 come 5, -7 come -7), senza moltiplicare per 329,33 come la maggior parte dei passi. I limiti di ±99 sono ipotizzati.",
+  "User 1 (0), User 4 (3) and User 5 (4) are confirmed by files; User 2 and 3 (1, 2) follow from the order.": "User 1 (0), User 4 (3) e User 5 (4) sono confermati da file; User 2 e 3 (1, 2) derivano dall'ordine."
 }

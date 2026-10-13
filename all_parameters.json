@@ -133,13 +133,36 @@
     "order": 4
   },
   "00028": {
-    "name": "Master Black (non-linear scale)",
+    "name": "Master Black",
     "status": "likely",
-    "evidence": "-1075 (sample look, MB -2), -1654 (sample look, MB -5), 0 in the Cine EI files; same values as scene 00008. Cine EI switch sets it to 0 (Master Black is not available in Cine EI) FS7M2 ALL: -3 -> -992 (010.ALL), -4 -> -1613 (012.ALL); with the Mk1 and the Mk2 scene value for -3 (-1158, -786) this shows that the stored value depends on another camera setting, not only on the menu step.",
+    "evidence": "FS7M2 rounds 17-23 (2026-10-13), clicked one wheel click at a time: every stored value is a whole multiple of 41.351 (one wheel click; 8 clicks = 330.8, about one menu step). The camera shows the click count divided by 8, cut towards zero: 0 for -7..+7 clicks (-289..+289), -1 from -8 (-331) to -15 (-620), -2 from -16 (-662), -3 from -24 (-992), -4 up to -39 (-1613), -5 from -40 (-1654 .. -1778 at -43); +1 starts at +8 (+331). Measured: -827 (-20), -662 (-16), -620 (-15), -331 (-8), -289 (-7), +289 (+7), +331 (+8), -992, -1613, -1778. The Mk1 values (-1075, -1158, -1654) are multiples of the same unit (26, 28, 40 clicks) but do not fit the 8-click menu raster of the Mk2: the Mk1 menu step width is not measured. The range of 99 menu steps = 792 clicks is an assumption (32767 / 41.351 = 792.4).",
     "scene_equivalent": "00008",
     "group": "video",
     "subgroup": "Paint › Black",
-    "order": 2
+    "order": 2,
+    "widget": {
+      "type": "stepfields",
+      "unit": 41.351,
+      "range": [
+        -792,
+        792
+      ],
+      "max_raw": 32767,
+      "min_raw": -32767,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Wheel clicks",
+          "hint": {
+            "per": 8,
+            "models": [
+              "PXW-FS7M2"
+            ]
+          },
+          "big": 8
+        }
+      ]
+    }
   },
   "00042": {
     "name": "Gamma Select: HG (index HG1-HG8)",
@@ -3778,7 +3801,7 @@
     "order": 19,
     "name": "Gamma Category (STD / HG / User / S-Log2 / S-Log3)",
     "status": "likely",
-    "evidence": "FS7M2 005.ALL (gamma category STD, STD5) vs 004.ALL (S-Log2): 0 -> 1, 00044 1 -> 0; 0 in all Mk1 files (none was in category STD). The dropdown combines the flags 00039 (STD), 00041 (HG), 00044 (S-Log2) (all 0 = S-Log3); picking also sets 00125 (FS7M2: 1 with STD/HG) and 00494 (1 with S-Log3 in Custom mode). The User category is not decoded yet. User: 00190 = 1 (FS7M2 007.ALL, User/User4).",
+    "evidence": "FS7M2 005.ALL (gamma category STD, STD5) vs 004.ALL (S-Log2): 0 -> 1, 00044 1 -> 0; 0 in all Mk1 files (none was in category STD). The dropdown combines the flags 00039 (STD), 00041 (HG), 00044 (S-Log2) (all 0 = S-Log3); picking also sets 00125 (FS7M2: 1 with STD/HG) and 00494 (1 with S-Log3 in Custom mode). The User category is not decoded yet. User: 00190 = 1 (FS7M2 007.ALL, User/User4). FS7M2 rounds 25-30 (2026-10-13): leaving STD switches Knee Setting and Black Gamma Setting off by themselves (HG, S-Log3: both 0); back in STD the camera restores the state STD had (round 27: both On again, because they were On before; round 30: both stay Off, because they were Off before the detour).",
     "widget": {
       "type": "derived",
       "options": [
@@ -4023,6 +4046,13 @@
             "4": "User 5"
           }
         }
+      },
+      "remember": {
+        "option": "STD",
+        "ids": [
+          "00037",
+          "00108"
+        ]
       }
     }
   },
@@ -4088,10 +4118,10 @@
     "group": "video",
     "subgroup": "Paint › Gamma",
     "order": 23,
-    "evidence": "FS7M2 007.ALL: User4 -> 3 (index starts at 0 like the HG/STD selects; other User numbers not seen).",
+    "evidence": "FS7M2 007.ALL: User4 -> 3; rounds 38 and 39 (2026-10-13): User 1 = 0 (the camera already stood on User 1), User 5 = 4. User 2 and 3 (1, 2) follow from the order.",
     "widget": {
       "type": "choice",
-      "note": "Only User 4 (= 3) is confirmed by a file; User 1 to 5 = 0 to 4 is assumed from the order in the manual.",
+      "note": "User 1 (0), User 4 (3) and User 5 (4) are confirmed by files; User 2 and 3 (1, 2) follow from the order.",
       "choices": {
         "0": "User 1",
         "1": "User 2",
@@ -4787,7 +4817,7 @@
   "00104": {
     "name": "Auto Knee",
     "status": "likely",
-    "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): 1,0 -> 1,1, so field 1 is Auto Knee (0 = On, 1 = Off). Field 0 (1 in all files) is unknown.",
+    "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): 1,0 -> 1,1, so field 1 is Auto Knee (0 = On, 1 = Off). Field 0 (1 in all files) is unknown. FS7M2 rounds 31-33 (2026-10-13): ALL 00232 field 6 mirrors Auto Knee (1 = Off, 0 = On, no exception in 50 files) and is written with it. Field 0 of 00104 was 0 once (round 32: Knee Setting On and Auto Knee On), otherwise 1 (hypothesis from one file, not written).",
     "group": "video",
     "subgroup": "Paint › Knee / White Clip",
     "order": 2,
@@ -4801,7 +4831,19 @@
             "1": "Auto Knee Off"
           }
         }
-      ]
+      ],
+      "companions": {
+        "0": {
+          "00232": {
+            "6": "0"
+          }
+        },
+        "1": {
+          "00232": {
+            "6": "1"
+          }
+        }
+      }
     },
     "scene_equivalent": "00056"
   },
@@ -4890,24 +4932,25 @@
   "00036": {
     "name": "Black Gamma Range",
     "status": "likely",
-    "evidence": "FS7M2 round 13 (Black Gamma Setting Off -> On, Range -> Low, Master Black Gamma 0 -> +5; gamma category STD, Knee Saturation Off): 1 -> 3 (Low = 3). 1 is the value in all other files (probably Mid, the default); High unknown.",
+    "evidence": "FS7M2 rounds 13, 35, 36 (2026-10-13), gamma category STD: Low = 3 (round 13), High = 1 (round 35, also the value in all older files, the camera default), Mid = 2 (round 36). The menu order is Low, Mid, High; the stored index runs the other way.",
     "group": "video",
     "subgroup": "Paint › Black Gamma",
     "order": 2,
     "widget": {
       "type": "choice",
       "choices": {
-        "1": "Mid",
-        "3": "Low"
+        "3": "Low",
+        "2": "Mid",
+        "1": "High"
       },
-      "note": "Low is confirmed (3); 1 is the value in every other file and probably Mid (the default). High is not known and therefore not offered."
+      "note": "Confirmed on the FS7M2: High = 1 (default), Mid = 2, Low = 3."
     },
     "scene_equivalent": "00015"
   },
   "00032": {
     "name": "Master Black Gamma (menu step -99..+99)",
     "status": "likely",
-    "evidence": "FS7M2 round 13 (Black Gamma Setting Off -> On, Range -> Low, Master Black Gamma 0 -> +5; gamma category STD, Knee Saturation Off): 0 -> 5; the value is the menu step itself, not step x 329.33 (single data point, negative values unverified).",
+    "evidence": "FS7M2 round 13 (Black Gamma Setting Off -> On, Range -> Low, Master Black Gamma 0 -> +5; gamma category STD, Knee Saturation Off): 0 -> 5; the value is the menu step itself, not step x 329.33 (single data point, negative values unverified). FS7M2 round 37 (2026-10-13): Master Black Gamma -7 is stored as -7 (negative values confirmed).",
     "group": "video",
     "subgroup": "Paint › Black Gamma",
     "order": 3,
@@ -4919,7 +4962,7 @@
       "unit": "",
       "small": 1,
       "large": 10,
-      "note": "+5 is stored as 5 (not multiplied by 329.33 like most menu steps); negative values are assumed to be stored the same way (not verified)."
+      "note": "Confirmed on the FS7M2: the menu step is stored as it is (+5 as 5, -7 as -7), not multiplied by 329.33 like most menu steps. The limits of ±99 are assumed."
     },
     "scene_equivalent": "00011"
   },

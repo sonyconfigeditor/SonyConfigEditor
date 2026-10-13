@@ -47,9 +47,9 @@ LF line endings, latin-1. SCENE files (`.SCENE`), ALL files (`.ALL`) and the use
 | Skin Detail hue | -degrees x 182.04 (65536/360, negative sign) |
 | Skin Detail width | degrees x 182.04 |
 | Frame rate (ALL 00150) | numerator / denominator (30000/1001 = 29.97p) |
-| Master Black | not linear, finer than the display (see below) |
+| Master Black | 41.351 per wheel click, 8 clicks per menu step (FS7M2; see below) |
 
-Master Black: the wheel has many values between two displayed steps and the file stores the fine value. Observed values (middle of a step): Mk1 -2 = -1075, -3 = -1158, -5 = -1654; Mk2 -2 = -827, -3 = -992, -4 = -1613, -5 = -1778. The conversion maps displayed steps (`value_maps` in `scene_parameters.json`); an unknown raw value keeps the target model's state.
+Master Black (FS7M2, measured click by click): the file stores the wheel position, every value is a whole multiple of **41.351** (one click). The menu shows the click count divided by **8, cut towards zero**: -7..+7 clicks (-289..+289) show 0, -8 (-331) to -15 (-620) show -1, -16 (-662) starts -2, -24 (-992) starts -3, -40 (-1654) starts -5; the positive side is symmetric (+8 = +331 shows +1). Measured: -827 (-20), -662, -620, -331, -289, +289, +331, -992, -1613, -1778. The Mk1 values -1075, -1158, -1654 are multiples of the same unit (26, 28, 40 clicks) but do not fit the 8-click raster, so the Mk1 menu step width is not known yet. A range of 99 menu steps = 792 clicks is assumed (32767 / 41.351). The conversion maps displayed steps (`value_maps` in `scene_parameters.json`); an unknown raw value keeps the target model's state.
 
 ## What the manuals give us
 
@@ -97,7 +97,7 @@ Knee setting scene `00060` / ALL `00108` (1 = On), Auto Knee scene `00056` / ALL
 
 ### Black Gamma
 
-Black Gamma setting scene `00016` / ALL `00037` (1 = On), **Range** scene `00015` / ALL `00036` (3 = Low confirmed; 1 is the value in every other file, probably Mid, the default; High is unknown), **Master Black Gamma** scene `00011` / ALL `00032` (+5 is stored as 5, not multiplied by 329.33 like most menu steps; one data point, negative values unverified). Confirmed on the FS7M2 with gamma category STD and Knee Saturation Off; the manual says Black Gamma works with category STD only and cannot be used together with Knee Saturation (the program locks both against each other).
+Black Gamma setting scene `00016` / ALL `00037` (1 = On), **Range** scene `00015` / ALL `00036` (High = 1, the default; Mid = 2; Low = 3; all confirmed, FS7M2 rounds 13, 35, 36), **Master Black Gamma** scene `00011` / ALL `00032` (+5 is stored as 5, not multiplied by 329.33 like most menu steps; one data point, negative values unverified). Confirmed on the FS7M2 with gamma category STD and Knee Saturation Off; the manual says Black Gamma works with category STD only and cannot be used together with Knee Saturation (the program locks both against each other).
 
 ### Offset White (Paint menu)
 
@@ -153,3 +153,7 @@ Rules from the manuals and camera observations are stored as `requires` / `_lock
 - The seven new ALL IDs of the Mk2.
 - Many constant 0/1 flags and long runs of zeros in ALL files cannot be assigned without changing one menu item at a time on the camera.
 - All statements about the Mk2 are limited to what was tested on one FS7M2 camera; behaviour with other firmware versions is unknown.
+
+Knee Setting (scene `00060` / ALL `00108`) and Black Gamma Setting (scene `00016` / ALL `00037`) are available in gamma category STD only. The camera switches both off when STD is left (HG, User, S-Log2, S-Log3) and restores the state STD had when it is chosen again (FS7M2 rounds 25-30). Preset Matrix is not changed by a category switch.
+
+Auto Knee: ALL `00232` field 6 mirrors it (1 = Auto Knee Off, 0 = On; no exception in 50 files), and `00104` field 0 was 0 in one file only (Knee Setting On and Auto Knee On), otherwise 1 (hypothesis). Preset Matrix is not changed by gamma category switches, Knee changes or a power cycle of the camera (FS7M2 rounds 24-34).

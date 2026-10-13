@@ -2089,12 +2089,12 @@ class App(ctk.CTk):
             self._apply_group_state(group)
             table_row += 3
         self._row_parent = self.table
-        for widget in self.entries.values():
+        for wkey, widget in self.entries.items():
             deps = getattr(widget, "_derived_deps", None)
             if deps:
                 for pid in deps:
                     if pid in self.vars:
-                        self.vars[pid].trace_add("write", lambda *_a, w=widget: w._refresh())
+                        self.vars[pid].trace_add("write", lambda *_a, w=widget, k=wkey: (w._refresh(), self._paint_mark(k)))
                 widget._refresh()
         self._table_footer()
         self.update_idletasks()
@@ -2485,6 +2485,17 @@ class App(ctk.CTk):
                 if self._cond_holds(rule["cond"]):
                     for pid, fields in rule["set"].items():
                         values.setdefault(pid, {}).update(fields)
+            keep = spec.get("remember")     # settings that only exist in one option (Knee, Black Gamma in STD): off outside, the old state comes back in it
+            if keep:
+                old_label = current_label()
+                if old_label == keep["option"] and label != old_label:
+                    self._stash[(key, old_label)] = {pid: self._field_value(pid, 0) for pid in keep["ids"] if pid in self.vars}
+                    for pid in keep["ids"]:
+                        values.setdefault(pid, {})["0"] = "0"
+                elif label == keep["option"] and old_label != label:
+                    for pid, value in self._stash.get((key, label), {}).items():
+                        if value is not None:
+                            values.setdefault(pid, {})["0"] = value
             self._apply_companions(key, values)
             refresh()
 
@@ -2817,10 +2828,17 @@ class App(ctk.CTk):
                     if max_raw and not own_range and abs(new) == hi:
                         raw = max_raw if new > 0 else min_raw  # camera stores the limit steps as +-32767 (or the spec's min_raw)
                     set_item(idx, str(raw))
+                show_all()
+
+            def show_all():
                 entry.delete(0, "end")
                 entry.insert(0, shown())
                 if swatch is not None:
                     swatch.configure(fg_color=hue_hex(int(shown())))
+                if hint_label is not None:
+                    clicks = int(shown())
+                    menu_step = (abs(clicks) // hint["per"]) * (1 if clicks >= 0 else -1)
+                    hint_label.configure(text=tr("Camera menu shows: {value}").format(value=f"{menu_step:+d}" if menu_step else "0"))
 
             def commit(_event=None):
                 try:
@@ -2835,23 +2853,28 @@ class App(ctk.CTk):
             def button(text, delta):
                 return ctk.CTkButton(row, text=text, width=38, height=26, command=lambda: bump(delta))
 
-            button("−10", -10).pack(side="left", padx=(0, 2))
+            big = f.get("big", 10)      # the large buttons: Master Black moves a whole menu step (8 wheel clicks)
+            button(f"−{big}", -big).pack(side="left", padx=(0, 2))
             button("−1", -1).pack(side="left", padx=(0, 2))
             entry.pack(side="left", padx=2)
             button("+1", 1).pack(side="left", padx=(2, 0))
-            button("+10", 10).pack(side="left", padx=(2, 0))
+            button(f"+{big}", big).pack(side="left", padx=(2, 0))
+            hint = f.get("hint")      # what the camera menu shows for this fine value (Master Black: 8 wheel clicks = one menu step, cut towards zero)
+            hint_label = None
+            if hint and self.scene.model in hint.get("models", [self.scene.model]):
+                hint_label = ctk.CTkLabel(row, text="", text_color="gray")
+                hint_label.pack(side="left", padx=(14, 0))
+                explain = InfoLabel(row)
+                explain.set_info(tr("The small buttons move the wheel by one click, the large buttons by a whole menu step ({n} clicks). The camera menu shows the number of clicks divided by {n}, cut towards zero: around zero {zero} clicks all show 0.").format(n=hint["per"], zero=2 * hint["per"] - 1))
+                explain.pack(side="left", padx=(6, 0))
             if swatch is not None:
                 swatch.pack(side="left", padx=(8, 0))
             entry.bind("<Return>", commit)
             entry.bind("<FocusOut>", commit)
+            entry.commit = commit       # the tests commit directly (a synthetic focus event is not reliably delivered)
 
-            def refresh_step():
-                entry.delete(0, "end")
-                entry.insert(0, shown())
-                if swatch is not None:
-                    swatch.configure(fg_color=hue_hex(int(shown())))
-
-            refreshers.append(refresh_step)
+            show_all()
+            refreshers.append(show_all)
 
         cells = []
         for n, f in enumerate(fields):
@@ -3595,10 +3618,16 @@ class App(ctk.CTk):
             self._update_warnings()
         if self.var_changed.get() and not self._busy:
             self._schedule_filter()
-        changed = self.vars[key].get() != self.original.get(key)
+        self._paint_mark(key)
+
+    def _paint_mark(self, key: str):
+        """Yellow frame of a row while its value differs from the loaded file. A dropdown that is a combination of several parameters
+        (Gamma Category with its select) counts as changed when any of them is."""
         widget = self.entries.get(key)
         if widget is None:      # row of a collapsed block that is not built yet (marked when it is built)
             return
+        ids = {key} | set(getattr(widget, "_derived_deps", ()))
+        changed = any(self.vars[pid].get() != self.original.get(pid) for pid in ids if pid in self.vars)
         if isinstance(widget, ctk.CTkFrame) and hasattr(widget, "_mark"):
             widget._mark.configure(border_color=CHANGED_COLOR if changed else self._c["card"])
         elif isinstance(widget, ctk.CTkFrame):

@@ -5,6 +5,13 @@ The version stays at 0.1.0 for now (development state).
 
 ## [0.1.0] - 2026-10-07
 ### Added
+- Fix: the Gamma Category row now gets the yellow "changed" frame when only its select changes (e.g. User 5 -> User 1 changes only the select value, not the category flags); it also disappears again when the loaded value is restored.
+- **Gamma User select** confirmed (FS7M2 rounds 38 and 39): User 1 = 0, User 5 = 4 (User 4 = 3 was known); User 2 and 3 follow from the order. Switching to User also switched Knee Setting and Black Gamma Setting off, as the app does since the STD rule.
+- **Master Black Gamma** negative values confirmed (FS7M2 round 37): -7 is stored as -7, like +5 as 5.
+- **Black Gamma Range** complete (FS7M2 rounds 35 and 36): High = 1 (the camera default, also the value in all older files), Mid = 2, Low = 3. The earlier assumption "1 = Mid" was wrong; the dropdown now offers all three.
+- **Auto Knee** also writes ALL `00232` field 6 (1 = Off, 0 = On; FS7M2 rounds 31-33), like the camera does.
+- **Knee Setting and Black Gamma Setting follow the STD category** (FS7M2 rounds 25-30): leaving STD (HG, User, S-Log2, S-Log3) switches both off like the camera does, and choosing STD again brings back the state STD had (in one undo step). Gamma Category dropdown option `remember` in the databases. Preset Matrix does not change with the category (rounds 24-27).
+- **Master Black as wheel clicks** (FS7M2 rounds 18-23, measured click by click): the field counts wheel clicks (41.351 per click; buttons ±1 click and ±8 = one whole menu step), next to it "Camera menu shows: n" (clicks / 8, cut towards zero, so -7..+7 clicks show 0) and an info symbol that explains it. Replaces the unscaled raw field; the Mk1 menu raster is not measured yet, so the hint is shown for the FS7M2 only. Range ±99 menu steps (792 clicks) is an assumption.
 - Fix: switching to "System" built the window in the colours of the previous mode (dark menu bar text on a dark bar after Day -> System): the system mode is detected at once now, and the window follows when the system switches between light and dark while "System" is selected.
 - **Day / night mode:** View > Appearance > System / Day / Night (default Night); the choice is saved in the settings file. The window is rebuilt on a change, because the plain tk widgets and menus do not follow by themselves.
 - **Jump buttons** ("Go to": Video, Audio, Miscellaneous, Unknown) below the filter row open their block and scroll to its header; the block headers and the buttons carry small Unicode icons (no image files). Buttons of blocks the shown file does not have (Audio and Miscellaneous in SCENE files) are greyed out and come back with ALL.
