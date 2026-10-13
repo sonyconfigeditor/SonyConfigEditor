@@ -157,3 +157,15 @@ Rules from the manuals and camera observations are stored as `requires` / `_lock
 Knee Setting (scene `00060` / ALL `00108`) and Black Gamma Setting (scene `00016` / ALL `00037`) are available in gamma category STD only. The camera switches both off when STD is left (HG, User, S-Log2, S-Log3) and restores the state STD had when it is chosen again (FS7M2 rounds 25-30). Preset Matrix is not changed by a category switch.
 
 Auto Knee: ALL `00232` field 6 mirrors it (1 = Auto Knee Off, 0 = On; no exception in 50 files), and `00104` field 0 was 0 in one file only (Knee Setting On and Auto Knee On), otherwise 1 (hypothesis). Preset Matrix is not changed by gamma category switches, Knee changes or a power cycle of the camera (FS7M2 rounds 24-34).
+
+ISO/Gain/EI (FS7M2, ALL files): `00389` Mode (0 = ISO, 1 = dB); dB gain per switch position <L>, <M>, <H> in `00399`-`00401` (index = dB / 3 + 1: 1 = 0 dB, 3 = 6 dB, 4 = 9 dB, 5 = 12 dB; the manual lists -3 to 18 dB); ISO per switch position as a position in the manual's ISO list of the dynamic range, one triplet per range: `00390`-`00392` (460 %), `00393`-`00395` (800 %, confirmed: 2 = ISO 2500, 7 = ISO 8000), `00396`-`00398` (1300 %). The defaults 0, 3, 6 match the manual's defaults.
+
+ND Filter presets (FS7M2): ALL `00280` / scene `00097`, fields 0 to 2 = Preset 1 to 3, each the denominator of the ND fraction (4, 8, 16, 32, 64, 128 = 1/4 to 1/128); fields 3 to 5 are unknown. The Mk1 has no variable ND (`0,0,0,4096`).
+
+Auto Exposure (FS7M2, in All and Scene files): Level = scene `00081` / ALL `00221` (two fields: the second is the level x 100, -200 to +200 in steps of 25), Speed = `00082` / `00222` (the menu step), Mode = `00086` / `00265` (1 = Standard, 2 = Backlight). The Gamma User select is scene `00121` / ALL `00191`.
+
+AGC: scene `00079` / ALL `00235` (1 = On; ALL `00232` field 4 mirrors it). AGC Limit: one list position per dynamic range, scene `00161`-`00163` / ALL `00456`-`00458` (460 %, 800 %, 1300 %); the manual's lists have six entries and the default position is 4; the limit is greyed out in the camera menu while AGC is Off. Mode: 1 = Standard, 2 = Backlight, 3 = Spotlight.
+
+A.SHT Limit (Auto Shutter limit): scene `00084` / ALL `00225`, the denominator of the exposure time (default 2000 = 1/2000). Detect Window: `00088` / `00267` (1 to 6). Auto ND Filter: field 4 of the ND value `00097` / `00280` (0 = Off, 1 = On).
+
+Auto Shutter: scene `00090` / ALL `00269` (1 = On). Clip High Light: `00087` / `00266` (1 = On). Detect Window Indication: `00089` / `00268`, stored inverted (0 = On, 1 = Off, found by elimination).

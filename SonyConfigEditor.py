@@ -48,11 +48,11 @@ GROUP_ICONS = {"video": "🎬", "audio": "🔊", "misc": "⚙", "unknown": "❓"
 DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a block (parameters get "subgroup" in the databases; others: "Other")
 SUBGROUP_ORDER = [
-    "System › Base Setting", "System › Codec / Rec Format",
-    "Camera", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Offset White",
-    "White", "Recording › S&Q Motion", "System › Rec Format (companion values)", "Audio › Input", "VF › Zebra / Marker", "File › Clip",
+    "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
+    "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Offset White",
+    "White", "Recording › S&Q Motion", "Audio › Input", "VF › Zebra / Marker", "File › Clip",
 ]
-CATEGORIES = ("Paint",)      # menu categories with their own collapsible heading above their sub-groups ("Paint › Gamma", "Paint › Matrix", ...)
+CATEGORIES = ("System", "Camera", "Paint")      # main menus of the camera with their own collapsible heading above their sub-groups ("Paint › Gamma", "Camera › ND Filter", ...)
 FILTER_DELAY_MS = 150
 BASE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))  # _MEIPASS: bundled by PyInstaller
 # SCENE and ALL files share the container format but use different parameter IDs -> one database per file type
@@ -2352,8 +2352,8 @@ class App(ctk.CTk):
             return self._build_axis_widget(var, spec)
         fields = spec["fields"] if spec["type"] == "fields" else [{"index": None, "choices": spec["choices"]}]
         parts = var.get().split(",")
-        if any(f["index"] is not None and f["index"] >= len(parts) for f in fields):
-            return None
+        if any(f["index"] is not None and f["index"] >= len(parts) for f in fields) or len(parts) < spec.get("min_fields", 0):
+            return None       # another camera model stores a different shape: the plain text field is shown
 
         frame = ctk.CTkFrame(self._row_parent, fg_color="transparent", border_width=0, border_color=CHANGED_COLOR)
         menu_row = self._marked_row(frame)   # the "changed" frame goes around the controls only, not around the notes below

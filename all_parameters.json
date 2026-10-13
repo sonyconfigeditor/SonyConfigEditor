@@ -2961,12 +2961,24 @@
     }
   },
   "00225": {
-    "name": "ISO / EI value (?)",
-    "status": "hypothesis",
-    "scene_equivalent": "00084",
-    "evidence": "2000 constant; equals scene 00084 (FS7 base sensitivity)",
+    "name": "Auto Exposure A.SHT Limit",
+    "status": "likely",
+    "evidence": "FS7M2 round 48 (2026-10-13): Auto Exposure A.SHT Limit 1/2000 -> 1/250 changes exactly this ID (scene 00084 / ALL 00225): 2000 -> 250 (the value is the denominator). It was 2000 in every earlier file, so the old reading 'ISO / EI value (FS7 base sensitivity)' was wrong. The manual lists 1/100, 1/150, 1/200, 1/250 and 1/2000; other values may exist.",
     "group": "video",
-    "subgroup": "Camera"
+    "subgroup": "Camera › Auto Exposure",
+    "order": 7,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "100": "1/100",
+        "150": "1/150",
+        "200": "1/200",
+        "250": "1/250",
+        "2000": "1/2000"
+      },
+      "note": "The value is the denominator of the shortest exposure time of the automatic shutter (manual: 1/100, 1/150, 1/200, 1/250, 1/2000; 1/250 is confirmed by a file)."
+    },
+    "scene_equivalent": "00084"
   },
   "00362": {
     "name": "Level 115.00 % (?)",
@@ -3768,6 +3780,21 @@
         ]
       },
       "reason": "Offset White is Off"
+    },
+    {
+      "ids": [
+        "00456",
+        "00457",
+        "00458"
+      ],
+      "when": {
+        "id": "00235",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "AGC is Off"
     }
   ],
   "_locks_comment": "Sub-groups whose widgets are greyed out (not editable, values stay visible) while the condition holds. Source: user (Cine EI mode: the whole Paint menu is greyed out).",
@@ -4130,7 +4157,8 @@
         "4": "User 5"
       }
     },
-    "covered_by": "00039"
+    "covered_by": "00039",
+    "scene_equivalent": "00121"
   },
   "00045": {
     "name": "Gamma (On/Off)",
@@ -5115,5 +5143,695 @@
       }
     },
     "scene_equivalent": "00118"
+  },
+  "00389": {
+    "name": "ISO/Gain/EI Mode (ISO / dB)",
+    "status": "likely",
+    "evidence": "FS7M2 round 40 (2026-10-13): Camera > ISO/Gain/EI > Mode dB -> ISO: 1 -> 0 and nothing else; round 41 back to dB: 0 -> 1. All Mk1 files and the FS7M2 rounds 1-39 have 1 (dB).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO",
+        "1": "dB"
+      }
+    },
+    "scene_equivalent": "00123"
+  },
+  "00399": {
+    "name": "ISO/Gain <L> (dB mode)",
+    "status": "likely",
+    "evidence": "FS7M2 rounds 41 and 42 (2026-10-13), Mode dB: the camera menu shows H 12 dB, M 6 dB, L 0 dB = 5, 3, 1; round 42 M 6 dB -> 9 dB: 00400 3 -> 4 and nothing else. The default of every file is 1, 3, 5.",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 2,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "-3 dB",
+        "1": "0 dB",
+        "2": "3 dB",
+        "3": "6 dB",
+        "4": "9 dB",
+        "5": "12 dB",
+        "6": "18 dB"
+      },
+      "note": "Index = dB / 3 + 1, confirmed for 0 dB (1), 6 dB (3), 9 dB (4) and 12 dB (5) by files; the manual lists -3, 0, 3, 6, 9, 12 and 18 dB, so 18 dB (6) and -3 dB (0) are assumed."
+    },
+    "scene_equivalent": "00133"
+  },
+  "00400": {
+    "name": "ISO/Gain <M> (dB mode)",
+    "status": "likely",
+    "evidence": "FS7M2 rounds 41 and 42 (2026-10-13), Mode dB: the camera menu shows H 12 dB, M 6 dB, L 0 dB = 5, 3, 1; round 42 M 6 dB -> 9 dB: 00400 3 -> 4 and nothing else. The default of every file is 1, 3, 5.",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 3,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "-3 dB",
+        "1": "0 dB",
+        "2": "3 dB",
+        "3": "6 dB",
+        "4": "9 dB",
+        "5": "12 dB",
+        "6": "18 dB"
+      },
+      "note": "Index = dB / 3 + 1, confirmed for 0 dB (1), 6 dB (3), 9 dB (4) and 12 dB (5) by files; the manual lists -3, 0, 3, 6, 9, 12 and 18 dB, so 18 dB (6) and -3 dB (0) are assumed."
+    },
+    "scene_equivalent": "00134"
+  },
+  "00401": {
+    "name": "ISO/Gain <H> (dB mode)",
+    "status": "likely",
+    "evidence": "FS7M2 rounds 41 and 42 (2026-10-13), Mode dB: the camera menu shows H 12 dB, M 6 dB, L 0 dB = 5, 3, 1; round 42 M 6 dB -> 9 dB: 00400 3 -> 4 and nothing else. The default of every file is 1, 3, 5.",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 4,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "-3 dB",
+        "1": "0 dB",
+        "2": "3 dB",
+        "3": "6 dB",
+        "4": "9 dB",
+        "5": "12 dB",
+        "6": "18 dB"
+      },
+      "note": "Index = dB / 3 + 1, confirmed for 0 dB (1), 6 dB (3), 9 dB (4) and 12 dB (5) by files; the manual lists -3, 0, 3, 6, 9, 12 and 18 dB, so 18 dB (6) and -3 dB (0) are assumed."
+    },
+    "scene_equivalent": "00135"
+  },
+  "00390": {
+    "name": "ISO/Gain <L> (ISO mode, 460% range)",
+    "status": "likely",
+    "evidence": "Probably the ISO/Gain<L> index for the dynamic range 460% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), STD: H 3200, M 1600, L 800 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 10,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 800",
+        "1": "ISO 1000",
+        "2": "ISO 1250",
+        "3": "ISO 1600",
+        "4": "ISO 2000",
+        "5": "ISO 2500",
+        "6": "ISO 3200",
+        "7": "ISO 4000",
+        "8": "ISO 5000",
+        "9": "ISO 6400"
+      },
+      "note": "Position in the ISO list of the 460% dynamic range (manual): 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00124"
+  },
+  "00391": {
+    "name": "ISO/Gain <M> (ISO mode, 460% range)",
+    "status": "likely",
+    "evidence": "Probably the ISO/Gain<M> index for the dynamic range 460% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), STD: H 3200, M 1600, L 800 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 11,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 800",
+        "1": "ISO 1000",
+        "2": "ISO 1250",
+        "3": "ISO 1600",
+        "4": "ISO 2000",
+        "5": "ISO 2500",
+        "6": "ISO 3200",
+        "7": "ISO 4000",
+        "8": "ISO 5000",
+        "9": "ISO 6400"
+      },
+      "note": "Position in the ISO list of the 460% dynamic range (manual): 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00125"
+  },
+  "00392": {
+    "name": "ISO/Gain <H> (ISO mode, 460% range)",
+    "status": "likely",
+    "evidence": "Probably the ISO/Gain<H> index for the dynamic range 460% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), STD: H 3200, M 1600, L 800 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 12,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 800",
+        "1": "ISO 1000",
+        "2": "ISO 1250",
+        "3": "ISO 1600",
+        "4": "ISO 2000",
+        "5": "ISO 2500",
+        "6": "ISO 3200",
+        "7": "ISO 4000",
+        "8": "ISO 5000",
+        "9": "ISO 6400"
+      },
+      "note": "Position in the ISO list of the 460% dynamic range (manual): 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00126"
+  },
+  "00393": {
+    "name": "ISO/Gain <L> (ISO mode, 800% range)",
+    "status": "likely",
+    "evidence": "FS7M2 rounds 40-42 (2026-10-13), gamma category User (dynamic range 800%), Mode ISO: L 1600, M 3200, H 6400 = 0, 3, 6; the user set M 2500 and H 8000 in one file: 00394 3 -> 2, 00395 6 -> 7. The index is the position in the manual's ISO list for the dynamic range (800%: ISO 1600 ... ISO 12500). The default is 0, 3, 6 (L, M, H) in every file, which matches the defaults of the manual: M = ISO 1600 (460%), 3200 (800%), 4000 (1300%).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 13,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 1600",
+        "1": "ISO 2000",
+        "2": "ISO 2500",
+        "3": "ISO 3200",
+        "4": "ISO 4000",
+        "5": "ISO 5000",
+        "6": "ISO 6400",
+        "7": "ISO 8000",
+        "8": "ISO 10000",
+        "9": "ISO 12500"
+      },
+      "note": "Position in the ISO list of the 800% dynamic range (manual): 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12500. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00127"
+  },
+  "00394": {
+    "name": "ISO/Gain <M> (ISO mode, 800% range)",
+    "status": "likely",
+    "evidence": "FS7M2 rounds 40-42 (2026-10-13), gamma category User (dynamic range 800%), Mode ISO: L 1600, M 3200, H 6400 = 0, 3, 6; the user set M 2500 and H 8000 in one file: 00394 3 -> 2, 00395 6 -> 7. The index is the position in the manual's ISO list for the dynamic range (800%: ISO 1600 ... ISO 12500). The default is 0, 3, 6 (L, M, H) in every file, which matches the defaults of the manual: M = ISO 1600 (460%), 3200 (800%), 4000 (1300%).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 14,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 1600",
+        "1": "ISO 2000",
+        "2": "ISO 2500",
+        "3": "ISO 3200",
+        "4": "ISO 4000",
+        "5": "ISO 5000",
+        "6": "ISO 6400",
+        "7": "ISO 8000",
+        "8": "ISO 10000",
+        "9": "ISO 12500"
+      },
+      "note": "Position in the ISO list of the 800% dynamic range (manual): 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12500. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00128"
+  },
+  "00395": {
+    "name": "ISO/Gain <H> (ISO mode, 800% range)",
+    "status": "likely",
+    "evidence": "FS7M2 rounds 40-42 (2026-10-13), gamma category User (dynamic range 800%), Mode ISO: L 1600, M 3200, H 6400 = 0, 3, 6; the user set M 2500 and H 8000 in one file: 00394 3 -> 2, 00395 6 -> 7. The index is the position in the manual's ISO list for the dynamic range (800%: ISO 1600 ... ISO 12500). The default is 0, 3, 6 (L, M, H) in every file, which matches the defaults of the manual: M = ISO 1600 (460%), 3200 (800%), 4000 (1300%).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 15,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 1600",
+        "1": "ISO 2000",
+        "2": "ISO 2500",
+        "3": "ISO 3200",
+        "4": "ISO 4000",
+        "5": "ISO 5000",
+        "6": "ISO 6400",
+        "7": "ISO 8000",
+        "8": "ISO 10000",
+        "9": "ISO 12500"
+      },
+      "note": "Position in the ISO list of the 800% dynamic range (manual): 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12500. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00129"
+  },
+  "00396": {
+    "name": "ISO/Gain <L> (ISO mode, 1300% range)",
+    "status": "likely",
+    "evidence": "Probably the ISO/Gain<L> index for the dynamic range 1300% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), S-Log3: H 8000, M 4000, L 2000 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 16,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 2000",
+        "1": "ISO 2500",
+        "2": "ISO 3200",
+        "3": "ISO 4000",
+        "4": "ISO 5000",
+        "5": "ISO 6400",
+        "6": "ISO 8000",
+        "7": "ISO 10000",
+        "8": "ISO 12500",
+        "9": "ISO 16000"
+      },
+      "note": "Position in the ISO list of the 1300% dynamic range (manual): 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12500, 16000. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00130"
+  },
+  "00397": {
+    "name": "ISO/Gain <M> (ISO mode, 1300% range)",
+    "status": "likely",
+    "evidence": "Probably the ISO/Gain<M> index for the dynamic range 1300% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), S-Log3: H 8000, M 4000, L 2000 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 17,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 2000",
+        "1": "ISO 2500",
+        "2": "ISO 3200",
+        "3": "ISO 4000",
+        "4": "ISO 5000",
+        "5": "ISO 6400",
+        "6": "ISO 8000",
+        "7": "ISO 10000",
+        "8": "ISO 12500",
+        "9": "ISO 16000"
+      },
+      "note": "Position in the ISO list of the 1300% dynamic range (manual): 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12500, 16000. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00131"
+  },
+  "00398": {
+    "name": "ISO/Gain <H> (ISO mode, 1300% range)",
+    "status": "likely",
+    "evidence": "Probably the ISO/Gain<H> index for the dynamic range 1300% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), S-Log3: H 8000, M 4000, L 2000 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 18,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 2000",
+        "1": "ISO 2500",
+        "2": "ISO 3200",
+        "3": "ISO 4000",
+        "4": "ISO 5000",
+        "5": "ISO 6400",
+        "6": "ISO 8000",
+        "7": "ISO 10000",
+        "8": "ISO 12500",
+        "9": "ISO 16000"
+      },
+      "note": "Position in the ISO list of the 1300% dynamic range (manual): 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12500, 16000. Gamma STD and HG1-HG4 = 460%, HG7, HG8 and User = 800%, S-Log2 and S-Log3 = 1300%."
+    },
+    "scene_equivalent": "00132"
+  },
+  "00280": {
+    "name": "ND Filter presets",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 43 (2026-10-13): Camera > ND Filter > Preset 1 1/4 -> 1/8: field 0 of ALL 00280 (scene 00097, id_map) 4 -> 8, the other fields unchanged (the camera also stood on a different gamma category in this file). The value is the denominator of the ND fraction (manual: 1/4, 1/8, 1/16, 1/32, 1/64, 1/128). Round 44 (2026-10-13): Preset 2 1/16 -> 1/32 and Preset 3 1/64 -> 1/128 change fields 1 and 2 (16 -> 32, 64 -> 128) and nothing else, so the three fields are Preset 1, 2 and 3; fields 3 to 5 (4608 / 4096, 0, 4) are unknown. The FS7 Mk1 has no variable ND presets (0, 0, 0, 4096 there): the dropdowns are shown for the six-field shape of the FS7M2 only. Round 48: Auto Exposure > Auto ND Filter Off -> On changes field 4 (0 -> 1): the automatic ND filter is stored in this ID (likely).",
+    "group": "video",
+    "subgroup": "Camera › ND Filter",
+    "order": 1,
+    "widget": {
+      "type": "fields",
+      "min_fields": 6,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Preset 1",
+          "choices": {
+            "4": "1/4",
+            "8": "1/8",
+            "16": "1/16",
+            "32": "1/32",
+            "64": "1/64",
+            "128": "1/128"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Preset 2",
+          "choices": {
+            "4": "1/4",
+            "8": "1/8",
+            "16": "1/16",
+            "32": "1/32",
+            "64": "1/64",
+            "128": "1/128"
+          }
+        },
+        {
+          "index": 2,
+          "label": "Preset 3",
+          "choices": {
+            "4": "1/4",
+            "8": "1/8",
+            "16": "1/16",
+            "32": "1/32",
+            "64": "1/64",
+            "128": "1/128"
+          }
+        },
+        {
+          "index": 4,
+          "label": "Auto ND Filter",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        }
+      ],
+      "note": "The value is the denominator of the ND fraction (1/4 to 1/128); all three presets are confirmed by files."
+    }
+  },
+  "00222": {
+    "name": "Auto Exposure Speed",
+    "status": "likely",
+    "evidence": "FS7M2 rounds 45 and 46 (2026-10-13): Camera > Auto Exposure > Speed 0 -> +7 -> -9: 00222 0 -> 7 -> -9 (the menu step itself, range assumed -99..+99).",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 2,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": -99,
+      "max": 99,
+      "unit": "",
+      "small": 1,
+      "large": 10,
+      "note": "The menu step is stored as it is (+7 as 7, -9 as -9); the limits of ±99 are assumed."
+    },
+    "scene_equivalent": "00082"
+  },
+  "00265": {
+    "name": "Auto Exposure Mode",
+    "status": "likely",
+    "evidence": "FS7M2 round 46 (2026-10-13): Auto Exposure Mode Standard -> Backlight: 00265 1 -> 2 (Standard = 1, Backlight = 2; Round 47: Spotlight = 3 (2 -> 3)).",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "1": "Standard",
+        "2": "Backlight",
+        "3": "Spotlight"
+      },
+      "note": "Standard = 1, Backlight = 2 and Spotlight = 3 are confirmed by files."
+    },
+    "scene_equivalent": "00086"
+  },
+  "00221": {
+    "name": "Auto Exposure Level",
+    "status": "likely",
+    "evidence": "FS7M2 rounds 45 and 46 (2026-10-13): Auto Exposure Level -0.75 and -1.25 (the user first wrote +0.75 by mistake): 00221 `1, 0` -> `100, -75` -> `100, -125`. Field 1 = level x 100 (the menu offers -2.0 to +2.0 in steps of 0.25). Field 0 went from 1 to 100 with the first change and stayed there; field 0 / field 1 look like denominator / numerator (0/1 = 0 by default, then -75/100). Level 0 after a change has not been seen (the camera might write 1 or 100 into field 0). Round 47: Level back to 0: `100, -125` -> `1, 0` (field 0 is 1 again).",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 3,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 1,
+          "label": "Level",
+          "choices": {
+            "-200": "-2.00",
+            "-175": "-1.75",
+            "-150": "-1.50",
+            "-125": "-1.25",
+            "-100": "-1.00",
+            "-75": "-0.75",
+            "-50": "-0.50",
+            "-25": "-0.25",
+            "0": "0",
+            "25": "+0.25",
+            "50": "+0.50",
+            "75": "+0.75",
+            "100": "+1.00",
+            "125": "+1.25",
+            "150": "+1.50",
+            "175": "+1.75",
+            "200": "+2.00"
+          }
+        }
+      ],
+      "companions": {
+        "-200": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "-175": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "-150": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "-125": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "-100": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "-75": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "-50": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "-25": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "25": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "50": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "75": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "100": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "125": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "150": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "175": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "200": {
+          "00221": {
+            "0": "100"
+          }
+        },
+        "0": {
+          "00221": {
+            "0": "1"
+          }
+        }
+      },
+      "note": "Level in steps of 0.25 (manual: -2.0 to +2.0): the file holds the level x 100 in the second field; the first field becomes 100 with the first change (assumed denominator)."
+    },
+    "scene_equivalent": "00081"
+  },
+  "00235": {
+    "name": "Auto Exposure AGC",
+    "status": "likely",
+    "evidence": "FS7M2 round 47 (2026-10-13): Auto Exposure AGC Off -> On: scene 00079 / ALL 00235 0 -> 1 (the old guess 00079 = ALL 00219 was wrong: 00219 did not change); ALL 00232 field 4 follows (0 -> 1), like field 6 follows Auto Knee. The AGC Limit is greyed out in the camera menu while AGC is Off.",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 4,
+    "scene_equivalent": "00079",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      },
+      "companions": {
+        "0": {
+          "00232": {
+            "4": "0"
+          }
+        },
+        "1": {
+          "00232": {
+            "4": "1"
+          }
+        }
+      },
+      "note": "On and Off are confirmed by a file (round 47)."
+    }
+  },
+  "00456": {
+    "name": "Auto Exposure AGC Limit (ISO mode, 460% range)",
+    "status": "hypothesis",
+    "evidence": "FS7M2 round 47 (2026-10-13), gamma S-Log3 (1300% range): AGC Limit ISO 10000 -> another value: scene 00163 / ALL 00458 4 -> 2. The default of every file is 4 (10000 at 1300%), so the value is the position in the manual's list (ISO 2500 / 4000 / 5000 / 8000 / 10000 / 16000). One triplet per dynamic range like the ISO values: 00456 = 460%, 00457 = 800%, 00458 = 1300% (the first two are assumed from the order and their default 4).",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 5,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 1000",
+        "1": "ISO 1600",
+        "2": "ISO 2000",
+        "3": "ISO 3200",
+        "4": "ISO 4000",
+        "5": "ISO 6400"
+      },
+      "note": "Position in the AGC limit list of the 460% dynamic range (manual): ISO 1000, ISO 1600, ISO 2000, ISO 3200, ISO 4000, ISO 6400. The default is position 4."
+    },
+    "scene_equivalent": "00161"
+  },
+  "00457": {
+    "name": "Auto Exposure AGC Limit (ISO mode, 800% range)",
+    "status": "hypothesis",
+    "evidence": "FS7M2 round 47 (2026-10-13), gamma S-Log3 (1300% range): AGC Limit ISO 10000 -> another value: scene 00163 / ALL 00458 4 -> 2. The default of every file is 4 (10000 at 1300%), so the value is the position in the manual's list (ISO 2500 / 4000 / 5000 / 8000 / 10000 / 16000). One triplet per dynamic range like the ISO values: 00456 = 460%, 00457 = 800%, 00458 = 1300% (the first two are assumed from the order and their default 4).",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 5,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 2000",
+        "1": "ISO 3200",
+        "2": "ISO 4000",
+        "3": "ISO 6400",
+        "4": "ISO 8000",
+        "5": "ISO 12500"
+      },
+      "note": "Position in the AGC limit list of the 800% dynamic range (manual): ISO 2000, ISO 3200, ISO 4000, ISO 6400, ISO 8000, ISO 12500. The default is position 4."
+    },
+    "scene_equivalent": "00162"
+  },
+  "00458": {
+    "name": "Auto Exposure AGC Limit (ISO mode, 1300% range)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 47 (2026-10-13), gamma S-Log3 (1300% range): AGC Limit ISO 10000 -> another value: scene 00163 / ALL 00458 4 -> 2 (the user set ISO 5000, position 2 of the 1300% list). The default of every file is 4 (10000 at 1300%), so the value is the position in the manual's list (ISO 2500 / 4000 / 5000 / 8000 / 10000 / 16000). One triplet per dynamic range like the ISO values: 00456 = 460%, 00457 = 800%, 00458 = 1300% (the first two are assumed from the order and their default 4).",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 5,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ISO 2500",
+        "1": "ISO 4000",
+        "2": "ISO 5000",
+        "3": "ISO 8000",
+        "4": "ISO 10000",
+        "5": "ISO 16000"
+      },
+      "note": "Position in the AGC limit list of the 1300% dynamic range (manual): ISO 2500, ISO 4000, ISO 5000, ISO 8000, ISO 10000, ISO 16000. The default is position 4."
+    },
+    "scene_equivalent": "00163"
+  },
+  "00267": {
+    "name": "Auto Exposure Detect Window",
+    "status": "likely",
+    "evidence": "FS7M2 round 48 (2026-10-13): Auto Exposure Detect Window 1 -> 5: scene 00088 / ALL 00267 1 -> 5 (the manual offers 1 to 6).",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 9,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6"
+      },
+      "note": "Detect Window 1 to 6 (manual); 5 is confirmed by a file."
+    },
+    "scene_equivalent": "00088"
+  },
+  "00269": {
+    "name": "Auto Exposure Auto Shutter",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 48 and 49 (2026-10-13): Auto Exposure > Auto Shutter Off -> On (round 48, together with other changes) and On -> Off (round 49, alone): scene 00090 / ALL 00269 0 -> 1 -> 0 and nothing else changed in round 49.",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 6,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    },
+    "scene_equivalent": "00090"
+  },
+  "00266": {
+    "name": "Auto Exposure Clip High Light",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 48 and 50 (2026-10-13): Auto Exposure > Clip High light Off -> On (round 48, with other changes) and On -> Off (round 50, alone): scene 00087 / ALL 00266 0 -> 1 -> 0, nothing else changed in round 50.",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 8,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    },
+    "scene_equivalent": "00087"
+  },
+  "00268": {
+    "name": "Auto Exposure Detect Window Indication",
+    "status": "likely",
+    "evidence": "FS7M2 round 48 (2026-10-13): Detect Window Indication Off -> On is the one remaining switch of the six changes: scene 00089 / ALL 00268 1 -> 0 (Auto Shutter = 00269 and Clip High light = 00266 were identified by rounds 49 and 50). By elimination the coding is inverted: 1 = Off, 0 = On; not changed alone yet.",
+    "group": "video",
+    "subgroup": "Camera › Auto Exposure",
+    "order": 10,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "1": "Off",
+        "0": "On"
+      },
+      "note": "Detect Window Indication is stored inverted: 0 = On, 1 = Off (found by elimination, not yet changed alone)."
+    },
+    "scene_equivalent": "00089"
   }
 }
