@@ -15,18 +15,18 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 ## Features
 
 - Opens `.SCENE` and `.ALL` files (menu, command line or drag and drop); the checksum is verified and rewritten on save, files round-trip byte-identically.
-- Settings are grouped like the camera menu (Video, Audio, Misc, Unknown) with dropdowns, step fields (+/- buttons) and check boxes. Unknown IDs stay visible as raw values and are written back unchanged.
+- Settings are grouped like the camera's menus (one tab per main menu: Camera, Paint, Audio, VF, Recording, File, System, with the camera's sub-menus inside) with dropdowns, step fields (+/- buttons) and check boxes. Unknown IDs stay visible as raw values and are written back unchanged.
 - **Options that are impossible in the current state are greyed out** (e.g. RAW 4096 needs Imager Scan Mode Normal, Detail settings with Detail Off, BT.2020 only on the FS7M2 with a 4K format) and implausible combinations raise a warning.
 - **Type switch SCENE / ALL** and **model switch FS7 / FS7M2** in the header: only mapped values are carried over, everything else stays stored and returns when you switch back.
-- **Expand all / Collapse all** (View menu, Ctrl+Shift+Down / Up, or the buttons next to the filter) for the blocks, the Paint category and the sub-groups.
+- **Expand all / Collapse all** (View menu, Ctrl+Shift+Down / Up, or the buttons next to the filter) for the sub-groups of the shown tab.
 - **Appearance** (View menu): System, Day or Night mode, remembered between runs.
-- **Tabs** for the camera's main menus (Camera, Paint, Audio, VF, Recording, File, System, Unknown) across the top show one menu at a time; each tab remembers where you were. Expand all / Collapse all act on the shown tab.
+- **Tabs** for the camera's main menus (Camera, Paint, Audio, VF, Recording, File, System, Unknown) across the top show one menu at a time, with the number of parameters; each tab remembers where you were. Rows that do not apply (e.g. the ISO rows while the gain mode is dB) are greyed out and sorted below the usable ones.
 - **Search and filter** (Ctrl+F): by name, ID or value; "changed only" shows everything that differs from the loaded file, "known only" hides undecoded IDs.
 - **Import** (File > Import, Ctrl+I): take over all known differing values from any SCENE/ALL file of either model, or pick single parameters from a list. One undo step.
 - **Compare** (File > Compare…, Ctrl+D, or "Show differences" in the import dialog): side-by-side view of the current file and another file with readable menu paths such as `Paint/White Clip/White Clip Level` instead of IDs. Changed rows are coloured; Alt+Down / Alt+Up (or F8 / Shift+F8) jump to the next / previous difference, Ctrl+1 shows the full files, Ctrl+2 only the differences.
 - **New** (Ctrl+N): neutral starting point for either model (not a factory reset).
 - Undo/redo, changed values are marked, title bar shows unsaved changes.
-- Languages switchable at run time (View > Language): English (default), German, Spanish, French, Italian and Portuguese (Portugal and Brazil); High-DPI aware; dark theme.
+- Languages switchable at run time (View > Language): English (default), German, Spanish, French, Italian and Portuguese (Portugal and Brazil); High-DPI aware; day, night or system theme.
 - Files are loaded defensively: size, line, ID and value limits reject malformed or hostile files.
 
 ## Download (Windows)
