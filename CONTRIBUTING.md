@@ -22,7 +22,7 @@ Before you send files:
 
 ## 2. Bug reports and ideas
 
-Open an [issue](../../issues/new/choose). Please include the version (About dialog), your operating system, whether you use the EXE or run the Python file, and what you did. Screenshots help.
+Open an [issue](../../issues/new/choose) for a bug. Please include the version (About dialog), your operating system, whether you use the EXE or run the Python file, and what you did. Screenshots help. For questions, ideas and showing what you use the tool for, the [Discussions](../../discussions) are the better place.
 
 ## 3. Translations
 

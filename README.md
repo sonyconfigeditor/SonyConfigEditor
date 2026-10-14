@@ -77,7 +77,7 @@ Developed with the help of an AI coding assistant (Claude by Anthropic); all cha
 
 ## Contact
 
-Questions, camera test reports and sample files: sonyconfigeditor@gmail.com
+Questions, ideas and sample files: [GitHub Discussions](https://github.com/sonyconfigeditor/SonyConfigEditor/discussions). Camera test reports and anything private: sonyconfigeditor@gmail.com
 
 ## License
 

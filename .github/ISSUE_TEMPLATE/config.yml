@@ -1,1 +1,5 @@
 blank_issues_enabled: true
+contact_links:
+  - name: Questions, ideas and sample files
+    url: https://github.com/sonyconfigeditor/SonyConfigEditor/discussions
+    about: Ask how something works, share what you use the tool for, or show a scene or ALL file here instead of opening an issue.
