@@ -276,5 +276,9 @@
   "Zoom Speed 1 to 8 (manual), default 3. Fields 1 and 2 of the value are unknown.": "Zoom Speed de 1 à 8 (manuel), par défaut 3. Les champs 1 et 2 de la valeur sont inconnus.",
   "Only the Shutter Angle is active in Angle mode. Scene files do not contain the recording format, so the Shutter Speed list and the ECS Frequency are only editable in All files.": "Seul le Shutter Angle est actif en mode Angle. Les fichiers Scene ne contiennent pas le format d’enregistrement ; la liste Shutter Speed et la ECS Frequency ne sont donc modifiables que dans les fichiers All.",
   "Only the control of the selected mode is active (Speed: Shutter Speed, Angle: Shutter Angle, ECS: ECS Frequency). The Shutter Speed list depends on the frame rate of the recording format (lists of the manual; checked against files with 25p only). The ECS Frequency is editable for 25p only (formula found with 25p files); with other frame rates it stays empty and unchanged. The camera also changes field 6 with the speed; it is not set here.": "Seul le contrôle du mode choisi est actif (Speed : Shutter Speed, Angle : Shutter Angle, ECS : ECS Frequency). La liste Shutter Speed dépend de la cadence du format d’enregistrement (listes du manuel ; vérifié uniquement avec des fichiers 25p). La ECS Frequency n’est modifiable qu’en 25p (formule trouvée avec des fichiers 25p) ; avec d’autres cadences elle reste vide et inchangée. La caméra modifie aussi le champ 6 avec la vitesse ; il n’est pas réglé ici.",
-  "Zoom Speed Type is not Fix": "Zoom Speed Type n’est pas Fix"
+  "Zoom Speed Type is not Fix": "Zoom Speed Type n’est pas Fix",
+  "Mode is ISO": "Le mode est ISO",
+  "Mode is dB": "Le mode est dB",
+  "The gamma uses another dynamic range": "Le gamma utilise une autre plage dynamique",
+  "Not used with the current settings": "Non utilisé avec les réglages actuels"
 }

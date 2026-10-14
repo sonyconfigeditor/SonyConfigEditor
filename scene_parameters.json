@@ -243,14 +243,14 @@
     ],
     "evidence": "First value = Preset White in K: sample look 4900 (page), sample set C FS7II files all 5600 (daylight preset), sample set B 6000/2800/4900/5700. Mk2 has 6 values = probably Preset White per ND-filter slot (CLEAR/1/2/3 + variable CLEAR/On), only the first is changed in all sample files. Older FS7 files only one value",
     "group": "video",
-    "subgroup": "White"
+    "subgroup": "Paint › White"
   },
   "00144": {
     "name": "White memory A: R gain, B gain (?)",
     "status": "likely",
     "evidence": "Same two values are the first two entries of 00164 in all files (FS7M2: sample set B -7604,750 / sample set C 9227,-21402; FS7: sample set A 8338,-19829). Memory A of Paint > White",
     "group": "video",
-    "subgroup": "White"
+    "subgroup": "Paint › White"
   },
   "00164": {
     "name": "White memory A: R gain, B gain, colour temp K (?)",
@@ -262,7 +262,7 @@
     ],
     "evidence": "Third value = colour temperature of the stored white (sample set C 5624, sample set B 2872); first two = 00144. 00165 = memory B (sample set B 5625; sample set C unused 0,0,3200). 00166..00181 (0,0,3200) are probably further white memories (per ND slot)",
     "group": "video",
-    "subgroup": "White"
+    "subgroup": "Paint › White"
   },
   "00057": {
     "name": "Knee Point",
@@ -733,7 +733,7 @@
     "status": "likely",
     "evidence": "See 00164",
     "group": "video",
-    "subgroup": "White"
+    "subgroup": "Paint › White"
   },
   "00021": {
     "name": "Step Gamma (0.35 to 0.90, file value x 100)",
@@ -1208,6 +1208,244 @@
         ]
       },
       "reason": "AGC is Off"
+    },
+    {
+      "ids": [
+        "00133",
+        "00134",
+        "00135"
+      ],
+      "when": {
+        "id": "00123",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Mode is ISO"
+    },
+    {
+      "ids": [
+        "00124",
+        "00125",
+        "00126",
+        "00127",
+        "00128",
+        "00129",
+        "00130",
+        "00131",
+        "00132",
+        "00161",
+        "00162",
+        "00163"
+      ],
+      "when": {
+        "id": "00123",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "Mode is dB"
+    },
+    {
+      "ids": [
+        "00124",
+        "00125",
+        "00126",
+        "00161"
+      ],
+      "when": {
+        "any": [
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "id": "00019",
+                    "field": 0,
+                    "in": [
+                      "1"
+                    ]
+                  },
+                  {
+                    "id": "00085",
+                    "field": 0,
+                    "in": [
+                      "4",
+                      "5"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "00078",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "00022",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              },
+              {
+                "id": "00143",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "reason": "The gamma uses another dynamic range"
+    },
+    {
+      "ids": [
+        "00127",
+        "00128",
+        "00129",
+        "00162"
+      ],
+      "when": {
+        "any": [
+          {
+            "any": [
+              {
+                "id": "00017",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "id": "00019",
+                    "field": 0,
+                    "in": [
+                      "1"
+                    ]
+                  },
+                  {
+                    "id": "00085",
+                    "field": 0,
+                    "in": [
+                      "0",
+                      "1",
+                      "2",
+                      "3"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "00022",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              },
+              {
+                "id": "00143",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "reason": "The gamma uses another dynamic range"
+    },
+    {
+      "ids": [
+        "00130",
+        "00131",
+        "00132",
+        "00163"
+      ],
+      "when": {
+        "any": [
+          {
+            "any": [
+              {
+                "id": "00017",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "id": "00019",
+                    "field": 0,
+                    "in": [
+                      "1"
+                    ]
+                  },
+                  {
+                    "id": "00085",
+                    "field": 0,
+                    "in": [
+                      "0",
+                      "1",
+                      "2",
+                      "3"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "id": "00019",
+                    "field": 0,
+                    "in": [
+                      "1"
+                    ]
+                  },
+                  {
+                    "id": "00085",
+                    "field": 0,
+                    "in": [
+                      "4",
+                      "5"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "00078",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "reason": "The gamma uses another dynamic range"
     }
   ],
   "00010": {
@@ -1881,7 +2119,7 @@
     "status": "likely",
     "evidence": "FS7M2 round 16 (White Switch<B> Memory -> ATW, Warm Cool <ATW> 0 -> +15, Balance <ATW> 0 -> -16; the Offset White <ATW> flag was left Off): 0 -> 1 when White Switch<B> was changed from Memory to ATW (the only unexplained change besides the ATW values).",
     "group": "video",
-    "subgroup": "White",
+    "subgroup": "Paint › White",
     "order": 9,
     "widget": {
       "type": "choice",

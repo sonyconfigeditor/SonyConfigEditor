@@ -42,17 +42,33 @@ SCENE_NAME_WIDTH = 17  # name field incl. '^' padding
 SCENE_FOOTER = "%%%%"
 CHANGED_COLOR = "#f0ad4e"
 WARNING_COLOR = "#e57373"
-# collapsible blocks of the parameter table; the block of a parameter comes from "group" in the parameter database
-GROUPS = [("video", "Video"), ("audio", "Audio"), ("misc", "Miscellaneous"), ("unknown", "Unknown")]
-GROUP_ICONS = {"video": "🎬", "audio": "🔊", "misc": "⚙", "unknown": "❓"}     # Unicode symbols (no image files needed), shown in the block header and the jump buttons
+# main menus of the camera = the tabs of the parameter table (in the order of the camera's menu); a parameter belongs to the tab of the first part of its
+# "subgroup" in the databases ("Paint › Gamma" -> Paint); parameters without a database entry and the sub-group "Other" are in Unknown.
+# Icons are Unicode symbols (no image files). Video, TC/UB and Media follow as soon as parameters of those menus are decoded.
+MENUS = [("camera", "Camera", "📹"), ("paint", "Paint", "🎨"), ("audio", "Audio", "🔊"), ("vf", "VF", "👁"), ("recording", "Recording", "⏺"),
+         ("file", "File", "📁"), ("system", "System", "⚙"), ("unknown", "Unknown", "❓")]
+GROUPS = [(key, title) for key, title, _icon in MENUS]
+GROUP_ICONS = {key: icon for key, _title, icon in MENUS}
+MENU_OF_PREFIX = {title: key for key, title, _icon in MENUS if key != "unknown"}
 DEFAULT_COLLAPSED = {"unknown"}
-# order of the camera-menu sub-groups inside a block (parameters get "subgroup" in the databases; others: "Other")
+# order of the camera-menu sub-groups inside a menu (parameters get "subgroup" in the databases; others: "Other"); Paint as in the camera: White first
 SUBGROUP_ORDER = [
     "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
-    "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Offset White",
-    "White", "Recording › S&Q Motion", "Audio › Input", "VF › Zebra / Marker", "File › Clip",
+    "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
+    "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
+    "Recording › S&Q Motion", "Audio › Input", "VF › Zebra / Marker", "File › Clip",
 ]
-CATEGORIES = ("System", "Camera", "Paint")      # main menus of the camera with their own collapsible heading above their sub-groups ("Paint › Gamma", "Camera › ND Filter", ...)
+REORDER_BY_LOCK = {"Camera › ISO/Gain/EI"}      # sub-groups whose usable rows move to the top, the greyed-out ones follow below a divider line
+CATEGORIES = ()      # the menus are tabs now; a heading per menu inside a tab would only repeat the tab name (the mechanism for headings is kept)
+
+
+def menu_of(info: dict | None) -> str:
+    """The tab (main menu) of a parameter."""
+    if not info:
+        return "unknown"
+    return MENU_OF_PREFIX.get(info.get("subgroup", "Other").split(" › ")[0], "unknown")
+
+
 FILTER_DELAY_MS = 150
 BASE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))  # _MEIPASS: bundled by PyInstaller
 # SCENE and ALL files share the container format but use different parameter IDs -> one database per file type
@@ -809,7 +825,7 @@ def build_diff_rows(items: list[dict], cur_params: dict, db: dict) -> list[dict]
     def order(item):
         info = db.get(item["tid"])
         sub = info.get("subgroup", "Other") if info else ""
-        return (group_rank.get(info.get("group", "misc") if info else "unknown", 9),
+        return (group_rank.get(menu_of(info), 9),
                 SUBGROUP_ORDER.index(sub) if sub in SUBGROUP_ORDER else len(SUBGROUP_ORDER), sub, info.get("order", 99) if info else 99, item["tid"])
 
     rows = []
@@ -1381,7 +1397,9 @@ class App(ctk.CTk):
         saved_dir = load_settings().get("last_dir")
         if isinstance(saved_dir, str) and is_safe_dir(saved_dir):      # no network (UNC) paths from the file: checking them would contact a foreign server
             self._last_dir = Path(saved_dir)
-        self._collapsed: dict[str, bool] = {}   # block -> collapsed (kept while the app runs)
+        self._collapsed: dict[str, bool] = {}   # block -> collapsed (no longer used: the tabs show one block at a time)
+        self._tab = "camera"                     # the selected tab (main menu), kept while the app runs
+        self._tab_scroll: dict[str, float] = {}  # tab -> scroll position (pixels) it was left at; forgotten when another file / profile is shown
         self._sub_collapsed: set[str] = set()   # collapsed sub-groups (by title, kept while the app runs)
         self._cat_collapsed: set[str] = set()   # collapsed categories ("Paint")
         self._groups: dict[str, dict] = {}
@@ -1744,16 +1762,13 @@ class App(ctk.CTk):
         ctk.CTkButton(filt, text=tr("Collapse all"), width=self._tr_width("Collapse all", 100), height=26, command=self.collapse_all).pack(side="left", padx=2)
         self.lbl_filter = ctk.CTkLabel(filt, text="", text_color="gray")
         self.lbl_filter.pack(side="right", padx=12)
-        jump = ctk.CTkFrame(self, fg_color="transparent")      # jump buttons: no long scrolling between the blocks
-        jump.pack(fill="x", padx=8, pady=(0, 2))
-        ctk.CTkLabel(jump, text=tr("Go to"), text_color="gray").pack(side="left", padx=(10, 6))
+        # tabs for the main blocks (Video, Audio, ...): only the selected block is in the table, so the table stays short
+        tabs = ctk.CTkFrame(self, fg_color="transparent")
+        tabs.pack(fill="x", padx=8, pady=(0, 2))
+        self.seg_tabs = ctk.CTkSegmentedButton(tabs, values=list(self._tab_labels().values()), command=self._on_tab, height=32)
+        self.seg_tabs.pack(fill="x", expand=True)
         self.jump_buttons = {}
-        jump_width = max(self._tr_width(title, 90) for _g, title in GROUPS) + 24      # all buttons as wide as the longest one
-        for group, title in GROUPS:
-            label = f"{GROUP_ICONS[group]}  {tr(title)}"
-            self.jump_buttons[group] = ctk.CTkButton(jump, text=label, width=jump_width, height=26, command=lambda g=group: self.jump_to(g))
-            self.jump_buttons[group].pack(side="left", padx=2)
-            self.jump_buttons[group].configure(state="disabled")      # enabled once the shown file has such a block
+        self._refresh_tabs()
 
         self._tables: dict[tuple, dict] = {}     # built tables of the profiles (type, model) that are not shown at the moment
         self._active_key: tuple | None = None
@@ -1886,6 +1901,7 @@ class App(ctk.CTk):
             setattr(self, attr, value)
         self._row_parent = self.table
         self._active_key = key
+        self._tab_scroll = {}
 
     def _drop_tables(self):
         for state in self._tables.values():
@@ -1956,6 +1972,7 @@ class App(ctk.CTk):
         s = self.scene
         self._busy = True
         scroll = self._scroll_hint
+        self._tab_scroll = {}
         for w in self.table.winfo_children():
             w.destroy()
         self.entries.clear()
@@ -1978,7 +1995,7 @@ class App(ctk.CTk):
         by_group = {g: [] for g, _title in GROUPS}
         for key, value in s.params.items():
             info = self.param_db.get(key)
-            by_group[info.get("group", "misc") if info else "unknown"].append((key, value, info))
+            by_group[menu_of(info)].append((key, value, info))
 
         def sort_key(item):
             key, _value, info = item
@@ -2006,17 +2023,18 @@ class App(ctk.CTk):
                                    "keys": [k for k, _v, _i in items], "visible": len(items), "sep": sep}
             self._row_parent = container
             row, current_sub, sub_info = 0, None, None
-            if group == "unknown" and self._collapsed.get(group, group in DEFAULT_COLLAPSED):
-                # the collapsed block of unknown parameters (about 250 rows of an ALL file) is built when it is opened
-                for key, value, _info in items:
+            if group == "unknown" and self._tab != "unknown":
+                # the rows without a database entry (about 180 in an ALL file) are built when the tab is opened; rows that have an entry
+                # (sub-group "Other") are built at once because they need their description and widget
+                lazy = [(key, value) for key, value, info in items if info is None]
+                items = [(key, value, info) for key, value, info in items if info is not None]
+                for key, value in lazy:
                     var = tk.StringVar(value=value)
                     var.trace_add("write", lambda *_a, k=key: self._on_edit(k))
                     self.vars[key] = var
                     self._rows[key] = {"label": None, "widget": None, "sub": None, "info": None, "lazy": True}
-                self._lazy_groups.add(group)
-                self._apply_group_state(group)
-                table_row += 3
-                continue
+                if lazy:
+                    self._lazy_groups.add(group)
             card, card_row, first_sub = container, 0, True
             for key, value, info in items:
                 sub = (info.get("subgroup", "Other") if info else None)
@@ -2026,7 +2044,7 @@ class App(ctk.CTk):
                         cat_sep = self._separator(container, "main", row=row, column=0, columnspan=2, pady=(self._sc(12), 0))
                         cat_label = tk.Label(container, text="", anchor="w", bg=self._c["bg"], fg=self._c["label"], font=self._font_bold, cursor="hand2")
                         cat_label.grid(row=row + 1, column=0, columnspan=2, sticky="w", padx=self._sc(5), pady=(self._sc(6), self._sc(2)))
-                        cat_info = {"label": cat_label, "sep": cat_sep, "title": category, "subs": []}
+                        cat_info = {"label": cat_label, "sep": cat_sep, "title": category, "subs": [], "group": group}
                         cat_label.bind("<Button-1>", lambda _e, ci=cat_info: self._toggle_cat(ci))
                         self._set_cat_text(cat_info)
                         self._cats.append(cat_info)
@@ -2045,8 +2063,11 @@ class App(ctk.CTk):
                     card.grid_columnconfigure(1, weight=1)
                     heading = tk.Label(card, text=sub, anchor="w", bg=self._c["card"], fg=self._c["accent"], font=self._font_bold, cursor="hand2")
                     heading.grid(row=0, column=0, columnspan=2, sticky="w", padx=self._sc(10), pady=(self._sc(6), self._sc(2)))
-                    sub_info = {"label": heading, "outer": wrap, "keys": [], "title": sub, "suffix": "", "category": category,
-                                "display": sub.split(" › ", 1)[1] if category else sub}
+                    divider = None
+                    if sub in REORDER_BY_LOCK:
+                        divider = tk.Label(card, text=tr("Not used with the current settings"), anchor="w", bg=self._c["card"], fg="#7a7a7a", font=self._font)
+                    sub_info = {"label": heading, "outer": wrap, "keys": [], "title": sub, "suffix": "", "category": category, "group": group, "divider": divider,
+                                "display": sub.split(" › ", 1)[1] if " › " in sub and sub.split(" › ")[0] in MENU_OF_PREFIX else sub}
                     if category:
                         next(c for c in self._cats if c["title"] == category)["subs"].append(sub_info)
                     heading.bind("<Button-1>", lambda _e, si=sub_info: self._toggle_sub(si))
@@ -2114,8 +2135,6 @@ class App(ctk.CTk):
         self._busy = True
         self._update_clip_row()
         self._apply_filter()
-        for group, button in self.jump_buttons.items():       # SCENE files have no Audio / Miscellaneous parameters: their buttons are greyed out
-            button.configure(state="normal" if group in self._groups else "disabled")
         self.btn_save.configure(state="normal")
         self.btn_save_as.configure(state="normal")
         self.btn_import.configure(state="normal")
@@ -2152,8 +2171,10 @@ class App(ctk.CTk):
             return
         self._lazy_groups.discard(group)
         container = self._groups[group]["container"]
-        row = 0
+        row = container.grid_size()[1]      # after the rows that were built at once
         for key in self._groups[group]["keys"]:
+            if not self._rows[key].get("lazy"):
+                continue
             var = self.vars[key]
             name_label = self._row_label(container, key, None)
             name_label.grid(row=row, column=0, padx=self._sc(5), pady=self._sc(1), sticky="w")
@@ -2168,14 +2189,45 @@ class App(ctk.CTk):
             self._rows[key].update({"label": name_label, "widget": widget, "lazy": False})
             row += 1
 
+    def _current_tab(self) -> str | None:
+        """The selected tab; a file without that block (SCENE files have no Audio) shows the first block it has."""
+        if self._tab in self._groups:
+            return self._tab
+        return next((g for g, _t in GROUPS if g in self._groups), None)
+
     def _apply_group_state(self, group: str):
         info = self._groups[group]
-        collapsed = self._collapsed.get(group, group in DEFAULT_COLLAPSED)
-        info["header"].configure(text=f"{'▶' if collapsed else '▼'}   {GROUP_ICONS[group]}  {info['title']}   ({info['count']})")
-        if collapsed:
-            info["container"].grid_remove()
-        else:
+        info["header"].configure(text=f"{GROUP_ICONS[group]}  {info['title']}   ({info['count']})")
+        if group == self._current_tab():
             info["container"].grid()
+        else:
+            info["container"].grid_remove()
+
+    def _tab_labels(self) -> dict[str, str]:
+        """Text of the tabs: icon, block name and (with a file) the number of its parameters (while a filter is active: of those that match)."""
+        labels = {}
+        for group, title in GROUPS:
+            info = self._groups.get(group)
+            count = (info["visible"] if self._filter_active() else info["count"]) if info else None
+            labels[group] = f"{GROUP_ICONS[group]}  {tr(title)}" + (f"  ({count})" if count is not None else "")
+        return labels
+
+    def _refresh_tabs(self):
+        labels = self._tab_labels()
+        if list(labels.values()) != list(getattr(self, "_tab_values", [])):
+            self.seg_tabs.configure(values=list(labels.values()))
+            self._tab_values = list(labels.values())
+        self.jump_buttons = {group: self.seg_tabs._buttons_dict[label] for group, label in labels.items()}
+        for group, button in self.jump_buttons.items():       # SCENE files have no Audio / Miscellaneous parameters: their tabs are greyed out
+            button.configure(state="normal" if group in self._groups else "disabled")
+        tab = self._current_tab()
+        if tab:
+            self.seg_tabs.set(labels[tab])
+
+    def _on_tab(self, value: str):
+        group = next((g for g, label in self._tab_labels().items() if label == value), None)
+        if group:
+            self.jump_to(group)
 
     # -- search and filter ------------------------------------------------------ #
     def _filter_active(self) -> bool:
@@ -2246,8 +2298,8 @@ class App(ctk.CTk):
                         part.grid() if visible else part.grid_remove()
             else:
                 if info["sep"] is not None:
-                    info["sep"].grid()
-                info["header"].grid()
+                    info["sep"].grid_remove()
+                info["header"].grid_remove()
                 self._apply_group_state(group)
         for sub in self._subheads:
             hidden = (active and not any(k in shown_keys for k in sub["keys"])) or (not active and sub.get("category") in self._cat_collapsed)
@@ -2259,10 +2311,16 @@ class App(ctk.CTk):
             self._set_cat_text(cat)
         total = sum(1 for row in self._rows.values() if not (row["info"] and row["info"].get("covered_by")))   # rows of combined dropdowns are not listed
         self.lbl_filter.configure(text=tr("{n} of {total}").format(n=len(shown_keys) if active else total, total=total))
+        for sub in self._subheads:
+            self._set_sub_text(sub)      # with a filter the headings carry the menu name
+            if sub.get("divider") is not None:
+                self._reorder_sub(sub)
+        self._refresh_tabs()
 
     def _set_sub_text(self, sub: dict):
         arrow = "▶" if sub["title"] in self._sub_collapsed else "▼"
-        sub["label"].configure(text=f"{arrow}  {sub.get('display', sub['title'])}{sub['suffix']}")
+        name = sub["title"] if self._filter_active() else sub.get("display", sub["title"])      # a filter lists several menus: then with the menu name
+        sub["label"].configure(text=f"{arrow}  {name}{sub['suffix']}")
 
     def _set_cat_text(self, cat: dict):
         arrow = "▶" if cat["title"] in self._cat_collapsed and not self._filter_active() else "▼"
@@ -2282,27 +2340,52 @@ class App(ctk.CTk):
             if sinfo["title"] == sub["title"]:
                 self._set_sub_text(sinfo)
         self._apply_filter()
+        if sub["title"] not in self._sub_collapsed:
+            self._reveal_sub(sub)
+
+    def _reveal_sub(self, sub: dict):
+        """After opening a sub-group: if its rows do not fit into the visible part, its heading moves to the top edge so that as many new rows as possible are shown."""
+        self.update_idletasks()
+        canvas = self.table._parent_canvas
+        outer = sub["outer"]
+        if not outer.winfo_manager():
+            return
+        top_of_view = canvas.yview()[0] * max(1, self.table.winfo_height())
+        y, widget = 0, outer
+        while widget is not self.table:
+            y += widget.winfo_y()
+            widget = widget.master
+        if y < top_of_view or y + outer.winfo_height() > top_of_view + canvas.winfo_height():
+            canvas.yview_moveto(max(0.0, (y - self._sc(6)) / max(1, self.table.winfo_height())))
+
+    def _tab_folds(self):
+        """The categories and sub-groups of the shown tab: expand / collapse all act on these only."""
+        tab = self._current_tab()
+        return [c for c in self._cats if c["group"] == tab], [sub for sub in self._subheads if sub["group"] == tab]
 
     def expand_all(self):
-        """Open every block, category and sub-group (the collapsed block of unknown parameters is built now)."""
+        """Open every category and sub-group of the shown tab; the position (in pixels) stays where it was."""
         if not self.scene:
             return
-        self._cat_collapsed.clear()
-        self._sub_collapsed.clear()
-        for group in self._groups:
-            self._collapsed[group] = False
-            self._ensure_built(group)
+        cats, subs = self._tab_folds()
+        canvas = self.table._parent_canvas
+        top = canvas.yview()[0] * max(1, self.table.winfo_height())
+        self._cat_collapsed -= {cat["title"] for cat in cats}
+        self._sub_collapsed -= {sub["title"] for sub in subs}
         self._after_fold_change()
+        self.update_idletasks()
+        canvas.yview_moveto(top / max(1, self.table.winfo_height()))
 
     def collapse_all(self):
-        """Close every block, category and sub-group."""
+        """Close every category and sub-group of the shown tab; the content shrinks, so the view goes back to the top (no empty area)."""
         if not self.scene:
             return
-        self._cat_collapsed |= {cat["title"] for cat in self._cats}
-        self._sub_collapsed |= {sub["title"] for sub in self._subheads}
-        for group in self._groups:
-            self._collapsed[group] = True
+        cats, subs = self._tab_folds()
+        self._cat_collapsed |= {cat["title"] for cat in cats}
+        self._sub_collapsed |= {sub["title"] for sub in subs}
         self._after_fold_change()
+        self.update_idletasks()
+        self.table._parent_canvas.yview_moveto(0)
 
     def _after_fold_change(self):
         for cat in self._cats:
@@ -2312,13 +2395,24 @@ class App(ctk.CTk):
         self._apply_filter()
 
     def jump_to(self, group: str):
-        """Open a block (if it is closed) and scroll the table so that its header is at the top."""
+        """Show a block: without a filter its tab is selected (only that block is in the table), with a filter the table scrolls to its header."""
         if not self.scene or group not in self._groups:
             return
-        if not self._filter_active() and self._collapsed.get(group, group in DEFAULT_COLLAPSED):
-            self._collapsed[group] = False
-            self._ensure_built(group)
-            self._apply_group_state(group)
+        if self._filter_active():
+            self._scroll_group_to_top(group)
+            return
+        if group == self._current_tab():
+            return
+        canvas = self.table._parent_canvas
+        self._tab_scroll[self._current_tab()] = canvas.yview()[0] * max(1, self.table.winfo_height())      # remember where the old tab was scrolled to
+        self._tab = group
+        self._ensure_built(group)
+        self._apply_filter()
+        self.update_idletasks()
+        canvas.yview_moveto(self._tab_scroll.get(group, 0) / max(1, self.table.winfo_height()))
+
+    def _scroll_group_to_top(self, group: str):
+        """Scroll the table so that the header of a block is at the top edge."""
         header = self._groups[group]["header"]
         if not header.winfo_manager():
             return      # the block has no match for the current filter
@@ -2710,6 +2804,7 @@ class App(ctk.CTk):
                 ctk.CTkButton(line, text=text, width=38, height=26, command=lambda d=delta, b=bump: b(d)).pack(side="left", padx=(2, 0))
             entry.bind("<Return>", commit)
             entry.bind("<FocusOut>", commit)
+            entry.commit = commit       # the tests commit directly (a synthetic focus event is not reliably delivered)
             controls[start] = entry
 
         def refresh():
@@ -2842,6 +2937,7 @@ class App(ctk.CTk):
             ctk.CTkLabel(row, text=unit, text_color="gray").pack(side="left", padx=(4, 0))
         entry.bind("<Return>", commit)
         entry.bind("<FocusOut>", commit)
+        entry.commit = commit       # the tests commit directly (a synthetic focus event is not reliably delivered)
         show()
         frame._refresh = show
         raw = ctk.CTkLabel(frame, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray", wraplength=430, justify="left")
@@ -3275,6 +3371,39 @@ class App(ctk.CTk):
                 self._set_enabled(row["widget"], True)
                 row["label"].configure(fg=self._c["label"])
 
+    def _reorder_sub(self, sub: dict):
+        """Rows that can be used move to the top of the sub-group, greyed-out rows follow below a divider (the order inside each part stays the menu order)."""
+        divider = sub.get("divider")
+        if divider is None:
+            return
+        rows = [(key, self._rows[key]) for key in sub["keys"] if self._rows.get(key) and self._rows[key].get("label") is not None]
+        active = [(k, r) for k, r in rows if not r.get("locked")]
+        locked = [(k, r) for k, r in rows if r.get("locked")]
+        position = 1
+        for part in (active, locked):
+            if part is locked and active and locked:
+                divider.grid(row=position, column=0, columnspan=2, sticky="w", padx=self._sc(10), pady=(self._sc(8), self._sc(2)))
+                position += 1
+            for _key, row in part:
+                for widget in (row["label"], row.get("outer") or row["widget"]):
+                    shown = widget.winfo_manager() == "grid"
+                    widget.grid_configure(row=position)
+                    if not shown:
+                        widget.grid_remove()          # a row hidden by a filter or a collapsed sub-group stays hidden
+                position += 1
+        hide = not (active and locked) or self._filter_active() or sub["title"] in self._sub_collapsed
+        if hide:
+            divider.grid_remove()
+
+    def _lock_when_holds(self, cond: dict) -> bool:
+        """Condition of a lock: {"id", "field", "in"} on one field (an unknown value never locks), or {"all": [...]} / {"any": [...]} of such conditions."""
+        if "all" in cond:
+            return all(self._lock_when_holds(c) for c in cond["all"])
+        if "any" in cond:
+            return any(self._lock_when_holds(c) for c in cond["any"])
+        value = self._field_value(cond["id"], cond.get("field", 0))
+        return value is not None and value in cond["in"]
+
     def _apply_locks(self):
         """Grey out whole sub-groups while a lock condition holds (e.g. the Paint menu in Cine EI mode, Gamma while it is Off).
 
@@ -3283,8 +3412,7 @@ class App(ctk.CTk):
         row_reason: dict[str, str] = {}
         sub_reason: dict[str, str] = {}
         for lock in self.locks:
-            value = self._field_value(lock["when"]["id"], lock["when"].get("field", 0))
-            if value is None or value not in lock["when"]["in"]:
+            if not self._lock_when_holds(lock["when"]):
                 continue
             if "ids" in lock:        # lock of single rows (e.g. a level that depends on its own On/Off switch)
                 for key in lock["ids"]:
@@ -3309,6 +3437,8 @@ class App(ctk.CTk):
             row["locked"] = locked
             self._set_enabled(row["widget"], not locked)
             row["label"].configure(fg="#7a7a7a" if locked else self._c["label"])
+        for sub in self._subheads:
+            self._reorder_sub(sub)
         for sub in self._subheads:
             if any(self._lock_matches(lock, sub["title"]) for lock in group_locks):
                 reason = sub_reason.get(sub["title"])

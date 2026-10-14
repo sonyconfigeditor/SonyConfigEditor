@@ -2847,7 +2847,7 @@
     ],
     "evidence": "591,2394,3112 / 593,2595,3100 (3100-3200 K) / 6198,-20281,4985 (4985 K): same structure as scene 00164 (R, B, colour temperature)",
     "group": "video",
-    "subgroup": "White"
+    "subgroup": "Paint › White"
   },
   "00020": {
     "name": "Multi Matrix Setting (On/Off)",
@@ -3809,6 +3809,244 @@
         ]
       },
       "reason": "Zoom Speed Type is not Fix"
+    },
+    {
+      "ids": [
+        "00399",
+        "00400",
+        "00401"
+      ],
+      "when": {
+        "id": "00389",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Mode is ISO"
+    },
+    {
+      "ids": [
+        "00390",
+        "00391",
+        "00392",
+        "00393",
+        "00394",
+        "00395",
+        "00396",
+        "00397",
+        "00398",
+        "00456",
+        "00457",
+        "00458"
+      ],
+      "when": {
+        "id": "00389",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "Mode is dB"
+    },
+    {
+      "ids": [
+        "00390",
+        "00391",
+        "00392",
+        "00456"
+      ],
+      "when": {
+        "any": [
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "id": "00041",
+                    "field": 0,
+                    "in": [
+                      "1"
+                    ]
+                  },
+                  {
+                    "id": "00042",
+                    "field": 0,
+                    "in": [
+                      "4",
+                      "5"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "00190",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "00044",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              },
+              {
+                "id": "00494",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "reason": "The gamma uses another dynamic range"
+    },
+    {
+      "ids": [
+        "00393",
+        "00394",
+        "00395",
+        "00457"
+      ],
+      "when": {
+        "any": [
+          {
+            "any": [
+              {
+                "id": "00039",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "id": "00041",
+                    "field": 0,
+                    "in": [
+                      "1"
+                    ]
+                  },
+                  {
+                    "id": "00042",
+                    "field": 0,
+                    "in": [
+                      "0",
+                      "1",
+                      "2",
+                      "3"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "00044",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              },
+              {
+                "id": "00494",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "reason": "The gamma uses another dynamic range"
+    },
+    {
+      "ids": [
+        "00396",
+        "00397",
+        "00398",
+        "00458"
+      ],
+      "when": {
+        "any": [
+          {
+            "any": [
+              {
+                "id": "00039",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "id": "00041",
+                    "field": 0,
+                    "in": [
+                      "1"
+                    ]
+                  },
+                  {
+                    "id": "00042",
+                    "field": 0,
+                    "in": [
+                      "0",
+                      "1",
+                      "2",
+                      "3"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "id": "00041",
+                    "field": 0,
+                    "in": [
+                      "1"
+                    ]
+                  },
+                  {
+                    "id": "00042",
+                    "field": 0,
+                    "in": [
+                      "4",
+                      "5"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "00190",
+                "field": 0,
+                "in": [
+                  "1"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "reason": "The gamma uses another dynamic range"
     }
   ],
   "_locks_comment": "Sub-groups whose widgets are greyed out (not editable, values stay visible) while the condition holds. Source: user (Cine EI mode: the whole Paint menu is greyed out).",
@@ -4844,7 +5082,7 @@
     "name": "Preset White (K) per ND slot (?)",
     "status": "likely",
     "group": "video",
-    "subgroup": "White",
+    "subgroup": "Paint › White",
     "order": 20,
     "evidence": "Equals scene 00158 (id_map; unique value match in two FS7M2 pairs). The camera writes its own preset white values when a SCENE file is loaded."
   },
@@ -4852,7 +5090,7 @@
     "name": "White memory B: R gain, B gain, colour temp K (?)",
     "status": "likely",
     "group": "video",
-    "subgroup": "White",
+    "subgroup": "Paint › White",
     "order": 21,
     "evidence": "Equals scene 00165 (id_map; unique value match in two FS7M2 pairs); overwritten by the camera when a SCENE file is loaded (scene white data)."
   },
@@ -5147,7 +5385,7 @@
     "status": "likely",
     "evidence": "FS7M2 round 16 (White Switch<B> Memory -> ATW, Warm Cool <ATW> 0 -> +15, Balance <ATW> 0 -> -16; the Offset White <ATW> flag was left Off): 0 -> 1 when White Switch<B> was changed from Memory to ATW (the only unexplained change besides the ATW values).",
     "group": "video",
-    "subgroup": "White",
+    "subgroup": "Paint › White",
     "order": 9,
     "widget": {
       "type": "choice",

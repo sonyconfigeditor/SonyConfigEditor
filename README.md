@@ -20,7 +20,7 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 - **Type switch SCENE / ALL** and **model switch FS7 / FS7M2** in the header: only mapped values are carried over, everything else stays stored and returns when you switch back.
 - **Expand all / Collapse all** (View menu, Ctrl+Shift+Down / Up, or the buttons next to the filter) for the blocks, the Paint category and the sub-groups.
 - **Appearance** (View menu): System, Day or Night mode, remembered between runs.
-- **Jump buttons** (Video, Audio, Miscellaneous, Unknown) below the filter row scroll straight to a block and open it if it is closed.
+- **Tabs** for the camera's main menus (Camera, Paint, Audio, VF, Recording, File, System, Unknown) across the top show one menu at a time; each tab remembers where you were. Expand all / Collapse all act on the shown tab.
 - **Search and filter** (Ctrl+F): by name, ID or value; "changed only" shows everything that differs from the loaded file, "known only" hides undecoded IDs.
 - **Import** (File > Import, Ctrl+I): take over all known differing values from any SCENE/ALL file of either model, or pick single parameters from a list. One undo step.
 - **Compare** (File > Compare…, Ctrl+D, or "Show differences" in the import dialog): side-by-side view of the current file and another file with readable menu paths such as `Paint/White Clip/White Clip Level` instead of IDs. Changed rows are coloured; Alt+Down / Alt+Up (or F8 / Shift+F8) jump to the next / previous difference, Ctrl+1 shows the full files, Ctrl+2 only the differences.
