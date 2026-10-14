@@ -2363,16 +2363,36 @@ class App(ctk.CTk):
             raw = var.get()
             return (raw.split(",")[idx] if idx is not None else raw).strip()
 
+        def field_cell(f):
+            """Parent of one control; with "show_labels" every control gets its caption above it."""
+            if not spec.get("show_labels"):
+                return menu_row
+            cell = ctk.CTkFrame(menu_row, fg_color="transparent")
+            cell.pack(side="left", padx=(0, 6))
+            ctk.CTkLabel(cell, text=f["label"], text_color="gray").pack()
+            return cell
+
+        def dynamic_choices(f):
+            """Choices that depend on another parameter (the shutter speed list depends on the frame rate of the recording format)."""
+            by = f["choices_by"]
+            vals = [self._field_value(by["id"], i) for i in by["fields"]]
+            name = by["sets"].get(",".join(v or "" for v in vals))
+            return {k: with_raw(v, k) for k, v in by["lists"].get(name, {}).items()}
+
         def make_menu(f):
             idx = f["index"]
             only = f.get("only_models", {})
-            choices = {k: with_raw(v, k) for k, v in f["choices"].items() if self.scene.model in only.get(k, [self.scene.model])}
+            if "choices_by" in f:
+                choices = dynamic_choices(f)
+            else:
+                choices = {k: with_raw(v, k) for k, v in f["choices"].items() if self.scene.model in only.get(k, [self.scene.model])}
             labels = list(choices.values())
             cur = current(idx)
             if cur not in choices:
                 labels.append(tr("{value} (unknown)").format(value=cur))
             readonly = spec.get("readonly", False)
-            menu = ctk.CTkOptionMenu(menu_row, values=labels, width=self._menu_width(list(f["choices"].values()) + labels, 190), dynamic_resizing=False,
+            cell = field_cell(f)
+            menu = ctk.CTkOptionMenu(cell, values=labels, width=self._menu_width(list(f.get("choices", {}).values()) + labels, f.get("width", 190)), dynamic_resizing=False,
                                      state="disabled" if readonly else "normal")
             menu.set(choices.get(cur, tr("{value} (unknown)").format(value=cur)))
 
@@ -2400,15 +2420,85 @@ class App(ctk.CTk):
                     self._set_values(key, self._stash[(key, new)])
 
             menu.configure(command=pick)
-            menu.pack(side="left", padx=(0, 6))
+            if cell is menu_row:
+                menu.pack(side="left", padx=(0, 6))
+            else:
+                menu.pack()
             menu._enabled_when = f.get("enabled_when")   # e.g. the preset is only selectable while the preset matrix is On
+            menu._field_spec = f
             menus.append((menu, idx, choices))
 
+        ecs_entries: list = []
+
+        def make_ecs(f):
+            """ECS frequency in Hz: the file stores the exposure as a line count v = floor(L - L * r / f) (L total lines, r frame rate)."""
+            idx, ecs = f["index"], f["ecs"]
+            cell = field_cell(f)
+            entry = ctk.CTkEntry(cell, width=f.get("width", 100), justify="center")
+            if cell is menu_row:
+                entry.pack(side="left", padx=(0, 6))
+            else:
+                entry.pack()
+            entry._enabled_when = f.get("enabled_when")
+
+            def rate():
+                key = ",".join(self._field_value(ecs["id"], i) or "" for i in ecs["fields"])
+                return ecs["rates"].get(key)        # [total lines, frame rate]: only for the frame rates checked against files
+
+            def shown():
+                r = rate()
+                try:
+                    v = int(current(idx))
+                except ValueError:
+                    return ""
+                if not r or v >= r[0]:
+                    return ""
+                return f"{r[0] * r[1] / (r[0] - v - 0.5):.2f}"      # the file holds a whole line count: the frequency is only known within 0.1 %, the middle of the interval is shown
+
+            def show():
+                state = str(entry.cget("state"))
+                entry.configure(state="normal")
+                entry.delete(0, "end")
+                entry.insert(0, shown())
+                if state == "disabled":
+                    entry.configure(state="disabled")
+
+            def commit(_event=None):
+                r = rate()
+                try:
+                    hz = float(entry.get().replace(",", "."))
+                except ValueError:
+                    show()
+                    return
+                if r:
+                    hz = max(r[1], min(ecs.get("max", 8000), hz))
+                    v = max(0, int(r[0] - r[0] * r[1] / hz))
+                    items = var.get().split(",")
+                    lead = items[idx][: len(items[idx]) - len(items[idx].lstrip())]
+                    items[idx] = lead + str(v)
+                    self._last_key = None
+                    var.set(",".join(items))
+                show()
+
+            entry.bind("<Return>", commit)
+            entry.bind("<FocusOut>", commit)
+            entry.commit = commit       # the tests commit directly
+            entry._show = show
+            ecs_entries.append(entry)
+            show()
+
         for f in fields:
-            make_menu(f)
+            (make_ecs if "ecs" in f else make_menu)(f)
 
         def availability():
             for menu, idx, choices in menus:
+                dyn = getattr(menu, "_field_spec", {})
+                if "choices_by" in dyn:
+                    new = dynamic_choices(dyn)
+                    if new != choices:
+                        choices.clear()
+                        choices.update(new)
+                        menu.set(choices.get(current(idx), tr("{value} (unknown)").format(value=current(idx))))
                 cur = current(idx)
                 labels = list(choices.values()) + ([] if cur in choices else [tr("{value} (unknown)").format(value=cur)])
                 disabled = {}
@@ -2420,12 +2510,17 @@ class App(ctk.CTk):
                 rule = getattr(menu, "_enabled_when", None)
                 if rule and not hasattr(menu, "_state_before_lock"):      # a row lock (greyed row) has priority
                     menu.configure(state="normal" if current(rule["field"]) in rule["in"] else "disabled")
+            for entry in ecs_entries:
+                rule = entry._enabled_when
+                if rule and not hasattr(entry, "_state_before_lock"):
+                    entry.configure(state="normal" if current(rule["field"]) in rule["in"] else "disabled")
+                entry._show()
 
         def refresh():
+            availability()
             for menu, idx, choices in menus:
                 cur = current(idx)
                 menu.set(choices.get(cur, tr("{value} (unknown)").format(value=cur)))
-            availability()
 
         def warning() -> str:
             for _menu, idx, choices in menus:

@@ -2575,10 +2575,12 @@
     "widget": {
       "type": "fields",
       "min_fields": 7,
+      "show_labels": true,
       "fields": [
         {
           "index": 0,
           "label": "Mode",
+          "width": 100,
           "choices": {
             "0": "Speed",
             "1": "Angle",
@@ -2589,6 +2591,7 @@
         {
           "index": 1,
           "label": "Shutter Angle",
+          "width": 100,
           "choices": {
             "0": "5.6°",
             "1": "11.2°",
@@ -2602,10 +2605,16 @@
             "9": "180°",
             "10": "216°",
             "11": "300°"
+          },
+          "enabled_when": {
+            "field": 0,
+            "in": [
+              "1"
+            ]
           }
         }
       ],
-      "note": "Field 1 is the Shutter Angle (used in Angle mode); field 2 is the position in the Shutter Speed list of the frame rate and field 3 the ECS Frequency (coding not decoded yet); fields 4 to 6 are unknown."
+      "note": "Only the Shutter Angle is active in Angle mode. Scene files do not contain the recording format, so the Shutter Speed list and the ECS Frequency are only editable in All files."
     }
   },
   "00003": {
