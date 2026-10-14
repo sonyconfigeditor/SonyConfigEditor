@@ -32,8 +32,8 @@ from tkinter import filedialog, messagebox
 import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
-_version = "0.1.0"
-_date = "2026-10-07"
+_version = "0.2.0"
+_date = "2026-10-14"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
