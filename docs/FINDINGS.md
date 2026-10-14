@@ -169,3 +169,37 @@ AGC: scene `00079` / ALL `00235` (1 = On; ALL `00232` field 4 mirrors it). AGC L
 A.SHT Limit (Auto Shutter limit): scene `00084` / ALL `00225`, the denominator of the exposure time (default 2000 = 1/2000). Detect Window: `00088` / `00267` (1 to 6). Auto ND Filter: field 4 of the ND value `00097` / `00280` (0 = Off, 1 = On).
 
 Auto Shutter: scene `00090` / ALL `00269` (1 = On). Clip High Light: `00087` / `00266` (1 = On). Detect Window Indication: `00089` / `00268`, stored inverted (0 = On, 1 = Off, found by elimination).
+
+Focus (FS7M2, All files only, likely): Focus Area = ALL `00460` field 0 (0 = Wide, 1 = Center; Flexible Spot = 2 is an assumption; fields 1 and 2 unknown). AF Assist = ALL `00258` (1 = On). Both were changed in the same round, so the assignment rests on the value shapes.
+
+Shutter (FS7M2, likely): scene `00160` / ALL `00459`, field 0 = Mode (0 = Speed, 1 = Angle; ECS = 2 and Off = 3 assumed), field 1 = position in the Shutter Angle list (5.6, 11.2, 22.5, 45, 90, 120, 144, 150, 172.8, 180, 216, 300 degrees; 180 = 9, 216 = 10). Fields 2 to 6 unknown.
+
+Shutter mode: ECS = 2 (confirmed). ECS Frequency is field 3 of the same value (563 -> 559 when changing from about 50.1 to 49.77 Hz); the coding is a hypothesis (about 11.23 per Hz) and needs a round with known frequencies.
+
+Shutter Speed: field 2 of the same value is the position in the Shutter Speed list of the current frame rate (25P: 1/50 = 4, 1/25 = 3; likely). ECS Frequency (field 3): 559 = 49.77 Hz, 613 = 55.02 Hz, roughly linear (hypothesis). Field 6 moves with the speed (7 -> 6), meaning unknown.
+
+Noise Suppression: Setting scene `00003` / ALL `00021` (1 = On), Level `00004` / `00022` (1 = Mid, 2 = High; Low = 0 assumed).
+
+ECS Frequency (field 3 of ALL `00459`, 25P, likely): v = floor(1125 - 28125 / f), where 1125 is the total line count of an HD frame and 28125 = 1125 x 25; inverse f = 28125 / (1125 - v). Checked with 34.00, 49.77 and 55.02 Hz. Other frame rates not checked.
+
+Confirmed by a single-change round: AF Assist = ALL `00258` (1 = On); Noise Suppression Level Low = 0; Shutter Mode Off = 3. Focus Area = ALL `00460` follows by elimination (likely).
+
+Focus Area: ALL `00460` field 0 (0 = Wide, 1 = Center, 2 = Flexible Spot; confirmed). Focus Area (Push AF): ALL `00461` field 0 (0 = Center, 1 = Flexible Spot; likely, changed together with Focus Area). Fields 1 and 2 of both stay 0 (the spot position is not set in the menu).
+
+Color Bars: Type = ALL `00052` (0 = ARIB, 1 = SMPTE; 75% = 2 and 100% = 3 assumed). The Color Bars Setting (On/Off) is not stored in either file type.
+
+Color Bars Type 75% = 2 (confirmed). Flicker Reduce (All file only, likely): Mode = ALL `00227` (0 = Auto, 1 = On; Off = 2 assumed), Frequency = ALL `00228` (0 = 50 Hz, 1 = 60 Hz); both were changed in the same round.
+
+Color Bars Type 100% = 3 (confirmed). Flicker Reduce: `00227` and `00228` both went 1 -> 0 with Frequency 50 Hz and Mode Off; Mode Off = 0 (not 2), so the assignment of the two IDs and the Auto value are still open (a round with only the Frequency changed is needed).
+
+Flicker Reduce Frequency = ALL `00228` (0 = 50 Hz, 1 = 60 Hz; confirmed by a single change). Mode = `00227` by elimination (0 = Off, 1 = On; Auto = 2 assumed).
+
+Flicker Reduce Mode is spread over two ALL values: `00226` (Auto flag) and `00227` (active): Off = 0 / 0, On = 0 / 1, Auto = 1 / 1 (confirmed by rounds 60, 61 and 63; the earlier assumption Auto = 2 was wrong).
+
+All file only (likely, assigned by the changed values): SteadyShot `00229` (0 = Off, 1 = SteadyShot; Active SteadyShot = 2 assumed), Handle Zoom Zoom Speed Type `00359` (0 = Fix, 1 = Variable; Off = 2 assumed), Video Light Set `00305` (0 = Power Link, 2 = Rec Link + Stby; Rec Link = 1 assumed).
+
+SteadyShot: the option Active SteadyShot can be greyed out in the camera menu (depends on the attached lens; the manual gives no per-option condition), so its value (2) is still unverified.
+
+Confirmed by single changes: Video Light Set `00305` (0 = Power Link, 1 = Rec Link, 2 = Rec Link + Stby), Zoom Speed Type `00359` (0 = Fix, 1 = Variable, 2 = Off). SteadyShot `00229` (0 = Off, 1 = SteadyShot) follows by elimination.
+
+Handle Zoom Zoom Speed: ALL `00231` field 0 (1 to 8, default 3; likely, confirmed by a single change). Fields 1 and 2 unknown.

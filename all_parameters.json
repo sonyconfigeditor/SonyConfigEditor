@@ -5833,5 +5833,289 @@
       "note": "Detect Window Indication is stored inverted: 0 = On, 1 = Off (found by elimination, not yet changed alone)."
     },
     "scene_equivalent": "00089"
+  },
+  "00258": {
+    "name": "AF Assist",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 51 (2026-10-14): Camera > Focus > Focus Area Wide -> Center and AF Assist On -> Off were changed together; ALL 00258 1 -> 0 and 00460 field 0 0 -> 1 are the only differences (no scene file change; the manual lists both items as All File only). The assignment of the two IDs is by value shape (single On/Off flag vs. three-field value with a mode in field 0), not proven by a single change. Round 57 (2026-10-14): AF Assist Off -> On alone changed 00258 0 -> 1 (with two unrelated changes in other IDs); 00460 stayed unchanged, so AF Assist = 00258 is confirmed and Focus Area = 00460 follows by elimination.",
+    "group": "video",
+    "subgroup": "Camera › Focus",
+    "order": 2,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00460": {
+    "name": "Focus Area",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 51 (2026-10-14): Focus Area Wide -> Center changed field 0 from 0 to 1 (together with AF Assist, see 00258). Wide = 0 and Center = 1 are seen; Flexible Spot = 2 is an assumption from the manual's option order (Wide / Center / Flexible Spot). Fields 1 and 2 (0, 0) are unknown; they may hold the Flexible Spot position or the Push AF area. Round 57: 00460 did not change when AF Assist was switched, so it is not AF Assist (Focus Area by elimination). Round 58 (2026-10-14): Focus Area Center -> Flexible Spot changed field 0 from 1 to 2 (Flexible Spot = 2 confirmed); fields 1 and 2 stayed 0. Wide = 0, Center = 1 as before (Focus Area = 00460 confirmed by the unchanged ID in round 57 and this round).",
+    "group": "video",
+    "subgroup": "Camera › Focus",
+    "order": 1,
+    "widget": {
+      "type": "fields",
+      "min_fields": 3,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Focus Area",
+          "choices": {
+            "0": "Wide",
+            "1": "Center",
+            "2": "Flexible Spot"
+          }
+        }
+      ],
+      "note": "Fields 1 and 2 are unknown; they did not change with Flexible Spot (the spot position is not set in the menu)."
+    }
+  },
+  "00459": {
+    "name": "Shutter",
+    "status": "likely",
+    "evidence": "FS7M2 round 52 (2026-10-14): Camera > Shutter > Mode Speed -> Angle and Shutter Angle 180 -> 216 degrees changed ALL 00459 / scene 00160 field 0 (0 -> 1) and field 1 (9 -> 10) and nothing else. Field 1 is the position in the manual's angle list (5.6, 11.2, 22.5, 45, 90, 120, 144, 150, 172.8, 180, 216, 300: 180 = 9, 216 = 10). Mode 0 = Speed, 1 = Angle; Off = 3 is an assumption from the manual's order.  Round 53 (2026-10-14): Mode Speed/Angle -> ECS and ECS Frequency 50.xx -> 49.77 Hz changed field 0 (1 -> 2, ECS = 2 confirmed) and field 3 (563 -> 559) and nothing else; field 3 is therefore the ECS Frequency (hypothesis for the coding: about 11.23 per Hz, 559 / 49.77 = 11.23, which would make 563 about 50.1 Hz; the exact earlier frequency is not known). Not editable yet. Fields 2, 4, 5, 6 (4, 0, 0, 7) unknown. Round 54 (2026-10-14, 25P format): Mode ECS -> Speed, Shutter Speed 1/50 -> 1/25 and ECS Frequency 49.77 -> 55.02 Hz changed fields 0 (2 -> 0), 2 (4 -> 3), 3 (559 -> 613) and 6 (7 -> 6) and nothing else. Field 2 is the position in the manual's Shutter Speed list of the frame rate (25P: 1/3, 1/6, 1/12, 1/25, 1/50, ...: 1/50 = 4, 1/25 = 3), likely; the list differs per frame rate, so it is not editable yet. Field 3 (ECS Frequency): 559 = 49.77 Hz and 613 = 55.02 Hz fit roughly v = 10.29 x f + 47 (hypothesis, only two points with rounded values; 563 would be about 50.2 Hz). Field 6 (7 -> 6) moved together with the speed, meaning unknown. Fields 4 and 5 (0, 0) unknown. Round 56 (2026-10-14, ALL only, 25P): ECS Frequency 34.00 Hz (after switching Mode Speed -> ECS: field 0 0 -> 2) gives field 3 = 297. With 49.77 -> 559 and 55.02 -> 613 the coding is v = floor(1125 - 28125 / f) for 25P (1125 = total lines of an HD frame, 28125 = 1125 x 25): 34.00 -> 297.8, 49.77 -> 559.9, 55.02 -> 613.8 (all match the truncated value); the earlier 563 is 50.04 Hz. Inverse f = 28125 / (1125 - v). Presumably 1125 x frame rate for other frame rates (not checked). Likely, three points. Round 57 (2026-10-14): Mode Off = 3 confirmed (field 0 2 -> 3, nothing else in the ID).",
+    "group": "video",
+    "subgroup": "Camera › Shutter",
+    "order": 1,
+    "widget": {
+      "type": "fields",
+      "min_fields": 7,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Mode",
+          "choices": {
+            "0": "Speed",
+            "1": "Angle",
+            "2": "ECS",
+            "3": "Off"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Shutter Angle",
+          "choices": {
+            "0": "5.6°",
+            "1": "11.2°",
+            "2": "22.5°",
+            "3": "45°",
+            "4": "90°",
+            "5": "120°",
+            "6": "144°",
+            "7": "150°",
+            "8": "172.8°",
+            "9": "180°",
+            "10": "216°",
+            "11": "300°"
+          }
+        }
+      ],
+      "note": "Field 1 is the Shutter Angle (used in Angle mode); field 2 is the position in the Shutter Speed list of the frame rate and field 3 the ECS Frequency (coding not decoded yet); fields 4 to 6 are unknown."
+    },
+    "scene_equivalent": "00160"
+  },
+  "00021": {
+    "name": "Noise Suppression Setting",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 55 (2026-10-14): Camera > Noise Suppression > Setting On -> Off changed scene 00003 / ALL 00021 1 -> 0 (scene 00003 / ALL 00021) and, together with Level Mid -> High, nothing else. Mk1 and Mk2 sample files all have 1 (On).",
+    "group": "video",
+    "subgroup": "Camera › Noise Suppression",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    },
+    "scene_equivalent": "00003"
+  },
+  "00022": {
+    "name": "Noise Suppression Level",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 55 (2026-10-14): Camera > Noise Suppression > Level Mid -> High changed scene 00004 / ALL 00022 1 -> 2 (scene 00004 / ALL 00022); Mid = 1 is the value of all sample files, Low = 0 is by the manual's order (assumed). Round 57: Level High -> Low gave 0 (Low = 0 confirmed).",
+    "group": "video",
+    "subgroup": "Camera › Noise Suppression",
+    "order": 2,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Low",
+        "1": "Mid",
+        "2": "High"
+      }
+    },
+    "scene_equivalent": "00004"
+  },
+  "00461": {
+    "name": "Focus Area (Push AF)",
+    "status": "likely",
+    "evidence": "FS7M2 round 58 (2026-10-14): Camera > Focus > Focus Area (Push AF) Center -> Flexible Spot (together with Focus Area -> Flexible Spot, which changed 00460) changed field 0 of ALL 00461 from 0 to 1. Center = 0 and Flexible Spot = 1 (the manual offers only these two); fields 1 and 2 (0, 0) unknown. Not changed alone: 00461 is the only other ID that changed, so the assignment is by elimination.",
+    "group": "video",
+    "subgroup": "Camera › Focus",
+    "order": 3,
+    "widget": {
+      "type": "fields",
+      "min_fields": 3,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Focus Area (Push AF)",
+          "choices": {
+            "0": "Center",
+            "1": "Flexible Spot"
+          }
+        }
+      ],
+      "note": "Fields 1 and 2 are unknown."
+    }
+  },
+  "00052": {
+    "name": "Color Bars Type",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 59 (2026-10-14): Camera > Color Bars > Setting Off -> On and Type SMPTE -> ARIB changed only ALL 00052 from 1 to 0 (scene unchanged). So Type ARIB = 0, SMPTE = 1, and Setting (On/Off) is not stored in the files (the manual lists Setting as not saved, Type as All File only). 75% = 2 and 100% = 3 are assumptions from the manual's order (ARIB / SMPTE / 75% / 100%). The files of both camera models hold 0 or 1. Round 60 (2026-10-14): Type -> 75% changed 00052 from 0 to 2 (75% = 2 confirmed); 100% = 3 stays an assumption. Round 61: Type -> 100% changed 00052 from 2 to 3 (100% = 3 confirmed).",
+    "group": "video",
+    "subgroup": "Camera › Color Bars",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "ARIB",
+        "1": "SMPTE",
+        "2": "75%",
+        "3": "100%"
+      }
+    }
+  },
+  "00227": {
+    "name": "Flicker Reduce Mode (Off / On)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 60 (2026-10-14): Camera > Flicker Reduce > Mode Auto -> On and Frequency 50 Hz -> 60 Hz were changed together (plus Color Bars Type): ALL 00227 0 -> 1 and 00228 0 -> 1 are the only other differences (not in the scene file; the manual lists both as All File only). The assignment is by menu order (Mode first) and by the samples: 00227 is 1 in only a few earlier files, 00228 is 1 in the many files recorded with 59.94 Hz formats. Auto = 0 and On = 1; Off = 2 is an assumption from the manual's order (Auto / On / Off). Round 61 (2026-10-14): Mode -> Off and Frequency -> 50 Hz again changed both IDs together, 1 -> 0 (and nothing else except Color Bars Type). Mode Off gave 0 instead of the assumed 2, so either the camera stood on Off (not Auto) before round 60 (then Off = 0, On = 1, Auto = 2 assumed) or the two IDs are not what they were taken for. Which of the two IDs is Mode and which is Frequency is still open. Round 62: 00227 did not change with the Frequency alone, so it is the Mode (by elimination, likely): Off = 0, On = 1; Auto = 2 is an assumption until a round with Mode Auto alone. Round 63 (2026-10-14): Mode Off -> Auto alone changed 00226 and 00227 together, 0 -> 1. With round 60 (Off -> On changed only 00227) and round 61 (On -> Off, only 00227 back) the coding is: Off = 00226 0 / 00227 0, On = 0 / 1, Auto = 1 / 1 (00226 is the Auto flag, 00227 means Flicker Reduce active). All 113 sample files only contain these three combinations.",
+    "group": "video",
+    "subgroup": "Camera › Flicker Reduce",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      },
+      "companions": {
+        "0": {
+          "00226": {
+            "0": "0"
+          }
+        }
+      },
+      "note": "Auto is the separate switch Flicker Reduce Auto (00226) with this one On; turning this Off also switches Auto off."
+    }
+  },
+  "00228": {
+    "name": "Flicker Reduce Frequency",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 60 (2026-10-14): Frequency 50 Hz -> 60 Hz changed ALL 00228 0 -> 1 (together with Mode, see 00227). 50 Hz = 0, 60 Hz = 1; the earlier files of the camera in 59.94 Hz mode mostly have 1 (supports the assignment). Round 61: 1 -> 0 again together with 00227 (Frequency 60 -> 50 Hz and Mode -> Off); the assignment of the two IDs is not proven. Round 62 (2026-10-14): Frequency 50 -> 60 Hz alone changed only 00228 (0 -> 1): Frequency = 00228 confirmed (50 Hz = 0, 60 Hz = 1).",
+    "group": "video",
+    "subgroup": "Camera › Flicker Reduce",
+    "order": 2,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "50 Hz",
+        "1": "60 Hz"
+      }
+    }
+  },
+  "00226": {
+    "name": "Flicker Reduce Auto",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 63 (2026-10-14): Flicker Reduce Mode Off -> Auto changed ALL 00226 and 00227 together, 0 -> 1. 00226 is 1 only together with 00227 = 1 in all sample files; rounds 60 and 61 changed 00227 alone (Off <-> On). So Mode Auto = 00226 1 with 00227 1, Mode On = 00226 0 with 00227 1, Off = both 0.",
+    "group": "video",
+    "subgroup": "Camera › Flicker Reduce",
+    "order": 0,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "Auto"
+      },
+      "companions": {
+        "1": {
+          "00227": {
+            "0": "1"
+          }
+        }
+      },
+      "note": "Mode Auto = this switch on (Flicker Reduce Mode is then On); Off here with Mode On = fixed On."
+    }
+  },
+  "00229": {
+    "name": "SteadyShot",
+    "status": "likely",
+    "evidence": "FS7M2 round 64 (2026-10-14, ALL only; the manual lists the item as All File only): SteadyShot Off -> SteadyShot, Zoom Speed Type Variable -> Fix and Video Light Set -> Rec Link + Stby were changed together; the only differences were ALL 00229 0 -> 1, 00305 0 -> 2 and 00359 1 -> 0. 00229 is the SteadyShot (the remaining 0 -> 1 change; Off = 0, SteadyShot = 1; Active SteadyShot = 2 is an assumption from the manual's order Active SteadyShot / SteadyShot / Off). The samples hold 0 (105 files) and 1 (9 files). Round 64 follow-up (2026-10-14): on the user's camera and lens the entry Active SteadyShot is greyed out in the menu, so the value for it could not be tested. The manual only says that the function works with a compatible lens and lists no condition for the single options, so Active SteadyShot = 2 stays an assumption. Round 65: the other two IDs of round 64 are confirmed by single changes, so 00229 = SteadyShot follows by elimination (Off 0, SteadyShot 1).",
+    "group": "video",
+    "subgroup": "Camera › SteadyShot",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "SteadyShot",
+        "2": "Active SteadyShot – assumption"
+      },
+      "note": "Active SteadyShot = 2 is an assumption (the option is greyed out on some lenses)."
+    }
+  },
+  "00305": {
+    "name": "Video Light Set",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 64 (2026-10-14, ALL only; the manual lists the item as All File only): SteadyShot Off -> SteadyShot, Zoom Speed Type Variable -> Fix and Video Light Set -> Rec Link + Stby were changed together; the only differences were ALL 00229 0 -> 1, 00305 0 -> 2 and 00359 1 -> 0. 00305 is the Video Light Set (0 -> 2 can only be the last of three options): Power Link = 0 (all samples), Rec Link = 1 (assumed), Rec Link + Stby = 2. Round 65 (2026-10-14): Video Light Set -> Rec Link alone changed 00305 from 2 to 1 (Rec Link = 1 confirmed; 00305 = Video Light Set confirmed).",
+    "group": "video",
+    "subgroup": "Camera › Video Light Set",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Power Link",
+        "1": "Rec Link",
+        "2": "Rec Link + Stby"
+      }
+    }
+  },
+  "00359": {
+    "name": "Handle Zoom Zoom Speed Type",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 64 (2026-10-14, ALL only; the manual lists the item as All File only): SteadyShot Off -> SteadyShot, Zoom Speed Type Variable -> Fix and Video Light Set -> Rec Link + Stby were changed together; the only differences were ALL 00229 0 -> 1, 00305 0 -> 2 and 00359 1 -> 0. 00359 is the Zoom Speed Type (the only value that went down): Variable = 1 (113 of 114 sample files), Fix = 0 (this file). Off = 2 is an assumption from the manual's order Fix / Variable / Off. Round 65: Zoom Speed Type -> Off alone changed 00359 from 0 to 2 (Off = 2 confirmed; 00359 = Zoom Speed Type confirmed).",
+    "group": "video",
+    "subgroup": "Camera › Handle Zoom",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Fix",
+        "1": "Variable",
+        "2": "Off"
+      }
+    }
+  },
+  "00231": {
+    "name": "Handle Zoom Zoom Speed (1 to 8)",
+    "status": "likely",
+    "evidence": "FS7M2 round 66 (2026-10-14, ALL only; the manual lists Zoom Speed as All File only): Camera > Handle Zoom > Zoom Speed 3 -> 7 changed only ALL 00231 field 0 (3 -> 7). 3 is the manual's default and the value of all other sample files; the range 1 to 8 is from the manual. Field 1 (always 1) and field 2 (0 in 35 files, 2 in 81) are unknown.",
+    "group": "video",
+    "subgroup": "Camera › Handle Zoom",
+    "order": 2,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 1,
+      "max": 8,
+      "small": 1,
+      "large": 1,
+      "decimals": 0,
+      "note": "Zoom Speed 1 to 8 (manual), default 3. Fields 1 and 2 of the value are unknown."
+    }
   }
 }

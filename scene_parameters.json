@@ -2564,5 +2564,79 @@
       },
       "note": "Detect Window Indication is stored inverted: 0 = On, 1 = Off (found by elimination, not yet changed alone)."
     }
+  },
+  "00160": {
+    "name": "Shutter",
+    "status": "likely",
+    "evidence": "FS7M2 round 52 (2026-10-14): Camera > Shutter > Mode Speed -> Angle and Shutter Angle 180 -> 216 degrees changed scene 00160 / ALL 00459 field 0 (0 -> 1) and field 1 (9 -> 10) and nothing else. Field 1 is the position in the manual's angle list (5.6, 11.2, 22.5, 45, 90, 120, 144, 150, 172.8, 180, 216, 300: 180 = 9, 216 = 10). Mode 0 = Speed, 1 = Angle; Off = 3 is an assumption from the manual's order.  Round 53 (2026-10-14): Mode Speed/Angle -> ECS and ECS Frequency 50.xx -> 49.77 Hz changed field 0 (1 -> 2, ECS = 2 confirmed) and field 3 (563 -> 559) and nothing else; field 3 is therefore the ECS Frequency (hypothesis for the coding: about 11.23 per Hz, 559 / 49.77 = 11.23, which would make 563 about 50.1 Hz; the exact earlier frequency is not known). Not editable yet. Fields 2, 4, 5, 6 (4, 0, 0, 7) unknown. Round 54 (2026-10-14, 25P format): Mode ECS -> Speed, Shutter Speed 1/50 -> 1/25 and ECS Frequency 49.77 -> 55.02 Hz changed fields 0 (2 -> 0), 2 (4 -> 3), 3 (559 -> 613) and 6 (7 -> 6) and nothing else. Field 2 is the position in the manual's Shutter Speed list of the frame rate (25P: 1/3, 1/6, 1/12, 1/25, 1/50, ...: 1/50 = 4, 1/25 = 3), likely; the list differs per frame rate, so it is not editable yet. Field 3 (ECS Frequency): 559 = 49.77 Hz and 613 = 55.02 Hz fit roughly v = 10.29 x f + 47 (hypothesis, only two points with rounded values; 563 would be about 50.2 Hz). Field 6 (7 -> 6) moved together with the speed, meaning unknown. Fields 4 and 5 (0, 0) unknown. Round 56 (2026-10-14, ALL only, 25P): ECS Frequency 34.00 Hz (after switching Mode Speed -> ECS: field 0 0 -> 2) gives field 3 = 297. With 49.77 -> 559 and 55.02 -> 613 the coding is v = floor(1125 - 28125 / f) for 25P (1125 = total lines of an HD frame, 28125 = 1125 x 25): 34.00 -> 297.8, 49.77 -> 559.9, 55.02 -> 613.8 (all match the truncated value); the earlier 563 is 50.04 Hz. Inverse f = 28125 / (1125 - v). Presumably 1125 x frame rate for other frame rates (not checked). Likely, three points. Round 57: Mode Off = 3 confirmed (field 0 -> 3).",
+    "group": "video",
+    "subgroup": "Camera › Shutter",
+    "order": 1,
+    "widget": {
+      "type": "fields",
+      "min_fields": 7,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Mode",
+          "choices": {
+            "0": "Speed",
+            "1": "Angle",
+            "2": "ECS",
+            "3": "Off"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Shutter Angle",
+          "choices": {
+            "0": "5.6°",
+            "1": "11.2°",
+            "2": "22.5°",
+            "3": "45°",
+            "4": "90°",
+            "5": "120°",
+            "6": "144°",
+            "7": "150°",
+            "8": "172.8°",
+            "9": "180°",
+            "10": "216°",
+            "11": "300°"
+          }
+        }
+      ],
+      "note": "Field 1 is the Shutter Angle (used in Angle mode); field 2 is the position in the Shutter Speed list of the frame rate and field 3 the ECS Frequency (coding not decoded yet); fields 4 to 6 are unknown."
+    }
+  },
+  "00003": {
+    "name": "Noise Suppression Setting",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 55 (2026-10-14): Camera > Noise Suppression > Setting On -> Off changed scene 00003 / ALL 00021 1 -> 0 (scene 00003 / ALL 00021) and, together with Level Mid -> High, nothing else. Mk1 and Mk2 sample files all have 1 (On).",
+    "group": "video",
+    "subgroup": "Camera › Noise Suppression",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00004": {
+    "name": "Noise Suppression Level",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 55 (2026-10-14): Camera > Noise Suppression > Level Mid -> High changed scene 00004 / ALL 00022 1 -> 2 (scene 00004 / ALL 00022); Mid = 1 is the value of all sample files, Low = 0 is by the manual's order (assumed). Round 57: Level High -> Low gave 0 (Low = 0 confirmed).",
+    "group": "video",
+    "subgroup": "Camera › Noise Suppression",
+    "order": 2,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Low",
+        "1": "Mid",
+        "2": "High"
+      }
+    }
   }
 }

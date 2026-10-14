@@ -49,7 +49,7 @@ DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a block (parameters get "subgroup" in the databases; others: "Other")
 SUBGROUP_ORDER = [
     "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
-    "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Offset White",
+    "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Offset White",
     "White", "Recording › S&Q Motion", "Audio › Input", "VF › Zebra / Marker", "File › Clip",
 ]
 CATEGORIES = ("System", "Camera", "Paint")      # main menus of the camera with their own collapsible heading above their sub-groups ("Paint › Gamma", "Camera › ND Filter", ...)
