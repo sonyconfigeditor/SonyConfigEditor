@@ -46,7 +46,7 @@ Settings (language, last folder) are stored in your user config directory (put a
 
 ## Usage
 
-1. **Open** a scene or ALL file (Ctrl+O) or start a **New** one (Ctrl+N).
+1. **Open** a SCENE or ALL file (Ctrl+O) or start a **New** one (Ctrl+N).
 2. Change values; use the filter to find them. Greyed-out entries cannot be set in the current state.
 3. Choose the **model** (FS7 / FS7M2) and **type** (SCENE / ALL) in the header if you want to convert.
 4. Set the **file ID** (name, 16 characters) and **number** (000-999); **Save** (Ctrl+S) writes `NNN.SCENE` / `NNN.ALL` into the folder of the loaded file, **Save As** (Ctrl+Shift+S) lets you choose.
