@@ -853,6 +853,7 @@ class ImportDialog(ctk.CTkToplevel):
 
     def __init__(self, app, items: list[dict], source_text: str, invisible: bool = False):
         super().__init__(app)
+        apply_window_icon(self)
         if invisible:
             self.attributes("-alpha", 0)   # tests: never show a window to the user (set before anything is built)
         self.app, self.items, self.result, self.source_text = app, items, None, source_text
@@ -948,6 +949,7 @@ class DiffDialog(ctk.CTkToplevel):
 
     def __init__(self, app, rows: list[dict], other_name: str, invisible: bool = False):
         super().__init__(app)
+        apply_window_icon(self)
         if invisible:
             self.attributes("-alpha", 0)
         self.app, self.rows, self.other_name = app, rows, other_name
@@ -1133,6 +1135,7 @@ class LicenseDialog(ctk.CTkToplevel):
 
     def __init__(self, app, invisible: bool = False):
         super().__init__(app)
+        apply_window_icon(self)
         if invisible:
             self.attributes("-alpha", 0)
         self.title(tr("License text"))
@@ -1171,6 +1174,24 @@ def open_mail_client() -> bool:
 
 
 LOGO_FILE = BASE_DIR / "assets" / "sonyconfigeditor.png"
+ICON_FILE = BASE_DIR / "assets" / "sonyconfigeditor.ico"       # made by tools/make_icon.py; also embedded in the EXE (build_exe.bat)
+
+
+def apply_window_icon(window) -> None:
+    """The program icon in the title bar and the taskbar (Windows). customtkinter puts its own icon on a window after about 200 ms: set ours later."""
+    if sys.platform != "win32" or not ICON_FILE.is_file():
+        return
+
+    def put():
+        try:
+            window.iconbitmap(str(ICON_FILE))
+        except (tk.TclError, RuntimeError):      # the window is gone already, or the file cannot be used: the default icon stays
+            pass
+
+    try:
+        window.after(400, put)
+    except (tk.TclError, RuntimeError):
+        pass
 
 
 def load_logo(size: int):
@@ -1193,6 +1214,7 @@ class AboutDialog(ctk.CTkToplevel):
 
     def __init__(self, app, invisible: bool = False):
         super().__init__(app)
+        apply_window_icon(self)
         if invisible:
             self.attributes("-alpha", 0)
         self.app, self.invisible = app, invisible
@@ -1262,6 +1284,7 @@ class ModelDialog(ctk.CTkToplevel):
 
     def __init__(self, app, invisible: bool = False):
         super().__init__(app)
+        apply_window_icon(self)
         if invisible:
             self.attributes("-alpha", 0)
         self.result = None
@@ -1370,6 +1393,7 @@ class App(ctk.CTk):
         self._apply_appearance(self.appearance)
         ctk.set_default_color_theme("blue")
         self.title(f"{APP_NAME} v{_version}")
+        apply_window_icon(self)
         scale = ctk.ScalingTracker.get_window_scaling(self)
         screen_w, screen_h = self.winfo_screenwidth() / scale, self.winfo_screenheight() / scale
         self.geometry(f"{int(min(1150, screen_w * 0.9))}x{int(min(700, screen_h * 0.85))}")   # the Multi Matrix row (axis, hue, saturation) needs about 1050

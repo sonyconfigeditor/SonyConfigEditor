@@ -3,6 +3,10 @@
 Format: `_version` / `_date` in `SonyConfigEditor.py` must match the top entry.
 Newest first; the version is only raised for a release.
 
+## [Unreleased]
+### Added
+- **Program icon:** `assets/sonyconfigeditor.ico` (the logo without its wide transparent margin, seven sizes from 16 to 256 px) is embedded in the EXE (`build_exe.bat`, PyInstaller `--icon`, shown by Explorer) and used for the title bar and the taskbar of the program and its dialogs instead of the default icon.
+
 ## [0.2.0] - 2026-10-14
 ### Added
 - **ISO/Gain/EI: usable rows on top.** The rows that apply to the current mode and gamma (Mode and the three ISO or dB rows) stand at the top of the sub-group, the greyed-out ones follow below the line "Not used with the current settings"; the order follows the mode and the gamma while you change them. While a filter is active the order and the line stay as they are (`REORDER_BY_LOCK`).
@@ -85,13 +89,13 @@ Newest first; the version is only raised for a release.
 - **Compare / difference view** (File > Compare…, Ctrl+D, and the "Show differences" button of the import dialog): current file against another file in two columns with readable menu paths (no IDs), changed rows coloured, next/previous difference (Alt+Down / Alt+Up, F8 / Shift+F8), full files (Ctrl+1) or only differences (Ctrl+2). Fix: an f-string with nested quotes in the import dialog needed Python 3.12; the test suite now checks this.
 - the project notes (English summary of everything known about the file formats and parameters) and the project notes (translated) are part of the public documentation.
 - Spanish and Italian catalogs (`translations/es.json`, `it.json`); the decoding status in brackets ([likely], [hypothesis]) is translated; the e-mail address in the About dialog opens the mail program.
-- Speed: opening a file of the same type and model updates the existing table in place instead of rebuilding about 1000 widgets (6-9 s -> 0.4-2 s); `tools/run_checks.py` runs single test blocks (`--only`) and prints the time per block; every profile (type, model) keeps its built table, so switching between SCENE/ALL and between the models only updates values (about 2 s instead of 8); the full test run dropped from 17 to under 7 minutes.
+- Speed: opening a file of the same type and model updates the existing table in place instead of rebuilding about 1000 widgets (6-9 s -> 0.4-2 s); every profile (type, model) keeps its built table, so switching between SCENE/ALL and between the models only updates values (about 2 s instead of 8).
 - Logo (`assets/sonyconfigeditor.png`) in the About dialog (transparent margin cropped, scales with the display scaling) and in the README; bundled by `build_exe.bat` / `build_app.sh`.
 - **Menu bar** instead of the toolbar buttons (own scalable, dark bar; File: New, Open, Save, Save As, Import, Exit; Edit: Undo, Redo, Find; View: Language; Help: About) with the usual shortcuts (Ctrl+N/O/S/Shift+S/I/Z/Y/F/Q, F1). About dialog with copyright (pseudonym "Lukas Himmelswanderer"), unofficial/no-warranty disclaimer towards Sony and the licence text; `LICENSE` (MIT).
-- **Language switch at run time** (View > Language): all texts are translatable (English source texts in the code are the keys, catalogs in `translations/<code>.json`, `translate_db` for the notes/labels/dropdowns of the databases, `_label_words` for generated format labels); German is a catalog (`de.json`), English is the default and source language. Buttons and dropdowns take the width of the longest translation. `tools/i18n_keys.py` lists the keys and missing translations.
+- **Language switch at run time** (View > Language): all texts are translatable (English source texts in the code are the keys, catalogs in `translations/<code>.json`, `translate_db` for the notes/labels/dropdowns of the databases, `_label_words` for generated format labels); German is a catalog (`de.json`), English is the default and source language. Buttons and dropdowns take the width of the longest translation.
 - **Settings file** (language, last folder) in the user's config directory (Windows `%APPDATA%`, macOS `Library/Application Support`, Linux `$XDG_CONFIG_HOME`; portable: `settings.json` next to the program). Size-limited, type-checked, no network paths, atomic write.
-- **Hardened file loading**: limits for file size (64 KB), lines, ID format (5 digits), duplicate IDs, value length/fields, control characters, model and name; hostile files are rejected with a message (tests 44).
-- `build_app.sh` (PyInstaller for Linux/macOS, untested), requirements in the header of `SonyConfigEditor.py`; tests record every message box instead of showing it.
+- **Hardened file loading**: limits for file size (64 KB), lines, ID format (5 digits), duplicate IDs, value length/fields, control characters, model and name; hostile files are rejected with a message.
+- `build_app.sh` (PyInstaller for Linux/macOS, untested), requirements in the header of `SonyConfigEditor.py`.
 - Step fields (User Matrix, Skin Detail) put as many cells in a line as fit into the window and wrap only when it is narrow (reflow while resizing).
 - The start window is wider (1150 instead of 900 logical pixels, limited to 90 % of the screen) so that the Multi Matrix row (axis, hue, saturation) is no longer cut off at the edge.
 - Fix: after a lock was released (e.g. White Clip Off -> On, Cine EI -> Custom) the number fields of that row stayed uneditable: the inner entry of a field was disabled a second time and kept the disabled state. Typing and the display of values work again; the checks now look at the inner entry.

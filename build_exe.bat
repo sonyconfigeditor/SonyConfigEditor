@@ -19,6 +19,7 @@ if errorlevel 1 (
 
 python -m PyInstaller --noconfirm --clean --onefile --windowed ^
     --name SonyConfigEditor ^
+    --icon assets\sonyconfigeditor.ico ^
     --version-file build\version_info.txt ^
     --collect-data customtkinter ^
     --add-data "scene_parameters.json;." ^
