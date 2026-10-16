@@ -33,7 +33,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.2.0"
-_date = "2026-10-14"
+_date = "2026-10-16"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -56,7 +56,7 @@ SUBGROUP_ORDER = [
     "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
     "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
-    "Recording › S&Q Motion", "Audio › Input", "VF › Zebra / Marker", "File › Clip",
+    "Recording › S&Q Motion", "Audio › Input", "Audio › Output", "VF › Zebra / Marker", "File › Clip", "File › Scene File",
 ]
 REORDER_BY_LOCK = {"Camera › ISO/Gain/EI"}      # sub-groups whose usable rows move to the top, the greyed-out ones follow below a divider line
 CATEGORIES = ()      # the menus are tabs now; a heading per menu inside a tab would only repeat the tab name (the mechanism for headings is kept)
@@ -118,8 +118,23 @@ def param_db_models(kind: str) -> list | None:
     return _read_param_file(kind).get("_models")
 
 
+FACTORY_DIR = TEMPLATE_DIR / "factory"      # the camera's own factory state (SCENE + ALL file after a full reset): what "New" starts from
+
+
+def factory_params(model: str, kind: str) -> dict | None:
+    """Parameters of the factory state of a model (kind "scene" or "all"), None if there is no factory file for it."""
+    try:
+        return dict(SceneFile.load(FACTORY_DIR / f"{model}.{kind.upper()}").params)
+    except (OSError, SceneFileError):
+        return None
+
+
 def new_scene_params(model: str) -> dict | None:
-    """Parameters of a new SCENE file: the model's template plus the neutral values of defaults.json (None without template)."""
+    """Parameters of a new SCENE file: the factory state of the model if there is one, otherwise the model's template plus the neutral values
+    of defaults.json (None without template)."""
+    factory = factory_params(model, "scene")
+    if factory is not None:
+        return factory
     params = SceneSession._template(model, "scene")
     if params is None:
         return None
@@ -1838,7 +1853,13 @@ class App(ctk.CTk):
             return False
         self.scene = SceneFile(name="NEW", model=model, params=params)
         self._adopt("scene")
-        self.lbl_status.configure(text=tr("New (neutral values, not a factory state)"))
+        factory_all = factory_params(model, "all")
+        if factory_all is not None and self.session is not None:
+            key = f"all:{model}"            # the ALL side of the new file is the factory ALL file, like a profile that was visited already
+            self.session.store[key] = dict(factory_all)
+            self.session.baseline[key] = dict(factory_all)
+        factory = factory_all is not None and factory_params(model, "scene") is not None
+        self.lbl_status.configure(text=tr("New (factory state of the camera)") if factory else tr("New (neutral values, not a factory state)"))
         return True
 
     def open_path(self, path: Path) -> bool:

@@ -1,10 +1,19 @@
 # Changelog
 
-Format: `_version` / `_date` in `SonyConfigEditor.py` must match the top entry.
+Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
 Newest first; the version is only raised for a release.
 
-## [Unreleased]
+## [Unreleased] - 2026-10-16
 ### Added
+- **Audio > CH1&2 / CH3&4 AGC Mode** (Mono / Stereo) and **CH1-CH4 Level** (Audio Input Level / channel input level / combined; CH1 and CH3 seen, the combined entry is assumed), ALL files only, FS7M2.
+- **Audio > Audio Input Level, Limiter Mode (switch and level) and AGC Spec** (ALL files only, FS7M2). **1 kHz Tone on Color Bars** (Off / On, stored inverted: 1 = Off).
+- **Audio Output > Monitor Volume** (0 to 15) and **Alarm Volume** (0 to 7); Monitor CH CH3 confirmed (ALL files only, FS7M2).
+- **Audio > CH3 / CH4 Wind Filter** and **Audio Output > Monitor CH** (ALL files only, FS7M2; MIX ALL and CH1/CH2 are confirmed, the other channel choices follow the manual's order).
+- **Audio > CH3 / CH4 Level Control** (Auto / Manual), **CH3 / CH4 Input Level** (0 to 99) and **File > Scene File > Scene White Data** (Off / On), ALL files only, FS7M2.
+- **Audio > CH3 / CH4 Input Select** (ALL files only, FS7M2, likely): Off / Internal MIC / Shoe, and Shoe 2 for CH2 is now confirmed.
+- **Audio > CH1 / CH2 Input Select and CH1 Wind Filter** (ALL files only, FS7M2, likely): CH1 offers INPUT1, Internal MIC and Shoe 1 (ALL `00369`), CH2 INPUT1, INPUT2 and Internal MIC (`00370`), CH1 Wind Filter Off / On is field 0 of `00239`, CH2 Wind Filter field 0 of `00240`.
+- **Audio > INPUT1 / INPUT2 MIC Reference** (ALL files only; the SCENE file has no audio items): dropdowns -60 / -50 / -40 dB (factory value -50 dB), confirmed on the FS7M2 (ALL `00015` / `00016`). The Audio tab shows them.
+- **New file for the FS7M2 starts from the camera's factory state** (a SCENE and an ALL file saved after a full reset of the camera; the clip name, which the camera derives from its serial number, is replaced by a neutral "A"): both the SCENE side and the ALL side of a new file hold the real factory values. The FS7 keeps its neutral template. The Gamma Category row of a SCENE file now shows STD for the factory state (the camera leaves the S-Log3 flag set there), like the ALL file does.
 - **Program icon:** `assets/sonyconfigeditor.ico` (the logo without its wide transparent margin, seven sizes from 16 to 256 px) is embedded in the EXE (`build_exe.bat`, PyInstaller `--icon`, shown by Explorer) and used for the title bar and the taskbar of the program and its dialogs instead of the default icon.
 
 ## [0.2.0] - 2026-10-14

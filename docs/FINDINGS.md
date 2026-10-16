@@ -203,3 +203,21 @@ SteadyShot: the option Active SteadyShot can be greyed out in the camera menu (d
 Confirmed by single changes: Video Light Set `00305` (0 = Power Link, 1 = Rec Link, 2 = Rec Link + Stby), Zoom Speed Type `00359` (0 = Fix, 1 = Variable, 2 = Off). SteadyShot `00229` (0 = Off, 1 = SteadyShot) follows by elimination.
 
 Handle Zoom Zoom Speed: ALL `00231` field 0 (1 to 8, default 3; likely, confirmed by a single change). Fields 1 and 2 unknown.
+
+Factory state of the FS7M2 (full reset, PAL region): UHD 3840x2160 50p, gamma category STD with STD5 R709 and the S-Log3 flag (scene `00143` / ALL `00494`) set as well, dynamic range and gain at their defaults (gain mode dB, L/M/H = 0 / 6 / 12 dB, ISO index 0 / 3 / 6 per range), Auto Exposure Level 0, ND presets 1/4, 1/16, 1/64, Master Black 0, Matrix and Multi Matrix at zero, White Clip level 105 %, Knee Setting On, Auto Knee On. The clip name is derived from the serial number of the camera; it is replaced in the exported templates.
+
+Audio > INPUT1 / INPUT2 MIC Reference: ALL `00015` / `00016`, stored as the dB value (-60, -50, -40; factory -50). Audio menu items are stored in ALL files only (the manual lists them as not saved in SCENE files).
+
+Audio input select: CH1 = ALL `00369`, CH2 = `00370`, two fields (kind of source: 2 = INPUT1/INPUT2 connector, 0 = Internal MIC; number of the input). Kind of source: 2 = INPUT1/INPUT2 connector, 0 = Internal MIC, 5 = Shoe; INPUT1 = `2, 1`, INPUT2 = `2, 2`, CH1 Internal MIC = `0, 1`, CH1 Shoe 1 = `5, 1`, CH2 Internal MIC = `0, 2`. CH1 / CH2 Wind Filter = field 0 of `00239` / `00240` (0 Off, 1 On).
+
+Audio input select, CH2-CH4: CH2 Shoe 2 = `5, 2` in `00370`. CH3 = ALL `00427`, CH4 = `00428`, same two-field coding (Off = `12, x`, Internal MIC = `0, x`, Shoe = `5, x`; field 1 = channel; CH3 Internal MIC `0, 3` and CH4 Shoe 2 `5, 4` seen, CH3 Shoe 1 and CH4 Internal MIC assumed). For microphones and shoe inputs field 1 is the channel, for the INPUT1/INPUT2 connectors the number of the connector.
+
+Audio level control: ALL `00142` (CH3) and `00143` (CH4), 0 = Auto, 1 = Manual (CH1 and CH2 have hardware switches and no menu item); input level of CH3 / CH4: ALL `00438` / `00439`, 0 to 99 (factory 49). File > Scene File > Scene White Data: ALL `00304`, 0 = Off, 1 = On; the item only controls whether the white balance data of a SCENE file is applied when it is loaded, the SCENE file itself always contains these values.
+
+Audio wind filter CH3 / CH4: field 0 of ALL `00429` / `00430` (0 Off, 1 On). Audio Output > Monitor CH: ALL `00440`, 0 = CH1/CH2 (factory), 2 = MIX ALL; the manual order CH1/CH2, CH3/CH4, MIX ALL, CH1, CH2, CH3, CH4 suggests 1 = CH3/CH4 and 3-6 = CH1-CH4 (not seen). `00374` (16 flags) changed together with the monitor channel; the camera probably derives it from the channel selection (hypothesis).
+
+Audio Output: Monitor Volume = field 0 of ALL `00137` (0 to 15, factory 7; field 1 = 15 unknown), Alarm Volume = ALL `00375` (0 to 7, factory 4), Monitor CH CH3 = 5 in `00440`.
+
+Audio input: Audio Input Level = ALL `00371` (0 to 99, factory 99); Limiter Mode = switch `00146` (0 Off, 1 On) plus level `00147` (dB value, 0 when off, -12 seen); AGC Spec = `00144` (dB value, factory -6, -9 seen). 1 kHz Tone on Color Bars = `00053` (next to Color Bars Type), stored inverted: 1 = Off, 0 = On.
+
+Audio AGC mode: field 0 of ALL `00141` (CH1&2) and `00431` (CH3&4), 0 = Mono, 1 = Stereo. Channel level selection CH1-CH4: ALL `00372`, `00373`, `00432`, `00433` (factory 2 each): 0 = Audio Input Level, 2 = the channel's own input level, 1 = both combined (assumed; the Mk2 offers three entries without an XLR adapter, 'Side' for CH1/CH2).

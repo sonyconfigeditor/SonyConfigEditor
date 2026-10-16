@@ -2888,18 +2888,36 @@
     "order": 20
   },
   "00015": {
-    "name": "INPUT1 MIC Reference (dB) (?)",
-    "status": "hypothesis",
-    "evidence": "-40 (manual: -60/-50/-40 dB); 00016 = INPUT2 MIC Reference",
+    "name": "INPUT1 MIC Reference",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 67 (2026-10-16): Audio > Audio Input > INPUT1 MIC Reference -50 -> -60 dB and INPUT2 MIC Reference -50 -> -40 dB change exactly ALL 00015 (-50 -> -60) and 00016 (-50 -> -40); the SCENE file stays identical (the manual's table of saved menu items lists the Audio menu for the All File only). The manual offers -60 dB / -50 dB / -40 dB; -50 dB is the factory value.",
     "group": "audio",
-    "subgroup": "Audio › Input"
+    "subgroup": "Audio › Input",
+    "order": 3,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "-60": "-60 dB",
+        "-50": "-50 dB",
+        "-40": "-40 dB"
+      }
+    }
   },
   "00016": {
-    "name": "INPUT2 MIC Reference (dB) (?)",
-    "status": "hypothesis",
-    "evidence": "See 00015",
+    "name": "INPUT2 MIC Reference",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 67 (2026-10-16): Audio > Audio Input > INPUT1 MIC Reference -50 -> -60 dB and INPUT2 MIC Reference -50 -> -40 dB change exactly ALL 00015 (-50 -> -60) and 00016 (-50 -> -40); the SCENE file stays identical (the manual's table of saved menu items lists the Audio menu for the All File only). The manual offers -60 dB / -50 dB / -40 dB; -50 dB is the factory value.",
     "group": "audio",
-    "subgroup": "Audio › Input"
+    "subgroup": "Audio › Input",
+    "order": 4,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "-60": "-60 dB",
+        "-50": "-50 dB",
+        "-40": "-40 dB"
+      }
+    }
   },
   "00079": {
     "name": "Knee Point, other copy (?)",
@@ -6497,6 +6515,489 @@
       "large": 1,
       "decimals": 0,
       "note": "Zoom Speed 1 to 8 (manual), default 3. Fields 1 and 2 of the value are unknown."
+    }
+  },
+  "00369": {
+    "name": "CH1 Input Select",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 68 and 69 (2026-10-16, ALL only): CH1 Input Select INPUT1 -> Internal MIC: ALL 00369 `2, 1` -> `0, 1`; Internal MIC -> Shoe 1: `0, 1` -> `5, 1`. Field 0 is the kind of source (2 = INPUT1/INPUT2 connector, 0 = Internal MIC, 5 = Shoe), field 1 the number of the input / channel. The manual offers INPUT1 / Internal MIC / Shoe 1 for CH1.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "2, 1": "INPUT1",
+        "0, 1": "Internal MIC",
+        "5, 1": "Shoe 1"
+      }
+    }
+  },
+  "00370": {
+    "name": "CH2 Input Select",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 68-70 (2026-10-16, ALL only): CH2 Input Select INPUT2 -> INPUT1: ALL 00370 `2, 2` -> `2, 1`; INPUT1 -> Internal MIC: `2, 1` -> `0, 2`; Internal MIC -> Shoe 2: `0, 2` -> `5, 2`. Field 0 = kind of source (2 = INPUT1/INPUT2 connector, 0 = Internal MIC, 5 = Shoe), field 1 = number of the input (connector) or of the channel (mic, shoe).",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "2, 2": "INPUT2",
+        "2, 1": "INPUT1",
+        "0, 2": "Internal MIC",
+        "5, 2": "Shoe 2"
+      }
+    }
+  },
+  "00239": {
+    "name": "CH1 Wind Filter",
+    "status": "confirmed",
+    "evidence": "FS7M2 (2026-10-16, ALL only; the SCENE file stays unchanged), round 68: CH1 Wind Filter Off -> On = field 0 of ALL 00239 `0,1,2` -> `1,1,2` (0 = Off, 1 = On). The other two fields are unknown (`1, 2` and `2, 2` in the factory state).",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 5,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 0,
+          "label": "CH1 Wind Filter",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        }
+      ]
+    }
+  },
+  "00240": {
+    "name": "CH2 Wind Filter",
+    "status": "confirmed",
+    "evidence": "FS7M2 (2026-10-16, ALL only; the SCENE file stays unchanged), round 69: CH2 Wind Filter Off -> On = field 0 of ALL 00240 `0,2,2` -> `1,2,2` (0 = Off, 1 = On). The other two fields are unknown (`1, 2` and `2, 2` in the factory state).",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 6,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 0,
+          "label": "CH2 Wind Filter",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        }
+      ]
+    }
+  },
+  "00427": {
+    "name": "CH3 Input Select",
+    "status": "likely",
+    "evidence": "FS7M2 round 70 (2026-10-16, ALL only; the SCENE file is unchanged): CH3 Input Select Off -> Internal MIC changes ALL 00427 `12, 3` -> `0, 3`. Same coding as CH1/CH2 (field 0 = kind of source, field 1 = channel); Off = 12. The manual offers Off / Internal MIC / Shoe 1 for CH3. An older FS7 file showed `11, x` -> `5, x` in this ID, so the Off value may differ between the cameras.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "12, 3": "Off",
+        "0, 3": "Internal MIC",
+        "5, 3": "Shoe 1 – assumption"
+      },
+      "note": "Shoe 1 for CH3 (5, 3) is assumed from CH1 (Shoe 1 = 5, 1); it has not been seen in a file yet."
+    }
+  },
+  "00428": {
+    "name": "CH4 Input Select",
+    "status": "likely",
+    "evidence": "FS7M2 round 70 (2026-10-16, ALL only; the SCENE file is unchanged): CH4 Input Select Off -> Shoe 2 changes ALL 00428 `12, 4` -> `5, 4`. Same coding as CH1-CH3 (Shoe = 5, field 1 = channel); Off = 12. The manual offers Off / Internal MIC / Shoe 2 for CH4; Internal MIC is assumed to be `0, 4`.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.2,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "12, 4": "Off",
+        "0, 4": "Internal MIC – assumption",
+        "5, 4": "Shoe 2"
+      },
+      "note": "Internal MIC for CH4 (0, 4) is assumed from CH3 (Internal MIC = 0, 3); it has not been seen in a file yet."
+    }
+  },
+  "00142": {
+    "name": "CH3 Level Control",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 71-72 (2026-10-16, ALL only; the SCENE file is unchanged): CH3 Level Control Auto -> Manual: ALL 00142 0 -> 1 (round 71, together with the other channel); CH3 Level Control Manual -> Auto: 1 -> 0 (round 72); 0 = Auto, 1 = Manual. CH1 and CH2 have hardware switches on the camera body, so only CH3 and CH4 have a menu item.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.3,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Auto",
+        "1": "Manual"
+      }
+    }
+  },
+  "00143": {
+    "name": "CH4 Level Control",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 71-72 (2026-10-16, ALL only; the SCENE file is unchanged): CH4 Level Control Auto -> Manual: ALL 00143 0 -> 1 (round 71, together with the other channel); unchanged in round 72 (stays Manual, so CH3 = 00142 and CH4 = 00143 are separated); 0 = Auto, 1 = Manual. CH1 and CH2 have hardware switches on the camera body, so only CH3 and CH4 have a menu item.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.4,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Auto",
+        "1": "Manual"
+      }
+    }
+  },
+  "00304": {
+    "name": "Scene White Data",
+    "status": "likely",
+    "evidence": "FS7M2 round 71 (2026-10-16, ALL only; the SCENE file is unchanged): File > Scene File > Scene White Data Off -> On changed ALL 00304 from 0 to 1. The manual lists the item as All File only; it decides whether the white balance data of a SCENE file is applied when the file is loaded. The assignment follows from the three simultaneous changes (the other two are the level controls).",
+    "group": "misc",
+    "subgroup": "File › Scene File",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00438": {
+    "name": "CH3 Input Level",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 72 (2026-10-16, ALL only): CH3 Input Level 49 -> 41 (range 0 to 99, factory 49): ALL 00438 49 -> 41. Only used with CH3 Level Control = Manual.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.5,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 0,
+      "max": 99,
+      "small": 1,
+      "large": 10,
+      "note": "0 to 99 (manual of the menu item), factory value 49; the level control of CH3 must be Manual."
+    }
+  },
+  "00439": {
+    "name": "CH4 Input Level",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 72 (2026-10-16, ALL only): CH4 Input Level 49 -> 55 (range 0 to 99, factory 49): ALL 00439 49 -> 55. Only used with CH4 Level Control = Manual.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.6,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 0,
+      "max": 99,
+      "small": 1,
+      "large": 10,
+      "note": "0 to 99 (manual of the menu item), factory value 49; the level control of CH4 must be Manual."
+    }
+  },
+  "00429": {
+    "name": "CH3 Wind Filter",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): CH3 Wind Filter Off -> On changes field 0 of ALL 00429 from 0 to 1 (0 = Off, 1 = On); the other two fields (channel number 3 and 2) did not change. Same layout as CH1 / CH2 (00239 / 00240).",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 7,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 0,
+          "label": "CH3 Wind Filter",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        }
+      ]
+    }
+  },
+  "00430": {
+    "name": "CH4 Wind Filter",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): CH4 Wind Filter Off -> On changes field 0 of ALL 00430 from 0 to 1 (0 = Off, 1 = On); the other two fields (channel number 4 and 2) did not change. Same layout as CH1 / CH2 (00239 / 00240).",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 8,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 0,
+          "label": "CH4 Wind Filter",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        }
+      ]
+    }
+  },
+  "00440": {
+    "name": "Monitor CH",
+    "status": "likely",
+    "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): Audio > Audio Output > Monitor CH CH1/CH2 -> MIX ALL changes ALL 00440 from 0 to 2. Monitor CH MIX ALL -> CH3 (round 74) changes it from 2 to 5. The manual lists CH1/CH2 / CH3/CH4 / MIX ALL / CH1 / CH2 / CH3 / CH4; the indices follow that order (0 = CH1/CH2 factory, 2 = MIX ALL and 5 = CH3 are seen, 1, 3, 4 and 6 are assumed).",
+    "group": "audio",
+    "subgroup": "Audio › Output",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "CH1/CH2",
+        "1": "CH3/CH4 – assumption",
+        "2": "MIX ALL",
+        "3": "CH1 – assumption",
+        "4": "CH2 – assumption",
+        "5": "CH3",
+        "6": "CH4 – assumption"
+      }
+    }
+  },
+  "00374": {
+    "name": "Audio channel flags",
+    "status": "hypothesis",
+    "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): Changed together with Monitor CH -> MIX ALL (and the wind filters): 16 flags `1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0` -> `1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0` (fields 4-7, 12 and 14 went from 0 to 1). Probably a consequence of the monitor channel selection (the camera sets the channels that are output), but not separated yet. Round 74 (Monitor CH CH3, volumes changed): `0,0,0,0,1,1,0,0,0,1,0,1,1,0,0,0`; the flags depend on the monitor selection but no simple per-channel pattern is visible yet.",
+    "group": "audio",
+    "subgroup": "Audio › Output",
+    "order": 9
+  },
+  "00137": {
+    "name": "Monitor Volume",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 74 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Output > Monitor Volume 7 -> 12 changes field 0 of ALL 00137 `7,15` -> `12,15` (range 0 to 15, factory 7). Field 1 (15) did not change and is unknown.",
+    "group": "audio",
+    "subgroup": "Audio › Output",
+    "order": 2,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 0,
+      "max": 15,
+      "small": 1,
+      "large": 5,
+      "note": "0 to 15 (manual), factory value 7. The second field of this ID (15) is not known."
+    }
+  },
+  "00375": {
+    "name": "Alarm Volume",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 74 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Output > Alarm Volume 4 -> 2 changes ALL 00375 from 4 to 2 (range 0 to 7, factory 4).",
+    "group": "audio",
+    "subgroup": "Audio › Output",
+    "order": 3,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 0,
+      "max": 7,
+      "small": 1,
+      "large": 2,
+      "note": "0 to 7 (manual), factory value 4."
+    }
+  },
+  "00371": {
+    "name": "Audio Input Level",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Input > Audio Input Level 99 -> 30 changes ALL 00371 from 99 to 30 (range 0 to 99, factory 99).",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.7,
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 0,
+      "max": 99,
+      "small": 1,
+      "large": 10,
+      "note": "0 to 99 (manual), factory value 99."
+    }
+  },
+  "00146": {
+    "name": "Limiter Mode",
+    "status": "likely",
+    "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Input > Limiter Mode Off -> -12 dB changed ALL 00146 from 0 to 1 and ALL 00147 from 0 to -12. So 00146 is the switch (0 = Off, 1 = On) and 00147 the limiter level in dB.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.8,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      },
+      "note": "The limiter level is the next item (ALL 00147); the camera shows both as one setting Limiter Mode (Off / -6 / -9 / -12 / -15 / -17 dB)."
+    }
+  },
+  "00147": {
+    "name": "Limiter Level",
+    "status": "likely",
+    "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Input > Limiter Mode Off -> -12 dB changed ALL 00147 from 0 to -12 (and the switch 00146 from 0 to 1). The other levels of the manual (-6, -9, -15, -17 dB) follow by the same coding and have not been seen.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.9,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "none (Limiter Off)",
+        "-6": "-6 dB – assumption",
+        "-9": "-9 dB – assumption",
+        "-12": "-12 dB",
+        "-15": "-15 dB – assumption",
+        "-17": "-17 dB – assumption"
+      }
+    }
+  },
+  "00144": {
+    "name": "AGC Spec",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Input > AGC Spec -6 dB -> -9 dB changes ALL 00144 from -6 to -9 (factory -6). The manual lists -6 / -9 / -12 / -15 / -17 dB; the file holds the dB value.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.95,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "-6": "-6 dB",
+        "-9": "-9 dB",
+        "-12": "-12 dB – assumption",
+        "-15": "-15 dB – assumption",
+        "-17": "-17 dB – assumption"
+      }
+    }
+  },
+  "00053": {
+    "name": "1 kHz Tone on Color Bars",
+    "status": "likely",
+    "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): 1 kHz Tone on Color Bars Off -> On (state told by the user) changed ALL 00053 from 1 to 0, so 1 = Off and 0 = On (inverted). 00053 sits next to Color Bars Type 00052; the assignment follows from the four simultaneous changes of the round (the other IDs belong to the input level, the limiter and the AGC spec).",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 2.96,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "1": "Off",
+        "0": "On"
+      }
+    }
+  },
+  "00141": {
+    "name": "CH1&2 AGC Mode",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): CH1&2 AGC Mode Mono -> Stereo changes field 0 of ALL 00141 from 0 to 1 (0 = Mono, 1 = Stereo); field 1 (1) is the first channel of the pair and did not change.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 3.1,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 0,
+          "label": "CH1&2 AGC Mode",
+          "choices": {
+            "0": "Mono",
+            "1": "Stereo"
+          }
+        }
+      ]
+    }
+  },
+  "00431": {
+    "name": "CH3&4 AGC Mode",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): CH3&4 AGC Mode Mono -> Stereo changes field 0 of ALL 00431 from 0 to 1 (0 = Mono, 1 = Stereo); field 1 (3) is the first channel of the pair and did not change.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 3.2,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 0,
+          "label": "CH3&4 AGC Mode",
+          "choices": {
+            "0": "Mono",
+            "1": "Stereo"
+          }
+        }
+      ]
+    }
+  },
+  "00372": {
+    "name": "CH1 Level",
+    "status": "likely",
+    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. CH1 Level was set to the first entry (Audio Input Level) in round 76: ALL 00372 2 -> 0. The coding 0 = Audio Input Level, 1 = both combined, 2 = the channel's own input level fits the user's statement that CH3 stood on 'CH3 Input Level' in the factory state; the combined entry is assumed.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 3.3,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Audio Input Level",
+        "1": "Level+Side – assumption",
+        "2": "Side"
+      }
+    }
+  },
+  "00373": {
+    "name": "CH2 Level",
+    "status": "hypothesis",
+    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. CH2 Level has not been changed yet; 00373 is assigned by the ID order (it is 2 like the others). The coding 0 = Audio Input Level, 1 = both combined, 2 = the channel's own input level fits the user's statement that CH3 stood on 'CH3 Input Level' in the factory state; the combined entry is assumed.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 3.4,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Audio Input Level",
+        "1": "Level+Side – assumption",
+        "2": "Side"
+      }
+    }
+  },
+  "00432": {
+    "name": "CH3 Level",
+    "status": "likely",
+    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. CH3 Level changed ALL 00432 from 2 to 1 in round 76 (the user stated that it stood on 'CH3 Input Level' before, the new entry still has to be confirmed: probably 'Level+CH3 Input Level'). The coding 0 = Audio Input Level, 1 = both combined, 2 = the channel's own input level fits the user's statement that CH3 stood on 'CH3 Input Level' in the factory state; the combined entry is assumed.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 3.5,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Audio Input Level",
+        "1": "Level+CH3 Input Level – assumption",
+        "2": "CH3 Input Level"
+      }
+    }
+  },
+  "00433": {
+    "name": "CH4 Level",
+    "status": "hypothesis",
+    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. CH4 Level has not been changed yet; 00433 is assigned by the ID order (it is 2 like the others). The coding 0 = Audio Input Level, 1 = both combined, 2 = the channel's own input level fits the user's statement that CH3 stood on 'CH3 Input Level' in the factory state; the combined entry is assumed.",
+    "group": "audio",
+    "subgroup": "Audio › Input",
+    "order": 3.6,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Audio Input Level",
+        "1": "Level+CH4 Input Level – assumption",
+        "2": "CH4 Input Level"
+      }
     }
   }
 }
