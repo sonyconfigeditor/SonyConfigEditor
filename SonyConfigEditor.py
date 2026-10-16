@@ -389,6 +389,44 @@ def save_language(code: str) -> None:
     save_settings(language=code)
 
 
+GEOMETRY_PATTERN = re.compile(r"(\d+)x(\d+)\+(-?\d+)\+(-?\d+)")
+
+
+def window_settings(geometry: str, zoomed: bool, scale: float, previous: dict | None = None) -> dict | None:
+    """Window state for the settings file from a raw Tk geometry string ("WxH+X+Y" in screen pixels). The size is stored in
+    unscaled units (so that it fits another Windows scaling), the position as it is. A maximised window keeps the size and
+    position of its normal state (``previous``)."""
+    if zoomed:
+        return dict(previous, zoomed=True) if previous else None
+    match = GEOMETRY_PATTERN.fullmatch(geometry or "")
+    if not match or scale <= 0:
+        return None
+    width, height, x, y = (int(g) for g in match.groups())
+    return {"width": round(width / scale), "height": round(height / scale), "x": x, "y": y, "zoomed": False}
+
+
+def restore_window(data, screen: tuple[int, int, int, int], scale: float) -> dict | None:
+    """Checked window state from the settings file (user-editable input): ``screen`` is the virtual screen (x, y, width, height in
+    pixels). The size is limited to the screen; the position is dropped (window is placed by the system) when too little of the
+    window would be visible. Returns None for anything unusable."""
+    if not isinstance(data, dict) or scale <= 0:
+        return None
+    numbers = [data.get(k) for k in ("width", "height")]
+    if not all(isinstance(n, int) and not isinstance(n, bool) for n in numbers):
+        return None
+    screen_x, screen_y, screen_w, screen_h = screen
+    width = max(400, min(numbers[0], int(screen_w / scale)))
+    height = max(300, min(numbers[1], int(screen_h / scale)))
+    x, y = data.get("x"), data.get("y")
+    if not all(isinstance(n, int) and not isinstance(n, bool) for n in (x, y)):
+        x = y = None
+    else:
+        pixel_w = int(width * scale)
+        if not (screen_x - pixel_w + 120 <= x <= screen_x + screen_w - 120 and screen_y - 10 <= y <= screen_y + screen_h - 80):
+            x = y = None
+    return {"width": width, "height": height, "x": x, "y": y, "zoomed": data.get("zoomed") is True}
+
+
 APPEARANCES = ("system", "light", "dark")      # customtkinter appearance modes: follow Windows / day / night
 DEFAULT_APPEARANCE = "dark"
 
@@ -1269,6 +1307,87 @@ class AboutDialog(ctk.CTkToplevel):
             self.wait_window(dialog)
 
 
+# The virtual monitor of the VF tab: display elements of the camera at their fixed places (positions measured in the figure of the manual,
+# fractions of the picture), each with the name of its menu item (VF > Display On/Off, camera menu names stay English), an example text and the
+# number in the manual's figure. anchor "w": x is the left edge, "e": the right edge, "c": the centre.
+MONITOR_ELEMENTS = [
+    ("shutter",      "Shutter Setting",       "1/48",             0.005, 0.030, "w", True,  1),
+    ("gain",         "Gain Setting",          "ISO 800",          0.127, 0.030, "w", True,  3),
+    ("recmode",      "Rec/Play Status",       "S&Q  A●Rec  B Stby", 0.258, 0.030, "w", True,  5),
+    ("extraw_rec",   "Rec/Play Status (EXT RAW)",  "EXT RAW Rec",      0.574, 0.030, "w", True,  7),
+    ("colortemp",    "Color Temp.",           "5600K",            0.730, 0.030, "w", True,  9),
+    ("battery",      "Battery Remain",        "▮▮▮ 120min",       0.995, 0.030, "e", True,  11),
+    ("iris",         "Iris Position",         "F1.6",             0.007, 0.100, "w", True,  40),
+    ("nd",           "ND Filter Value",       "ND1/64",           0.085, 0.100, "w", True,  2),
+    ("focus_pos",    "Focus Position",        "2.5m",             0.190, 0.100, "w", True,  4),
+    ("focus_bar",    "Focus Position (bar)",  "1 1.5 2 3 4 5 7 10 15 20 30 ∞m", 0.320, 0.100, "w", True,  4),
+    ("fps",          "Frame Rate / Interval", "000FPS",           0.760, 0.100, "w", True,  10),
+    ("format",       "Rec Format",            "4096x2160",        0.995, 0.100, "e", True,  12),
+    ("framerate",    "Rec Format (rate)",     "59.94P",           0.995, 0.170, "e", True,  13),
+    ("codec",        "Rec Format (codec)",    "XAVC-I",           0.995, 0.240, "e", True,  14),
+    ("gamma",        "Gamma",                 "STD1",             0.995, 0.310, "e", True,  15),
+    ("extraw_fmt",   "Rec Format (EXT RAW)",  "EXT RAW 4K",       0.995, 0.380, "e", True,  16),
+    ("tc_lock",      "Timecode Lock",         "EXT-LK",           0.995, 0.450, "e", True,  17),
+    ("wifi",         "Wi-Fi Condition",       "Wi-Fi",            0.995, 0.520, "e", True,  18),
+    ("gps",          "GPS",                   "GPS",              0.955, 0.170, "e", False, 19),
+    ("zoom_pos",     "Zoom Position",         "Z 24",             0.007, 0.170, "w", True,  39),
+    ("steadyshot",   "SteadyShot",            "((•))",            0.007, 0.240, "w", True,  37),
+    ("focus_mode",   "Focus Mode",            "MF",               0.007, 0.310, "w", True,  36),
+    ("auto_shutter", "Auto Shutter",          "A.Sht",            0.007, 0.375, "w", True,  35),
+    ("agc",          "AGC",                   "AGC ON",           0.007, 0.440, "w", True,  34),
+    ("auto_nd",      "Auto ND Filter",        "A.ND",             0.007, 0.505, "w", True,  33),
+    ("auto_iris",    "Auto Iris",             "A.Iris",           0.007, 0.570, "w", True,  32),
+    ("ae_mode",      "AE Mode / Level",       "AE +0.00",         0.007, 0.635, "w", True,  31),
+    ("wb_mode",      "White Balance Mode",    "ATW",              0.007, 0.700, "w", True,  30),
+    ("rec_control",  "SDI/HDMI Rec Control",  "RecCtrl STOP",     0.007, 0.765, "w", True,  29),
+    ("media_util",   "Media Status",          "SD  🔒  ◎",        0.007, 0.830, "w", True,  28),
+    ("clip_name",    "Clip Name",             "A001C001_1234567A", 0.500, 0.870, "c", True,  25),
+    ("timecode",     "Timecode",              "TCG 00:00:00:00",  0.007, 0.955, "w", True,  27),
+    ("audio_meter",  "Audio Level Meter",     "Ch1 ▮▮▮▮▮▮▯▯▯▯▯▯\nCh2 ▮▮▮▮▮▮▮▯▯▯▯▯", 0.275, 0.955, "w", True,  24),
+    ("level_gauge",  "Level Gauge",           "━━━●━━━",         0.560, 0.955, "w", True,  23),
+    ("media_ab",     "Media Status (A/B)",    "A 000min  B 000min", 0.995, 0.955, "e", True,  22),
+    ("signal_mon",   "Video Signal Monitor",  "▁▂▃▅▇▆▄▂▁\nLUT 709", 0.995, 0.700, "e", True,  21),
+    ("focus_assist", "Focus Assist Indicator", "▭",               0.500, 0.500, "c", False, 20),
+    ("center_marker", "Center Marker",        "┼",                0.500, 0.500, "c", False, 0),
+]
+MONITOR_ASPECT = 434 / 242
+MONITOR_DEFAULT_OFF = {"gps", "focus_assist", "center_marker"}
+
+
+class MonitorPreview(tk.Canvas):
+    """Draws the example picture of the camera monitor; ``visible`` maps element keys to True / False (not stored in any file yet)."""
+
+    def __init__(self, master, width: int, bg: str, visible: dict):
+        super().__init__(master, width=width, height=round(width / MONITOR_ASPECT), background=bg, highlightthickness=0)
+        self.visible = visible
+        self._family = tkfont.nametofont("TkFixedFont").actual("family")
+        self.redraw()
+
+    def set_visible(self, key: str, on: bool):
+        self.visible[key] = bool(on)
+        self.redraw()
+
+    def redraw(self):
+        self.delete("all")
+        pw, ph = int(self.cget("width")), int(self.cget("height"))
+        self.create_rectangle(1, 1, pw - 1, ph - 1, fill="#d8d8d8", outline="#222222", width=2)
+        size = max(6, pw // 52)
+        font = (self._family, -size)
+        pad = max(1, size // 5)
+        for key, _label, text, x, y, anchor, boxed, _number in MONITOR_ELEMENTS:
+            if not self.visible.get(key):
+                continue
+            item = self.create_text(x * pw, y * ph, text=text, anchor={"w": "w", "e": "e", "c": "center"}[anchor], font=font, fill="#111111", justify="left")
+            if boxed:
+                x0, y0, x1, y1 = self.bbox(item)
+                self.tag_lower(self.create_rectangle(x0 - pad, y0 - pad, x1 + pad, y1 + pad, fill="#f3f3f3", outline="#555555"), item)
+        if self.visible.get("center_marker"):
+            cx, cy = pw / 2, ph / 2
+            self.create_rectangle(cx - pw * 0.095, cy - ph * 0.22, cx + pw * 0.095, cy + ph * 0.22, outline="#444444")
+            self.create_line(cx - 6, cy, cx + 6, cy, fill="#444444")
+            self.create_line(cx, cy - 6, cx, cy + 6, fill="#444444")
+
+
 class RowLabel(tk.Frame):
     """Name of a parameter row: the decoded text and, in grey and in brackets behind it, the ID."""
 
@@ -1411,8 +1530,16 @@ class App(ctk.CTk):
         apply_window_icon(self)
         scale = ctk.ScalingTracker.get_window_scaling(self)
         screen_w, screen_h = self.winfo_screenwidth() / scale, self.winfo_screenheight() / scale
-        self.geometry(f"{int(min(1150, screen_w * 0.9))}x{int(min(700, screen_h * 0.85))}")   # the Multi Matrix row (axis, hue, saturation) needs about 1050
+        self.geometry("{}x{}".format(*self._default_window_size()))
         self.minsize(int(min(900, screen_w * 0.6)), int(min(500, screen_h * 0.5)))
+        saved = restore_window(load_settings().get("window"), (self.winfo_vrootx(), self.winfo_vrooty(), self.winfo_vrootwidth(), self.winfo_vrootheight()), scale)
+        self._window_normal = None       # window state to save (the last normal one while the window is maximised)
+        if saved:
+            self._window_normal = {k: saved[k] for k in ("width", "height", "x", "y")}
+            self.geometry(f"{saved['width']}x{saved['height']}" + (f"+{saved['x']}+{saved['y']}" if saved["x"] is not None else ""))
+            if saved["zoomed"]:
+                self.after(300, lambda: self.state("zoomed"))
+        self.bind("<Configure>", self._remember_window, add="+")
 
         self.scene: SceneFile | None = None
         self.original: dict = {}
@@ -1621,6 +1748,8 @@ class App(ctk.CTk):
         for mode, label in (("system", tr("System")), ("light", tr("Day")), ("dark", tr("Night"))):
             look_menu.add_radiobutton(label=label, value=mode, variable=self.var_appearance, command=lambda m=mode: self.set_appearance(m))
         view_menu.add_cascade(label=tr("Appearance"), menu=look_menu)
+        view_menu.add_separator()
+        add(view_menu, "reset_window", "Reset window size and position", self.reset_window)
         cascade(tr("View"), view_menu)
 
         help_menu = new_menu(bar)
@@ -1630,7 +1759,7 @@ class App(ctk.CTk):
         self._menu_bar = bar
         self._menu_commands = {"new": self.new_file, "open": self.open_file, "save": self.save, "save_as": self.save_as, "import": self.import_file, "compare": self.compare_file,
                                "exit": self.on_close, "undo": self.undo, "redo": self.redo, "about": self.show_about,
-                               "expand_all": self.expand_all, "collapse_all": self.collapse_all}
+                               "expand_all": self.expand_all, "collapse_all": self.collapse_all, "reset_window": self.reset_window}
         for key, state in self._menu_state.items():
             self._set_menu_state(key, state)
         # the former toolbar buttons: the code (and the tests) still enable / disable them by name
@@ -2051,7 +2180,8 @@ class App(ctk.CTk):
         table_row = 0
         for group, title in GROUPS:
             items = sorted(by_group[group], key=sort_key)
-            if not items:
+            has_preview = group == "vf" and self.kind == "all"      # the VF tab always shows the virtual monitor of an ALL file
+            if not items and not has_preview:
                 continue
             sep = self._separator(self.table, "main", row=table_row, column=0, pady=(self._sc(10), 0)) if table_row else None
             header = ctk.CTkButton(
@@ -2068,6 +2198,9 @@ class App(ctk.CTk):
                                    "keys": [k for k, _v, _i in items], "visible": len(items), "sep": sep}
             self._row_parent = container
             row, current_sub, sub_info = 0, None, None
+            if has_preview:
+                self._build_vf_preview(container).grid(row=0, column=0, columnspan=2, sticky="ew", padx=self._sc(5), pady=(self._sc(4), self._sc(6)))
+                row = 1
             if group == "unknown" and self._tab != "unknown":
                 # the rows without a database entry (about 180 in an ALL file) are built when the tab is opened; rows that have an entry
                 # (sub-group "Other") are built at once because they need their description and widget
@@ -2166,6 +2299,42 @@ class App(ctk.CTk):
         self.update_idletasks()
         self.table._parent_canvas.yview_moveto(scroll)
 
+    def _build_vf_preview(self, parent) -> tk.Frame:
+        """Panel of the VF tab: compact check boxes for the display elements and, below, the virtual monitor of the camera with the
+        elements that are switched on. Until the IDs of VF > Display On/Off are decoded the choices are only a preview (not stored in the file)."""
+        if not hasattr(self, "_monitor_visible"):
+            self._monitor_visible = {e[0]: e[0] not in MONITOR_DEFAULT_OFF for e in MONITOR_ELEMENTS}
+        panel = tk.Frame(parent, bg=self._c["bg"])
+        head = tk.Frame(panel, bg=self._c["bg"])
+        head.pack(fill="x")
+        tk.Label(head, text=tr("Display preview"), anchor="w", bg=self._c["bg"], fg=self._c["accent"], font=self._font_bold).pack(side="left", padx=self._sc(5))
+        info = InfoLabel(head)
+        info.set_info(tr("Preview only: these choices are not stored in the file yet (the settings of VF > Display On/Off are not decoded). The elements are shown with example values at their places on the camera monitor."))
+        info.pack(side="left", padx=self._sc(4))
+        boxes = tk.Frame(panel, bg=self._c["bg"])
+        monitor = MonitorPreview(panel, self._sc(760), "#6b6b6b", self._monitor_visible)
+        variables = {}
+
+        def set_all(on: bool):
+            for key, var in variables.items():
+                var.set(on)
+                monitor.visible[key] = on
+            monitor.redraw()
+
+        for text, value in ((tr("All on"), True), (tr("All off"), False)):
+            ctk.CTkButton(head, text=text, width=self._tr_width(text, 80), height=24, command=lambda v=value: set_all(v)).pack(side="left", padx=self._sc(4))
+        columns = 5
+        for i, (key, label, *_rest) in enumerate(MONITOR_ELEMENTS):
+            var = tk.BooleanVar(value=self._monitor_visible.get(key, True))
+            variables[key] = var
+            box = ctk.CTkCheckBox(boxes, text=label, variable=var, checkbox_width=18, checkbox_height=18, command=lambda k=key, v=var: monitor.set_visible(k, v.get()))
+            box.grid(row=i // columns, column=i % columns, sticky="w", padx=self._sc(8), pady=self._sc(2))
+        boxes.pack(fill="x", pady=(self._sc(4), self._sc(6)))
+        monitor.pack(pady=(0, self._sc(4)))
+        panel.monitor, panel.monitor_vars = monitor, variables      # for the tests
+        self._vf_panel = panel
+        return panel
+
     def _table_header(self):
         """Header controls for the profile that is shown (type, model, locks)."""
         self.var_kind.set(self.kind.upper())
@@ -2254,7 +2423,7 @@ class App(ctk.CTk):
         for group, title in GROUPS:
             info = self._groups.get(group)
             count = (info["visible"] if self._filter_active() else info["count"]) if info else None
-            labels[group] = f"{GROUP_ICONS[group]}  {tr(title)}" + (f"  ({count})" if count is not None else "")
+            labels[group] = f"{GROUP_ICONS[group]}  {tr(title)}" + (f"  ({count})" if count else "")
         return labels
 
     def _refresh_tabs(self):
@@ -3225,7 +3394,49 @@ class App(ctk.CTk):
     def on_close(self):
         """Ask whether to save unsaved changes before the window closes."""
         if self._confirm_discard("Exit"):
+            state = self._window_settings()
+            if state:
+                save_settings(window=state)
             self.destroy()
+
+    def _default_window_size(self) -> tuple[int, int]:
+        """Size of a new window in unscaled units (the Multi Matrix row, axis / hue / saturation, needs about 1050)."""
+        scale = ctk.ScalingTracker.get_window_scaling(self)
+        screen_w, screen_h = self.winfo_screenwidth() / scale, self.winfo_screenheight() / scale
+        return int(min(1150, screen_w * 0.9)), int(min(700, screen_h * 0.85))
+
+    def reset_window(self):
+        """View > Reset window size and position: normal state, default size, centred on the screen."""
+        self.state("normal")
+        width, height = self._default_window_size()
+        scale = ctk.ScalingTracker.get_window_scaling(self)
+        x = max(0, (self.winfo_screenwidth() - round(width * scale)) // 2)
+        y = max(0, (self.winfo_screenheight() - round(height * scale)) // 3)
+        self.geometry(f"{width}x{height}+{x}+{y}")
+        self.update_idletasks()
+        self._remember_window()
+
+    def _raw_geometry(self) -> str:
+        """Geometry string in screen pixels (customtkinter's geometry() returns unscaled sizes)."""
+        return tk.Tk.wm_geometry(self)
+
+    def _remember_window(self, event=None):
+        if event is not None and event.widget is not self:
+            return
+        try:
+            if self.state() == "normal":
+                state = window_settings(self._raw_geometry(), False, ctk.ScalingTracker.get_window_scaling(self))
+                if state:
+                    self._window_normal = {k: state[k] for k in ("width", "height", "x", "y")}
+        except tk.TclError:
+            pass
+
+    def _window_settings(self) -> dict | None:
+        try:
+            zoomed = self.state() == "zoomed"
+            return window_settings(self._raw_geometry(), zoomed, ctk.ScalingTracker.get_window_scaling(self), self._window_normal)
+        except tk.TclError:
+            return None
 
     def _update_title(self):
         s = self.scene

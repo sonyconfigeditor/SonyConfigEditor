@@ -220,4 +220,6 @@ Audio Output: Monitor Volume = field 0 of ALL `00137` (0 to 15, factory 7; field
 
 Audio input: Audio Input Level = ALL `00371` (0 to 99, factory 99); Limiter Mode = switch `00146` (0 Off, 1 On) plus level `00147` (dB value, 0 when off, -12 seen); AGC Spec = `00144` (dB value, factory -6, -9 seen). 1 kHz Tone on Color Bars = `00053` (next to Color Bars Type), stored inverted: 1 = Off, 0 = On.
 
-Audio AGC mode: field 0 of ALL `00141` (CH1&2) and `00431` (CH3&4), 0 = Mono, 1 = Stereo. Channel level selection CH1-CH4: ALL `00372`, `00373`, `00432`, `00433` (factory 2 each): 0 = Audio Input Level, 2 = the channel's own input level, 1 = both combined (assumed; the Mk2 offers three entries without an XLR adapter, 'Side' for CH1/CH2).
+Audio AGC mode: field 0 of ALL `00141` (CH1&2) and `00431` (CH3&4), 0 = Mono, 1 = Stereo. Channel level selection CH1-CH4: ALL `00372`, `00373`, `00432`, `00433` (factory 2 each): 0 = Audio Input Level, 1 = the channel's own input level ('CH3 Input Level' seen; 'Side' for CH1/CH2 assumed), 2 = both combined (factory state; 'Level+Side' confirmed for CH2); the Mk2 offers these three entries without an XLR adapter, in this order.
+
+Audio output: Headphone Out = ALL `00139` (0 Mono, 1 Stereo), Output Limiter = `00376` (0 Off, 1 On), HDMI Output CH = `00441` (0 CH1/CH2, 1 CH3/CH4); the first two were changed together and are assigned by their neighbours in the file and the menu order. CH2 / CH4 Level (`00373` / `00433`) were changed to Audio Input Level (0).

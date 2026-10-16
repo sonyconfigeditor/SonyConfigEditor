@@ -5,6 +5,9 @@ Newest first; the version is only raised for a release.
 
 ## [Unreleased] - 2026-10-16
 ### Added
+- **Audio Output > Headphone Out** (Mono / Stereo), **Output Limiter** (On / Off) and **HDMI Output CH** (CH1/CH2, CH3/CH4); the channel level selections CH1-CH4 Level are complete (ALL files only, FS7M2).
+- **The window remembers its position and size** (and whether it was maximised) between runs; the saved values are checked, so a window that would end up off the screen (for example after unplugging a monitor) opens at the default place. **View > Reset window size and position** puts the window back to the default size, centred.
+- **VF tab with a virtual camera monitor** (ALL files): compact check boxes for the display elements (shutter, gain, ND, iris, focus, rec format, gamma, clip name, timecode, audio meters, battery, ...) and below them a picture of the camera monitor where the elements switched on appear at their fixed places with example values (positions from the figure of the manual). It is a preview for now: the choices are not stored in the file until the settings of VF > Display On/Off are decoded. All on / All off buttons.
 - **Audio > CH1&2 / CH3&4 AGC Mode** (Mono / Stereo) and **CH1-CH4 Level** (Audio Input Level / channel input level / combined; CH1 and CH3 seen, the combined entry is assumed), ALL files only, FS7M2.
 - **Audio > Audio Input Level, Limiter Mode (switch and level) and AGC Spec** (ALL files only, FS7M2). **1 kHz Tone on Color Bars** (Off / On, stored inverted: 1 = Off).
 - **Audio Output > Monitor Volume** (0 to 15) and **Alarm Volume** (0 to 7); Monitor CH CH3 confirmed (ALL files only, FS7M2).

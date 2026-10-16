@@ -6770,7 +6770,7 @@
   "00374": {
     "name": "Audio channel flags",
     "status": "hypothesis",
-    "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): Changed together with Monitor CH -> MIX ALL (and the wind filters): 16 flags `1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0` -> `1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0` (fields 4-7, 12 and 14 went from 0 to 1). Probably a consequence of the monitor channel selection (the camera sets the channels that are output), but not separated yet. Round 74 (Monitor CH CH3, volumes changed): `0,0,0,0,1,1,0,0,0,1,0,1,1,0,0,0`; the flags depend on the monitor selection but no simple per-channel pattern is visible yet.",
+    "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): Changed together with Monitor CH -> MIX ALL (and the wind filters): 16 flags `1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0` -> `1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0` (fields 4-7, 12 and 14 went from 0 to 1). Probably a consequence of the monitor channel selection (the camera sets the channels that are output), but not separated yet. Round 74 (Monitor CH CH3, volumes changed): `0,0,0,0,1,1,0,0,0,1,0,1,1,0,0,0`; the flags depend on the monitor selection but no simple per-channel pattern is visible yet. Round 77 (Headphone Out Stereo, Output Limiter On, HDMI Output CH3/CH4, level selections changed): `0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,1`; the flags change with several audio output settings, the meaning of the single flags is not decoded.",
     "group": "audio",
     "subgroup": "Audio › Output",
     "order": 9
@@ -6939,7 +6939,7 @@
   "00372": {
     "name": "CH1 Level",
     "status": "likely",
-    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. CH1 Level was set to the first entry (Audio Input Level) in round 76: ALL 00372 2 -> 0. The coding 0 = Audio Input Level, 1 = both combined, 2 = the channel's own input level fits the user's statement that CH3 stood on 'CH3 Input Level' in the factory state; the combined entry is assumed.",
+    "evidence": "Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. Coding in the order of the manual's list: 0 = Audio Input Level, 1 = the channel's own input level, 2 = both combined (factory). Seen (round 76, 2026-10-16): CH1 Level set from the factory entry to the first entry (Audio Input Level): ALL 00372 2 -> 0.",
     "group": "audio",
     "subgroup": "Audio › Input",
     "order": 3.3,
@@ -6947,15 +6947,15 @@
       "type": "choice",
       "choices": {
         "0": "Audio Input Level",
-        "1": "Level+Side – assumption",
-        "2": "Side"
+        "1": "Side – assumption",
+        "2": "Level+Side"
       }
     }
   },
   "00373": {
     "name": "CH2 Level",
-    "status": "hypothesis",
-    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. CH2 Level has not been changed yet; 00373 is assigned by the ID order (it is 2 like the others). The coding 0 = Audio Input Level, 1 = both combined, 2 = the channel's own input level fits the user's statement that CH3 stood on 'CH3 Input Level' in the factory state; the combined entry is assumed.",
+    "status": "likely",
+    "evidence": "Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. Coding in the order of the manual's list: 0 = Audio Input Level, 1 = the channel's own input level, 2 = both combined (factory). User (2026-10-16): CH2 Level shows 'Level+Side' and ALL 00373 is 2 (unchanged since the factory state), so 2 = Level+Side; the assignment CH2 = 00373 still follows the ID order (00433 is also 2). Round 77 (2026-10-16): ALL 00373 changed from 2 to 0 (= Audio Input Level, the first entry); with 00373 = CH2 Level this fits the request of that round. The user confirmed that both CH2 Level and CH4 Level were set to Audio Input Level in round 77; as 00373 and 00433 changed together, which of the two is CH2 and which CH4 follows the ID order (the same order as CH1 / CH3 at 00372 / 00432).",
     "group": "audio",
     "subgroup": "Audio › Input",
     "order": 3.4,
@@ -6963,40 +6963,85 @@
       "type": "choice",
       "choices": {
         "0": "Audio Input Level",
-        "1": "Level+Side – assumption",
-        "2": "Side"
+        "1": "Side – assumption",
+        "2": "Level+Side"
       }
     }
   },
   "00432": {
     "name": "CH3 Level",
     "status": "likely",
-    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. CH3 Level changed ALL 00432 from 2 to 1 in round 76 (the user stated that it stood on 'CH3 Input Level' before, the new entry still has to be confirmed: probably 'Level+CH3 Input Level'). The coding 0 = Audio Input Level, 1 = both combined, 2 = the channel's own input level fits the user's statement that CH3 stood on 'CH3 Input Level' in the factory state; the combined entry is assumed.",
+    "evidence": "Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. Coding in the order of the manual's list: 0 = Audio Input Level, 1 = the channel's own input level, 2 = both combined (factory). Seen (round 76, 2026-10-16): ALL 00432 changed from 2 to 1; the user states that CH3 Level shows 'CH3 Input Level' now, so 1 = CH3 Input Level.",
     "group": "audio",
     "subgroup": "Audio › Input",
     "order": 3.5,
     "widget": {
       "type": "choice",
       "choices": {
-        "0": "Audio Input Level",
-        "1": "Level+CH3 Input Level – assumption",
-        "2": "CH3 Input Level"
+        "0": "Audio Input Level – assumption",
+        "1": "CH3 Input Level",
+        "2": "Level+CH3 Input Level – assumption"
       }
     }
   },
   "00433": {
     "name": "CH4 Level",
-    "status": "hypothesis",
-    "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. CH4 Level has not been changed yet; 00433 is assigned by the ID order (it is 2 like the others). The coding 0 = Audio Input Level, 1 = both combined, 2 = the channel's own input level fits the user's statement that CH3 stood on 'CH3 Input Level' in the factory state; the combined entry is assumed.",
+    "status": "likely",
+    "evidence": "Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. Coding in the order of the manual's list: 0 = Audio Input Level, 1 = the channel's own input level, 2 = both combined (factory). CH4 Level: ALL 00433 changed from 2 to 0 (Audio Input Level, the first entry) in round 77 together with CH2 Level 00373; assigned by the ID order. The user confirmed that both CH2 Level and CH4 Level were set to Audio Input Level in round 77; as 00373 and 00433 changed together, which of the two is CH2 and which CH4 follows the ID order (the same order as CH1 / CH3 at 00372 / 00432).",
     "group": "audio",
     "subgroup": "Audio › Input",
     "order": 3.6,
     "widget": {
       "type": "choice",
       "choices": {
-        "0": "Audio Input Level",
-        "1": "Level+CH4 Input Level – assumption",
-        "2": "CH4 Input Level"
+        "0": "Audio Input Level – assumption",
+        "1": "CH4 Input Level – assumption",
+        "2": "Level+CH4 Input Level – assumption"
+      }
+    }
+  },
+  "00139": {
+    "name": "Headphone Out",
+    "status": "likely",
+    "evidence": "FS7M2 round 77 (2026-10-16, ALL only; the SCENE file is unchanged): Headphone Out Mono -> Stereo and Output Limiter Off -> On were changed together: ALL 00139 0 -> 1 and ALL 00376 0 -> 1. By the neighbours (00139 next to Monitor Volume 00137, 00376 next to Alarm Volume 00375) and the order of the menu (Monitor Volume, Headphone Out, Alarm Volume, Output Limiter), 00139 = Headphone Out (0 Mono, 1 Stereo) and 00376 = Output Limiter (0 Off, 1 On); the two are not separated by an own round. The user confirmed that both items were changed in that round.",
+    "group": "audio",
+    "subgroup": "Audio › Output",
+    "order": 2.5,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Mono",
+        "1": "Stereo"
+      }
+    }
+  },
+  "00376": {
+    "name": "Output Limiter",
+    "status": "likely",
+    "evidence": "FS7M2 round 77 (2026-10-16, ALL only; the SCENE file is unchanged): Headphone Out Mono -> Stereo and Output Limiter Off -> On were changed together: ALL 00139 0 -> 1 and ALL 00376 0 -> 1. By the neighbours (00139 next to Monitor Volume 00137, 00376 next to Alarm Volume 00375) and the order of the menu (Monitor Volume, Headphone Out, Alarm Volume, Output Limiter), 00139 = Headphone Out (0 Mono, 1 Stereo) and 00376 = Output Limiter (0 Off, 1 On); the two are not separated by an own round. The user confirmed that both items were changed in that round.",
+    "group": "audio",
+    "subgroup": "Audio › Output",
+    "order": 4,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00441": {
+    "name": "HDMI Output CH",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 77 (2026-10-16, ALL only; the SCENE file is unchanged): HDMI Output CH CH1/CH2 -> CH3/CH4 changes ALL 00441 from 0 to 1 (confirmed by the user; changed in the same round as Headphone Out, Output Limiter and the CH2 / CH4 level selections, but no other ID fits). Next to Monitor CH (00440).",
+    "group": "audio",
+    "subgroup": "Audio › Output",
+    "order": 5,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "CH1/CH2",
+        "1": "CH3/CH4"
       }
     }
   }

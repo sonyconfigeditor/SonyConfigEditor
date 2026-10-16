@@ -315,5 +315,13 @@
   "CH1 Level": "CH1 Nivel",
   "CH2 Level": "CH2 Nivel",
   "CH3 Level": "CH3 Nivel",
-  "CH4 Level": "CH4 Nivel"
+  "CH4 Level": "CH4 Nivel",
+  "Display preview": "Vista previa de la pantalla",
+  "All on": "Todos activados",
+  "All off": "Todos desactivados",
+  "Preview only: these choices are not stored in the file yet (the settings of VF > Display On/Off are not decoded). The elements are shown with example values at their places on the camera monitor.": "Solo vista previa: estas opciones aún no se guardan en el archivo (los ajustes de VF > Display On/Off aún no están descifrados). Los elementos aparecen con valores de ejemplo en su lugar en el monitor de la cámara.",
+  "Reset window size and position": "Restablecer tamaño y posición de la ventana",
+  "Headphone Out": "Salida de auriculares",
+  "Output Limiter": "Limitador de salida",
+  "HDMI Output CH": "Canal de salida HDMI"
 }

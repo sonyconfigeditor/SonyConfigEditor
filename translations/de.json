@@ -315,5 +315,13 @@
   "CH1 Level": "CH1 Pegelquelle",
   "CH2 Level": "CH2 Pegelquelle",
   "CH3 Level": "CH3 Pegelquelle",
-  "CH4 Level": "CH4 Pegelquelle"
+  "CH4 Level": "CH4 Pegelquelle",
+  "Display preview": "Anzeigevorschau",
+  "All on": "Alle an",
+  "All off": "Alle aus",
+  "Preview only: these choices are not stored in the file yet (the settings of VF > Display On/Off are not decoded). The elements are shown with example values at their places on the camera monitor.": "Nur Vorschau: Diese Auswahl wird noch nicht in der Datei gespeichert (die Einstellungen von VF > Display On/Off sind noch nicht entschlüsselt). Die Elemente erscheinen mit Beispielwerten an ihren Plätzen auf dem Kameramonitor.",
+  "Reset window size and position": "Fenstergröße und -position zurücksetzen",
+  "Headphone Out": "Kopfhörerausgang",
+  "Output Limiter": "Ausgabebegrenzer",
+  "HDMI Output CH": "HDMI-Ausgabekanal"
 }

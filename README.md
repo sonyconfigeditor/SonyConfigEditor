@@ -21,6 +21,7 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 - **Expand all / Collapse all** (View menu, Ctrl+Shift+Down / Up, or the buttons next to the filter) for the sub-groups of the shown tab.
 - **Appearance** (View menu): System, Day or Night mode, remembered between runs.
 - **Tabs** for the camera's main menus (Camera, Paint, Audio, VF, Recording, File, System, Unknown) across the top show one menu at a time, with the number of parameters; each tab remembers where you were. Rows that do not apply (e.g. the ISO rows while the gain mode is dB) are greyed out and sorted below the usable ones.
+- **VF tab with a virtual camera monitor** (ALL files): check boxes for the display elements and a picture of the camera monitor showing them at their places with example values. Preview only so far, the choices are not stored in the file.
 - **Search and filter** (Ctrl+F): by name, ID or value; "changed only" shows everything that differs from the loaded file, "known only" hides undecoded IDs.
 - **Import** (File > Import, Ctrl+I): take over all known differing values from any SCENE/ALL file of either model, or pick single parameters from a list. One undo step.
 - **Compare** (File > Compare…, Ctrl+D, or "Show differences" in the import dialog): side-by-side view of the current file and another file with readable menu paths such as `Paint/White Clip/White Clip Level` instead of IDs. Changed rows are coloured; Alt+Down / Alt+Up (or F8 / Shift+F8) jump to the next / previous difference, Ctrl+1 shows the full files, Ctrl+2 only the differences.
@@ -42,7 +43,7 @@ pip install customtkinter
 python SonyConfigEditor.py [file]
 ```
 
-Settings (language, last folder) are stored in your user config directory (put a `settings.json` next to the program for a portable setup).
+Settings (language, last folder, window position and size) are stored in your user config directory (put a `settings.json` next to the program for a portable setup).
 
 ## Usage
 
