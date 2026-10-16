@@ -223,3 +223,27 @@ Audio input: Audio Input Level = ALL `00371` (0 to 99, factory 99); Limiter Mode
 Audio AGC mode: field 0 of ALL `00141` (CH1&2) and `00431` (CH3&4), 0 = Mono, 1 = Stereo. Channel level selection CH1-CH4: ALL `00372`, `00373`, `00432`, `00433` (factory 2 each): 0 = Audio Input Level, 1 = the channel's own input level ('CH3 Input Level' seen; 'Side' for CH1/CH2 assumed), 2 = both combined (factory state; 'Level+Side' confirmed for CH2); the Mk2 offers these three entries without an XLR adapter, in this order.
 
 Audio output: Headphone Out = ALL `00139` (0 Mono, 1 Stereo), Output Limiter = `00376` (0 Off, 1 On), HDMI Output CH = `00441` (0 CH1/CH2, 1 CH3/CH4); the first two were changed together and are assigned by their neighbours in the file and the menu order. CH2 / CH4 Level (`00373` / `00433`) were changed to Audio Input Level (0).
+
+VF > Display On/Off: the switches are the first 42 values of ALL `00175` in the order of the menu (Setting first): 0 = shown, 1 = hidden; the codec index follows at position 42. Seen: Clip Name = position 33, Gamma = 30 (menu order confirmed at both ends); Color Temp., Battery Remain, Timecode and Audio Level Meter are among positions 4, 6, 7 and 10 (not yet assigned).
+
+VF > Display On/Off, continued: the list starts with Shutter Setting at position 0 (the item Setting is not in it); Shutter Setting = 0, Gain Setting = 2 (ND Filter Value = 1 in between), Color Temp. = 4, Frame Rate / Interval = 5, Battery Remain = 6, Timecode = 7, Audio Level Meter = 10, Gamma = 30, Clip Name = 33. The positions follow the menu order only roughly: some menu items hold more than one value.
+
+VF > Display On/Off, round 3: ND Filter Value = 1, Rec/Play Status = 3, Frame Rate / Interval = 5, Audio Manual = 8 and 9 (two values), Media Status = 11, Focus Position = 12, Zoom Position = 14 (the three-state items Focus Position and Zoom Position hold 2 when switched Off), Timecode Lock = 31. ALL `00231` field 2 (Zoom Speed row) changed from 0 to 2 in the same round.
+
+VF > Display On/Off, status: the switches of the remaining elements (Auto ND Filter, AE Mode, White Balance Mode, Rec Format, Wi-Fi Condition, Clip Number, GPS, Level Gauge, ...) are in `00175` too, but not all in the order of the menu (one lies at position 55, behind the recording format values); only positions 0 to 14, Gamma (30), Timecode Lock (31) and Clip Name (33) are assigned so far.
+
+VF > Zebra: ALL `00132` = Zebra 1 (field 0 on flag, 1 level in %, 2 aperture level in %), `00133` = Zebra 2 (field 0 on flag, 1 level in %); `00480` / `00481` are identical copies. Zebra Select is derived: 1 = Zebra 1 on and Zebra 2 off, 2 = the other way round, Both = both on (round: Select 1 -> Both changed only the Zebra 2 flag from 0 to 1). The switch Setting (Zebra on/off) is not stored in the file. Levels are stored 1:1 in % (81 % -> 81).
+
+VF > Peaking: ALL `00120` (7 fields): field 2 Color Peaking Level (0 to 99, 1:1), field 3 Color (0 B&W, 2 Yellow seen; 1 Red and 3 Blue by the manual's order), field 4 Peaking Type (0 Normal, 1 Color), field 6 Normal Peaking Level (0 to 99, 1:1); fields 0, 1, 5 (1, 3, 0) unknown, the switch Setting is not stored.
+
+VF > Marker: Center Marker = ALL `00075` (on flag) + `00076` (type 0 to 3 = marker 1 to 4); Safety Zone = `00078` (0 Off, 1 On); Safety Area = `00079` (percent x 1000: 90000, 92500, 95000); Marker Color = `00510` (0 White, 5 Red; the order of the manual's list). The switch Setting is not stored. SCENE `00157` is paired with `00510` in the ID map by equal value; unverified.
+
+VF > Marker, aspect: Aspect Marker = ALL `00080` (on flag) + `00081` (style, 1 = Mask), Aspect Select = `00082` (0 = 4:3, 8 = 2.35:1; the other choices are not seen), Aspect Mask = `00083` (0 to 15), Aspect Safety Area = `00085` (percent x 1000). SCENE files do not hold the marker color (SCENE `00157` stayed 0 with the color Red): the earlier pairing with `00510` was a coincidence.
+
+VF > Marker, user box: User Box = ALL `00323` (0 Off, 1 On), Width = `00324` (3 to 479, factory 240), Height = `00325` (3 to 269, factory 135), H Position = `00326` (-476 to +476, factory 0); the vertical position is probably `00327`.
+
+VF, rounds 89 and 90: Aspect Safety Zone = ALL `00084` (0 Off, 1 On), User Box V Position = `00327` (-266 to +266), 100% Marker = `00360`, Guide Frame = `00245` (0 Off, 1 On), Aspect Select: 7 = 1.85:1, 8 = 2.35:1 (4:3 = 0), VF Setting > Brightness = `00243` (-99 to +99, 1:1). The switch of the video signal monitor possibly sits in `00175` position 38 (hypothesis).
+
+TC/UB, first round: HDMI TC Out = ALL `00260` (0 Off, 1 On, likely). Timecode Mode (Preset / Regen / Clock) and Run (Rec Run / Free Run) changed only ALL `00158` (1 -> 0 with Preset / Rec Run -> Regen / Free Run; Regen locks Run; the value is also 2 with S&Q Motion on); TC Format is locked (NDF only) in PAL-based formats.
+
+TC/UB, second round: ALL `00158` holds timecode mode and run together: 0 = Regen, 1 = Preset with Rec Run, 2 = Preset with Free Run (also 2 with S&Q Motion on); `00176` = TC Display Select (0 Timecode, 3 Duration seen); `00283` = Users Bit Mode (0 Fix, 1 Time).

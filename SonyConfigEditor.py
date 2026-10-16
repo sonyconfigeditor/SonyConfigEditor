@@ -45,7 +45,7 @@ WARNING_COLOR = "#e57373"
 # main menus of the camera = the tabs of the parameter table (in the order of the camera's menu); a parameter belongs to the tab of the first part of its
 # "subgroup" in the databases ("Paint › Gamma" -> Paint); parameters without a database entry and the sub-group "Other" are in Unknown.
 # Icons are Unicode symbols (no image files). Video, TC/UB and Media follow as soon as parameters of those menus are decoded.
-MENUS = [("camera", "Camera", "📹"), ("paint", "Paint", "🎨"), ("audio", "Audio", "🔊"), ("vf", "VF", "👁"), ("recording", "Recording", "⏺"),
+MENUS = [("camera", "Camera", "📹"), ("paint", "Paint", "🎨"), ("audio", "Audio", "🔊"), ("vf", "VF", "👁"), ("tcub", "TC/UB", "⏱"), ("recording", "Recording", "⏺"),
          ("file", "File", "📁"), ("system", "System", "⚙"), ("unknown", "Unknown", "❓")]
 GROUPS = [(key, title) for key, title, _icon in MENUS]
 GROUP_ICONS = {key: icon for key, _title, icon in MENUS}
@@ -56,7 +56,7 @@ SUBGROUP_ORDER = [
     "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
     "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
-    "Recording › S&Q Motion", "Audio › Input", "Audio › Output", "VF › Zebra / Marker", "File › Clip", "File › Scene File",
+    "Recording › S&Q Motion", "Audio › Input", "Audio › Output", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "VF › Marker", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
 ]
 REORDER_BY_LOCK = {"Camera › ISO/Gain/EI"}      # sub-groups whose usable rows move to the top, the greyed-out ones follow below a divider line
 CATEGORIES = ()      # the menus are tabs now; a heading per menu inside a tab would only repeat the tab name (the mechanism for headings is kept)
@@ -1352,6 +1352,12 @@ MONITOR_ELEMENTS = [
 ]
 MONITOR_ASPECT = 434 / 242
 MONITOR_DEFAULT_OFF = {"gps", "focus_assist", "center_marker"}
+# Elements connected to the file: key -> position in ALL 00175. The first 42 values of 00175 are the switches of VF > Display On/Off in the order of the
+# menu (without Setting): 0 = shown, 1 = hidden; some menu items hold more than one value, so the positions follow the menu order only roughly. Seen so far (rounds 78, 79): the elements below; the others are a preview only.
+MONITOR_FLAGS = {"shutter": 0, "nd": 1, "gain": 2, "recmode": 3, "colortemp": 4, "fps": 5, "battery": 6, "timecode": 7, "audio_meter": 10, "media_ab": 11,
+                 "focus_pos": 12, "focus_bar": 12, "iris": 13, "zoom_pos": 14, "gamma": 30, "tc_lock": 31, "clip_name": 33}
+MONITOR_FLAG_OFF = {"focus_pos": 2, "focus_bar": 2, "zoom_pos": 2}      # three-state items (Meter / Feet / Off) hold 2 when switched off, the others 1
+DISPLAY_FLAGS_ID = "00175"
 
 
 class MonitorPreview(tk.Canvas):
@@ -2295,21 +2301,67 @@ class App(ctk.CTk):
                     if pid in self.vars:
                         self.vars[pid].trace_add("write", lambda *_a, w=widget, k=wkey: (w._refresh(), self._paint_mark(k)))
                 widget._refresh()
+        self._refresh_vf_preview()      # the VF block is built before the System block that holds the switches (ALL 00175)
         self._table_footer()
         self.update_idletasks()
         self.table._parent_canvas.yview_moveto(scroll)
+
+    def _display_flags(self) -> list[int] | None:
+        """The values of ALL 00175 as numbers (None when the file has no such row or it does not hold numbers)."""
+        var = self.vars.get(DISPLAY_FLAGS_ID)
+        if var is None:
+            return None
+        try:
+            return [int(v) for v in var.get().split(",")]
+        except ValueError:
+            return None
+
+    def _write_display_flags(self, changes: dict[str, bool]):
+        """Show / hide connected display elements in the file (one undo step)."""
+        flags = self._display_flags()
+        if flags is None:
+            return
+        new = list(flags)
+        for key, on in changes.items():
+            index = MONITOR_FLAGS.get(key)
+            if index is not None and index < len(new):
+                new[index] = 0 if on else MONITOR_FLAG_OFF.get(key, 1)
+        if new != flags:
+            self.vars[DISPLAY_FLAGS_ID].set(",".join(str(v) for v in new))
+            self._refresh_vf_preview()       # elements that share a switch (Focus Position and its bar) follow
+
+    def _refresh_vf_preview(self):
+        """After undo / redo / loading: the connected check boxes show the state of the file."""
+        panel = getattr(self, "_vf_panel", None)
+        flags = self._display_flags()
+        if panel is None or flags is None:
+            return
+        try:
+            for key, index in MONITOR_FLAGS.items():
+                if index < len(flags):
+                    on = flags[index] != MONITOR_FLAG_OFF.get(key, 1)
+                    panel.monitor_vars[key].set(on)
+                    self._monitor_visible[key] = on
+            panel.monitor.redraw()
+        except tk.TclError:
+            pass
 
     def _build_vf_preview(self, parent) -> tk.Frame:
         """Panel of the VF tab: compact check boxes for the display elements and, below, the virtual monitor of the camera with the
         elements that are switched on. Until the IDs of VF > Display On/Off are decoded the choices are only a preview (not stored in the file)."""
         if not hasattr(self, "_monitor_visible"):
             self._monitor_visible = {e[0]: e[0] not in MONITOR_DEFAULT_OFF for e in MONITOR_ELEMENTS}
+        flags = self._display_flags()
+        if flags is not None:
+            for key, index in MONITOR_FLAGS.items():
+                if index < len(flags):
+                    self._monitor_visible[key] = flags[index] != MONITOR_FLAG_OFF.get(key, 1)      # the file wins over the preview state
         panel = tk.Frame(parent, bg=self._c["bg"])
         head = tk.Frame(panel, bg=self._c["bg"])
         head.pack(fill="x")
         tk.Label(head, text=tr("Display preview"), anchor="w", bg=self._c["bg"], fg=self._c["accent"], font=self._font_bold).pack(side="left", padx=self._sc(5))
         info = InfoLabel(head)
-        info.set_info(tr("Preview only: these choices are not stored in the file yet (the settings of VF > Display On/Off are not decoded). The elements are shown with example values at their places on the camera monitor."))
+        info.set_info(tr("Check boxes marked with a dot are connected to the file (VF > Display On/Off); the others are a preview only, their settings are not decoded yet. The elements are shown with example values at their places on the camera monitor."))
         info.pack(side="left", padx=self._sc(4))
         boxes = tk.Frame(panel, bg=self._c["bg"])
         monitor = MonitorPreview(panel, self._sc(760), "#6b6b6b", self._monitor_visible)
@@ -2320,6 +2372,12 @@ class App(ctk.CTk):
                 var.set(on)
                 monitor.visible[key] = on
             monitor.redraw()
+            self._write_display_flags({key: on for key in MONITOR_FLAGS})
+
+        def toggled(key, var):
+            monitor.set_visible(key, var.get())
+            if key in MONITOR_FLAGS:
+                self._write_display_flags({key: var.get()})
 
         for text, value in ((tr("All on"), True), (tr("All off"), False)):
             ctk.CTkButton(head, text=text, width=self._tr_width(text, 80), height=24, command=lambda v=value: set_all(v)).pack(side="left", padx=self._sc(4))
@@ -2327,7 +2385,8 @@ class App(ctk.CTk):
         for i, (key, label, *_rest) in enumerate(MONITOR_ELEMENTS):
             var = tk.BooleanVar(value=self._monitor_visible.get(key, True))
             variables[key] = var
-            box = ctk.CTkCheckBox(boxes, text=label, variable=var, checkbox_width=18, checkbox_height=18, command=lambda k=key, v=var: monitor.set_visible(k, v.get()))
+            box = ctk.CTkCheckBox(boxes, text=label + (" ●" if key in MONITOR_FLAGS else ""), variable=var, checkbox_width=18, checkbox_height=18,
+                                  command=lambda k=key, v=var: toggled(k, v))
             box.grid(row=i // columns, column=i % columns, sticky="w", padx=self._sc(8), pady=self._sc(2))
         boxes.pack(fill="x", pady=(self._sc(4), self._sc(6)))
         monitor.pack(pady=(0, self._sc(4)))
@@ -3344,6 +3403,7 @@ class App(ctk.CTk):
                 refresh()
         self._refresh_availability()      # and lock again what the new values lock
         self._busy = False
+        self._refresh_vf_preview()
 
     def _restore(self, snap: dict):
         s = self.scene
@@ -4094,6 +4154,13 @@ class App(ctk.CTk):
         return frame
 
     def _on_edit(self, key: str):
+        mirror = (self.param_db.get(key) or {}).get("mirror")
+        if mirror and not self._busy and mirror in self.vars and self.vars[mirror].get() != self.vars[key].get():
+            self._busy = True       # the camera writes some settings twice (a copy in another ID): the copy follows, as part of the same undo step
+            try:
+                self.vars[mirror].set(self.vars[key].get())
+            finally:
+                self._busy = False
         if not self._busy:
             self._record(key)
             self._update_warnings()

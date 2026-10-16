@@ -248,22 +248,88 @@
     }
   },
   "00132": {
-    "name": "Zebra 1 (On/Off, Level, Aperture Level) (?)",
-    "status": "likely",
-    "evidence": "0,70,10 (Custom) / 1,70,3 (Cine EI); 00480 holds an identical copy",
-    "group": "misc",
-    "subgroup": "VF › Zebra / Marker"
+    "name": "Zebra 1",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Zebra",
+    "order": 1,
+    "mirror": "00480",
+    "evidence": "FS7M2 round 84 (2026-10-16, ALL only; the manual lists VF > Zebra as All File only): Zebra Select 1 -> Both, Zebra1 Level 70 % -> 81 % (the user set 81 % by mistake, so the level is stored 1:1 in %), Zebra1 Aperture Level 10 % -> 15 % and Zebra2 Level 100 % -> 90 % changed ALL 00132 `1,70,10` -> `1,81,15` and ALL 00133 `0,100` -> `1,90` (and their identical copies 00480 / 00481). Field 0 is the on flag of the zebra (Zebra Select 1 = Zebra 1 on and Zebra 2 off, 2 = the other way round, Both = both on), field 1 the level in %, field 2 of Zebra 1 the aperture level in %. The switch Setting (Zebra on / off) is not stored in the file.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        107
+      ],
+      "max_raw": 32767,
+      "min_raw": 0,
+      "note": "Zebra Select: Zebra 1 on and Zebra 2 off = 1, the other way round = 2, both on = Both. Level 0 to 107 %, aperture level 1 to 20 % (manual); the camera keeps an identical copy of the values in the next ID (kept in step by the program).",
+      "fields": [
+        {
+          "index": 0,
+          "label": "On",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Level (%)",
+          "range": [
+            0,
+            107
+          ]
+        },
+        {
+          "index": 2,
+          "label": "Aperture level (%)",
+          "range": [
+            1,
+            20
+          ]
+        }
+      ]
+    }
   },
   "00133": {
-    "name": "Zebra 2 (On/Off, Level %)",
-    "status": "likely",
-    "evidence": "1,62 in the sample look ALL file and 1,90 in the sample look ALL file: sample set A PDF names Zebra 2 @ 62 % / 90 %; 00481 holds a copy",
-    "fields": [
-      "on/off",
-      "level %"
-    ],
-    "group": "misc",
-    "subgroup": "VF › Zebra / Marker"
+    "name": "Zebra 2",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Zebra",
+    "order": 2,
+    "mirror": "00481",
+    "evidence": "FS7M2 round 84 (2026-10-16, ALL only; the manual lists VF > Zebra as All File only): see Zebra 1 (00132): ALL 00133 `0,100` -> `1,90`; field 0 is the on flag of Zebra 2, field 1 its level in %.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        109
+      ],
+      "max_raw": 32767,
+      "min_raw": 0,
+      "note": "Level 0 to 109 % (manual); the camera keeps an identical copy of the values in the next ID (kept in step by the program).",
+      "fields": [
+        {
+          "index": 0,
+          "label": "On",
+          "choices": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Level (%)",
+          "range": [
+            0,
+            109
+          ]
+        }
+      ]
+    }
   },
   "00150": {
     "name": "Video format: width, height, rate denominator, rate numerator, ...",
@@ -2920,18 +2986,38 @@
     }
   },
   "00079": {
-    "name": "Knee Point, other copy (?)",
-    "status": "hypothesis",
-    "evidence": "95000 in FS7M2 round 11 while 00105 (the real Knee Point, 90000 -> 80000) changes; probably the knee points of other gamma groups or modes (hypothesis)",
+    "name": "Safety Area",
+    "status": "confirmed",
     "group": "video",
-    "subgroup": "Paint › Knee / White Clip"
+    "subgroup": "VF › Marker",
+    "order": 4,
+    "evidence": "FS7M2 round 86 (2026-10-16, ALL only; the manual lists VF > Marker as All File only; the switch Setting stayed Off): Safety Area 90 % -> 92.5 % changed ALL 00079 from 90000 to 92500 (percent x 1000); 95000 was seen in round 11 (a side effect then), 80 % follows the manual's list.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "80000": "80 % – assumption",
+        "90000": "90 %",
+        "92500": "92.5 %",
+        "95000": "95 %"
+      }
+    }
   },
   "00085": {
-    "name": "Knee Point, other copy (?)",
-    "status": "hypothesis",
-    "evidence": "95000 in FS7M2 round 11 while 00105 (the real Knee Point, 90000 -> 80000) changes; probably the knee points of other gamma groups or modes (hypothesis)",
+    "name": "Aspect Safety Area",
+    "status": "confirmed",
     "group": "video",
-    "subgroup": "Paint › Knee / White Clip"
+    "subgroup": "VF › Marker",
+    "order": 10,
+    "evidence": "FS7M2 round 87 (2026-10-16, ALL; the SCENE file saved at the same time did not change; the switch Setting stayed Off): Aspect Safety Area 90 % -> 80 % changed ALL 00085 from 90000 to 80000 (percent x 1000); the manual lists 80 / 90 / 92.5 / 95 %.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "80000": "80 %",
+        "90000": "90 %",
+        "92500": "92.5 % – assumption",
+        "95000": "95 % – assumption"
+      }
+    }
   },
   "00105": {
     "name": "Knee Point",
@@ -3006,18 +3092,38 @@
     "subgroup": "Other"
   },
   "00324": {
-    "name": "User Box width (?)",
-    "status": "hypothesis",
-    "evidence": "240 and 135 (00325) have a 16:9 ratio; manual VF > Marker > User Box Width/Height",
-    "group": "misc",
-    "subgroup": "VF › Zebra / Marker"
+    "name": "User Box Width",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 12,
+    "evidence": "FS7M2 round 88 (2026-10-16, ALL only; the manual lists VF > Marker as All File only): User Box Width 240 -> 300 changed ALL 00324 from 240 to 300 (range 3 to 479 by the manual, factory 240).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 3,
+      "max": 479,
+      "small": 1,
+      "large": 10,
+      "note": "3 to 479 (manual), factory value 240."
+    }
   },
   "00325": {
-    "name": "User Box height (?)",
-    "status": "hypothesis",
-    "evidence": "See 00324",
-    "group": "misc",
-    "subgroup": "VF › Zebra / Marker"
+    "name": "User Box Height",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 13,
+    "evidence": "FS7M2 round 88 (2026-10-16, ALL only; the manual lists VF > Marker as All File only): User Box Height 135 -> 200 changed ALL 00325 from 135 to 200 (range 3 to 269 by the manual, factory 135).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 3,
+      "max": 269,
+      "small": 1,
+      "large": 10,
+      "note": "3 to 269 (manual), factory value 135."
+    }
   },
   "00031": {
     "name": "Black Setting (On/Off)",
@@ -3247,7 +3353,7 @@
   "00175": {
     "name": "Recording format descriptor (list of 55 values)",
     "status": "likely",
-    "evidence": "Position 42 (0-based) always equals field 16 of 00150 (codec index: 0 XAVC-I, 1 XAVC-L, 2 MPEG HD422, 6 RAW, 7 RAW & XAVC-I, 8 RAW & XAVC-L, 9 RAW & MPEG HD422, 10 ProRes 422 HQ, 11 ProRes 422) in all 14 ALL files; position 51 follows the frame rate/format (UHD/HD 25p 4, UHD 29.97p 5, HD or UHD 59.94 7, DCI 29.97p 1, DCI 59.94p 0); positions 40, 44, 49, 52 differ for DCI and the RAW-variant file 002. Position 43 mirrors field 17 of 00150 (RAW output format index: 0, 1, 3 seen)",
+    "evidence": "Position 42 (0-based) always equals field 16 of 00150 (codec index: 0 XAVC-I, 1 XAVC-L, 2 MPEG HD422, 6 RAW, 7 RAW & XAVC-I, 8 RAW & XAVC-L, 9 RAW & MPEG HD422, 10 ProRes 422 HQ, 11 ProRes 422) in all 14 ALL files; position 51 follows the frame rate/format (UHD/HD 25p 4, UHD 29.97p 5, HD or UHD 59.94 7, DCI 29.97p 1, DCI 59.94p 0); positions 40, 44, 49, 52 differ for DCI and the RAW-variant file 002. Position 43 mirrors field 17 of 00150 (RAW output format index: 0, 1, 3 seen) VF > Display On/Off (round 78, 2026-10-16, ALL only, SCENE unchanged): the first 42 values are the switches of the display elements in the order of the menu (without Setting, from Shutter Setting at 0; Gamma at 30, Clip Name at 33; the codec index follows at 42; some items hold more than one value): 0 = shown, 1 = hidden. Clip Name Off -> On changed position 33 from 1 to 0 and Gamma, Timecode, Audio Level Meter, Battery Remain and Color Temp. On -> Off changed positions 30, 4, 6, 7 and 10 from 0 to 1 (the four early positions are not yet assigned to the items; the menu order of the manual would give 6, 8, 9 and 11). Positions 39-41 (Level Gauge, Lens Info, Notice Message) are 1, 2, 1 in the factory state. Round 79 (2026-10-16): Shutter Setting and Gain Setting On -> Off changed positions 0 and 2 from 0 to 1, Color Temp. and Battery Remain Off -> On changed positions 4 and 6 from 1 to 0; with the menu order Color Temp. = 4, Frame Rate / Interval = 5, Battery Remain = 6, Timecode = 7, Audio Level Meter = 10 (the pair assignment inside {4, 6} and {7, 10} follows the menu order). Round 80 (2026-10-16): ND Filter Value, Rec/Play Status, Frame Rate / Interval, Audio Manual, Media Status, Focus Position (Off), Zoom Position (Off), SteadyShot, Focus Area Indicator, Focus Indicator, AGC, Auto Iris, Auto Exposure Level, SDI/HDMI Rec Control, Timecode Lock, Focus Assist Indicator, Video Level Warning and Level Gauge On -> Off changed positions 1, 3, 5, 8, 9, 11, 12 (0 -> 2), 14 (0 -> 2), 16, 19, 21, 22, 25, 29, 31, 35, 36 and, outside the flags, 50 and 53 (0 -> 1). Assigned by their neighbours: ND Filter Value 1, Rec/Play Status 3, Frame Rate / Interval 5, Audio Manual 8 (and 9), Media Status 11, Focus Position 12, Zoom Position 14 (the three-state items hold 2 when Off), Timecode Lock 31. The other positions (16, 19, 21, 22, 25, 29, 35, 36) are not assigned yet. ALL 00231 field 2 (Zoom Speed row) went from 0 to 2 in the same round. Rounds 81 and 82 (2026-10-16): the files are not in step with the task lists (the user switched many items in several steps); seen: Iris Position = position 13 (0 -> 1 when switched Off, between Focus Position 12 and Zoom Position 14); further changes at 17, 20, 28, 34 (round 82) and 39 (1 -> 0), 47 (0 -> 1) (round 81) are not assigned yet; the state of the camera has to be read off the menu to align the positions. Round 83 (2026-10-16, ALL only): Auto ND Filter, AE Mode, White Balance Mode and Rec Format On -> Off changed positions 23, 24, 27 and 55 from 0 to 1 (not assigned to the items; the positions do not follow the menu order throughout, one switch lies at 55, behind the recording format values). Round 90 (2026-10-16): Video Signal Monitor Setting Off -> Waveform: the only unexplained change was position 38 of this ID from 0 to 1 (hypothesis: Video Signal Monitor on; not confirmed).",
     "group": "video",
     "subgroup": "System › Rec Format (companion values)"
   },
@@ -3277,11 +3383,19 @@
     "subgroup": "System › Rec Format (companion values)"
   },
   "00283": {
-    "name": "History dependent value (not format related) (?)",
-    "status": "hypothesis",
-    "evidence": "1 until the ProRes files; 0 from 020.ALL on and it stayed 0 in 022.ALL (RAW) although ProRes was left: changed once, did not change back",
+    "name": "Users Bit Mode",
+    "status": "confirmed",
     "group": "video",
-    "subgroup": "System › Rec Format (companion values)"
+    "subgroup": "TC/UB › Users Bit",
+    "order": 1,
+    "evidence": "FS7M2 round 92 (2026-10-16, ALL only; the manual lists TC/UB as All File only): Users Bit > Mode Fix -> Time changed ALL 00283 from 0 to 1.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Fix",
+        "1": "Time"
+      }
+    }
   },
   "00173": {
     "name": "Pair of flags, second field 1 for ProRes (?)",
@@ -7042,6 +7156,485 @@
       "choices": {
         "0": "CH1/CH2",
         "1": "CH3/CH4"
+      }
+    }
+  },
+  "00480": {
+    "name": "Zebra 1 (copy)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Zebra",
+    "order": 3,
+    "covered_by": "00132",
+    "evidence": "Identical copy of ALL 00132 in every file seen; the program changes it together with 00132."
+  },
+  "00481": {
+    "name": "Zebra 2 (copy)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Zebra",
+    "order": 4,
+    "covered_by": "00133",
+    "evidence": "Identical copy of ALL 00133 in every file seen; the program changes it together with 00133."
+  },
+  "00120": {
+    "name": "Peaking (Type, Color, Levels)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Peaking",
+    "order": 1,
+    "evidence": "FS7M2 round 85 (2026-10-16, ALL only; the manual lists VF > Peaking as All File only; the switch Setting stayed Off): Peaking Type Normal -> Color, Color B&W -> Yellow, Color Peaking Level 50 -> 70 and Normal Peaking Level 50 -> 45 changed only ALL 00120 `1,3,50,0,0,0,50` -> `1,3,70,2,1,0,45`: field 2 Color Peaking Level (0 to 99, stored 1:1), field 3 Color (0 B&W, 1 Red, 2 Yellow, 3 Blue; Red and Blue follow the order of the manual), field 4 Peaking Type (0 Normal, 1 Color), field 6 Normal Peaking Level (0 to 99, stored 1:1). Fields 0, 1 and 5 (1, 3, 0) did not change and are unknown (field 0 is not the switch Setting, which was Off; the manual also lists a Frequency).",
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": 0,
+      "note": "Peaking: type, colour and levels 0 to 99 (manual). Fields 0, 1 and 5 of this row (1, 3, 0 in the factory state) are not decoded and stay unchanged; the switch Setting is not stored in the file.",
+      "fields": [
+        {
+          "index": 4,
+          "label": "Peaking Type",
+          "choices": {
+            "0": "Normal",
+            "1": "Color"
+          }
+        },
+        {
+          "index": 6,
+          "label": "Normal Peaking Level"
+        },
+        {
+          "index": 3,
+          "label": "Color",
+          "choices": {
+            "0": "B&W",
+            "1": "Red – assumption",
+            "2": "Yellow",
+            "3": "Blue – assumption"
+          }
+        },
+        {
+          "index": 2,
+          "label": "Color Peaking Level"
+        }
+      ]
+    }
+  },
+  "00075": {
+    "name": "Center Marker",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 1,
+    "evidence": "FS7M2 round 86 (2026-10-16, ALL only; the manual lists VF > Marker as All File only; the switch Setting stayed Off): Center Marker Off -> 3 changed ALL 00075 0 -> 1 (on flag) and ALL 00076 3 -> 2 (marker type, index 0 to 3 = marker 1 to 4; the factory value 3 is marker 4). Safety Zone Off -> On changed 00078 0 -> 1, Safety Area 90 -> 92.5 % changed 00079 90000 -> 92500 (value in 1/1000 %), Color White -> Red changed 00510 0 -> 5.",
+    "widget": {
+      "type": "derived",
+      "options": [
+        {
+          "label": "Off",
+          "match": {
+            "00075": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00075": {
+              "0": "0"
+            }
+          }
+        },
+        {
+          "label": "1",
+          "match": {
+            "00075": {
+              "0": "1"
+            },
+            "00076": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00075": {
+              "0": "1"
+            },
+            "00076": {
+              "0": "0"
+            }
+          }
+        },
+        {
+          "label": "2",
+          "match": {
+            "00075": {
+              "0": "1"
+            },
+            "00076": {
+              "0": "1"
+            }
+          },
+          "set": {
+            "00075": {
+              "0": "1"
+            },
+            "00076": {
+              "0": "1"
+            }
+          }
+        },
+        {
+          "label": "3",
+          "match": {
+            "00075": {
+              "0": "1"
+            },
+            "00076": {
+              "0": "2"
+            }
+          },
+          "set": {
+            "00075": {
+              "0": "1"
+            },
+            "00076": {
+              "0": "2"
+            }
+          }
+        },
+        {
+          "label": "4",
+          "match": {
+            "00075": {
+              "0": "1"
+            },
+            "00076": {
+              "0": "3"
+            }
+          },
+          "set": {
+            "00075": {
+              "0": "1"
+            },
+            "00076": {
+              "0": "3"
+            }
+          }
+        }
+      ],
+      "note": "Center Marker: Off or marker 1 to 4 (on flag 00075 and type 00076; 3 and 4 seen, 1 and 2 follow the order)."
+    }
+  },
+  "00076": {
+    "name": "Center Marker type",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 2,
+    "covered_by": "00075",
+    "evidence": "Marker type 0 to 3 = marker 1 to 4 (index 2 = marker 3 seen, 3 = marker 4 in the factory state); part of the Center Marker dropdown."
+  },
+  "00078": {
+    "name": "Safety Zone",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 3,
+    "evidence": "FS7M2 round 86 (2026-10-16, ALL only; the manual lists VF > Marker as All File only; the switch Setting stayed Off): Safety Zone Off -> On changed ALL 00078 from 0 to 1.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00510": {
+    "name": "Marker Color",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 5,
+    "evidence": "FS7M2 round 86 (2026-10-16, ALL only; the manual lists VF > Marker as All File only; the switch Setting stayed Off): Color White -> Red changed ALL 00510 from 0 to 5. The index follows the manual's list White / Yellow / Cyan / Green / Magenta / Red / Blue (White 0 and Red 5 seen). SCENE 00157 stayed 0 while the marker color was Red (round 87): the pairing of SCENE 00157 with this ID in the first ID map was a coincidence of equal values and was removed.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "White",
+        "1": "Yellow – assumption",
+        "2": "Cyan – assumption",
+        "3": "Green – assumption",
+        "4": "Magenta – assumption",
+        "5": "Red",
+        "6": "Blue – assumption"
+      }
+    }
+  },
+  "00080": {
+    "name": "Aspect Marker",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 6,
+    "evidence": "FS7M2 round 87 (2026-10-16, ALL; the SCENE file saved at the same time did not change; the switch Setting stayed Off): Aspect Marker Off -> Mask changed ALL 00080 0 -> 1 (on flag) and ALL 00081 0 -> 1 (marker style: 0 Line, 1 Mask; Line is assumed). Aspect Select 4:3 -> 2.35:1 changed 00082 0 -> 8, Aspect Mask 12 -> 5 changed 00083, Aspect Safety Area 90 -> 80 % changed 00085 90000 -> 80000.",
+    "widget": {
+      "type": "derived",
+      "options": [
+        {
+          "label": "Off",
+          "match": {
+            "00080": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00080": {
+              "0": "0"
+            }
+          }
+        },
+        {
+          "label": "Line – assumption",
+          "match": {
+            "00080": {
+              "0": "1"
+            },
+            "00081": {
+              "0": "0"
+            }
+          },
+          "set": {
+            "00080": {
+              "0": "1"
+            },
+            "00081": {
+              "0": "0"
+            }
+          }
+        },
+        {
+          "label": "Mask",
+          "match": {
+            "00080": {
+              "0": "1"
+            },
+            "00081": {
+              "0": "1"
+            }
+          },
+          "set": {
+            "00080": {
+              "0": "1"
+            },
+            "00081": {
+              "0": "1"
+            }
+          }
+        }
+      ],
+      "note": "Aspect Marker: Off, Line or Mask (on flag 00080 and style 00081; Mask seen, Line assumed)."
+    }
+  },
+  "00081": {
+    "name": "Aspect Marker style",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 7,
+    "covered_by": "00080",
+    "evidence": "Style of the aspect marker: 1 = Mask seen (0 in the factory state, Line assumed); part of the Aspect Marker dropdown."
+  },
+  "00082": {
+    "name": "Aspect Select",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 8,
+    "evidence": "FS7M2 round 87 (2026-10-16, ALL; the SCENE file saved at the same time did not change; the switch Setting stayed Off): Aspect Select 4:3 -> 2.35:1 changed ALL 00082 from 0 to 8. The other choices of the manual (1.66:1, 1.85:1, 2.4:1) are not seen yet; the index does not run 0 to 4, so they stay unknown. Round 90: Aspect Select 2.35:1 -> 1.85:1 changed 00082 from 8 to 7, so 7 = 1.85:1 and 8 = 2.35:1; 1.66:1 = 6 and 2.4:1 = 9 are assumed (neighbouring codes), 4:3 = 0 was seen.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "4:3",
+        "6": "1.66:1 – assumption",
+        "7": "1.85:1",
+        "8": "2.35:1",
+        "9": "2.4:1 – assumption"
+      }
+    }
+  },
+  "00083": {
+    "name": "Aspect Mask",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 9,
+    "evidence": "FS7M2 round 87 (2026-10-16, ALL; the SCENE file saved at the same time did not change; the switch Setting stayed Off): Aspect Mask 12 -> 5 changed ALL 00083 from 12 to 5 (range 0 to 15 by the manual, factory value 12).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 0,
+      "max": 15,
+      "small": 1,
+      "large": 5,
+      "note": "0 to 15 (manual), factory value 12."
+    }
+  },
+  "00323": {
+    "name": "User Box",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 11,
+    "evidence": "FS7M2 round 88 (2026-10-16, ALL only; the manual lists VF > Marker as All File only): User Box Off -> On changed ALL 00323 from 0 to 1.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00326": {
+    "name": "User Box H Position",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 14,
+    "evidence": "FS7M2 round 88 (2026-10-16, ALL only; the manual lists VF > Marker as All File only): User Box H Position 0 -> +100 changed ALL 00326 from 0 to 100 (range -476 to +476 by the manual; the vertical position is probably the next ID 00327, not seen yet).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": -476,
+      "max": 476,
+      "small": 1,
+      "large": 10,
+      "note": "-476 to +476 (manual), factory value 0."
+    }
+  },
+  "00084": {
+    "name": "Aspect Safety Zone",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 11,
+    "evidence": "FS7M2 round 89 (2026-10-16, ALL only; the manual lists VF > Marker as All File only): Aspect Safety Zone Off -> On changed ALL 00084 from 0 to 1.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00327": {
+    "name": "User Box V Position",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 16,
+    "evidence": "FS7M2 round 89 (2026-10-16, ALL only; the manual lists VF > Marker as All File only): User Box V Position 0 -> -50 changed ALL 00327 from 0 to -50 (range -266 to +266 by the manual, factory 0).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": -266,
+      "max": 266,
+      "small": 1,
+      "large": 10,
+      "note": "-266 to +266 (manual), factory value 0."
+    }
+  },
+  "00360": {
+    "name": "100% Marker",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 17,
+    "evidence": "FS7M2 round 89 (2026-10-16, ALL only; the manual lists VF > Marker as All File only): 100% Marker and Guide Frame Off -> On changed ALL 00245 and ALL 00360 from 0 to 1; FS7M2 round 90 (2026-10-16, ALL only): 100% Marker back to Off changed ALL 00360 from 1 to 0, so 00360 is the 100% Marker and 00245 the Guide Frame.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00245": {
+    "name": "Guide Frame",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 18,
+    "evidence": "FS7M2 round 89 (2026-10-16, ALL only; the manual lists VF > Marker as All File only): Guide Frame Off -> On changed ALL 00245 from 0 to 1 (together with the 100% Marker, which was separated in round 90: 00360).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00243": {
+    "name": "Brightness",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "VF › VF Setting",
+    "order": 1,
+    "evidence": "FS7M2 round 90 (2026-10-16, ALL only): VF Setting > Brightness 0 -> +20 changed ALL 00243 from 0 to 20 (range -99 to +99 by the manual, stored 1:1).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": -99,
+      "max": 99,
+      "small": 1,
+      "large": 10,
+      "note": "-99 to +99 (manual), stored 1:1, factory value 0."
+    }
+  },
+  "00260": {
+    "name": "HDMI TC Out",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "TC/UB › HDMI TC Out",
+    "order": 1,
+    "evidence": "FS7M2 round 91 (2026-10-16, ALL only; the manual lists TC/UB as All File only; the user counts it as round 91, archive/round_91): TC Mode Preset -> Regen (Run Rec Run -> Free Run, locked by Regen), HDMI TC Out Off -> On changed only ALL 00158 1 -> 0 and ALL 00260 0 -> 1. 00260 is HDMI TC Out (the only item with a plain on / off value among the three); TC Format is locked in the PAL-based formats (NDF only) and did not change.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00158": {
+    "name": "Timecode Mode / Run",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "TC/UB › Timecode",
+    "order": 1,
+    "evidence": "FS7M2 round 91 (2026-10-16, ALL only; the manual lists TC/UB as All File only; the user counts it as round 91, archive/round_91): Mode Preset -> Regen and Run Rec Run -> Free Run (locked by Regen) changed ALL 00158 from 1 to 0 (and 00260, see there). Mode and Run cannot be separated yet (round 92 asks for Preset with Free Run). Earlier observation: switching S&Q Motion on sets 00158 to 2. Round 92: TC Mode Regen -> Preset with Run already on Free Run changed 00158 from 0 to 2. So the value combines mode and run: 0 = Regen, 1 = Preset with Rec Run, 2 = Preset with Free Run (Clock, which also runs free, is not seen).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Regen",
+        "1": "Preset (Rec Run)",
+        "2": "Preset (Free Run)"
+      },
+      "note": "Timecode mode and run are one value: Regen = 0, Preset with Rec Run = 1, Preset with Free Run = 2 (also 2 while S&Q Motion is on); Clock is not seen yet."
+    }
+  },
+  "00176": {
+    "name": "TC Display Select",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "TC/UB › TC Display",
+    "order": 1,
+    "evidence": "FS7M2 round 92 (2026-10-16, ALL only; the manual lists TC/UB as All File only): TC Display > Display Select Timecode -> Duration changed ALL 00176 from 0 to 3 (the codes of Users Bit and the gap at 1 and 2 are not seen yet).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Timecode",
+        "3": "Duration"
       }
     }
   }
