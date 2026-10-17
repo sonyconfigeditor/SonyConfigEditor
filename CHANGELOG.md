@@ -3,17 +3,30 @@
 Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
 Newest first; the version is only raised for a release.
 
-## [Unreleased] - 2026-10-16
+## [Unreleased] - 2026-10-17
 ### Added
 - **TC/UB tab** (ALL files only, FS7M2, first items): timecode mode and run as one setting (Regen, Preset with Rec Run, Preset with Free Run), TC Display Select (Timecode, Duration seen), Users Bit Mode (Fix / Time) and HDMI TC Out (Off / On).
 - **VF > Marker** (ALL files only, FS7M2): Center Marker (Off, 1 to 4), Safety Zone (Off / On), Safety Area (80 / 90 / 92.5 / 95 %), Marker Color (White ... Blue), Aspect Marker (Off / Line / Mask), Aspect Select (4:3, 2.35:1 seen), Aspect Mask (0 to 15) and Aspect Safety Area, Aspect Safety Zone, the user box (on / off, width, height, horizontal and vertical position), 100% Marker and Guide Frame; **VF Setting > Brightness** (-99 to +99).
 - **Fixed:** a SCENE value was wrongly paired with the marker color when switching between SCENE and ALL files (equal values by chance); the marker color stays in the ALL file only.
-- **VF > Peaking** (ALL files only, FS7M2): Peaking Type (Normal / Color), Color (B&W / Yellow, Red and Blue by the manual's order), Normal Peaking Level and Color Peaking Level (0 to 99). The switch Setting and three further values of the row are not decoded.
+- **VF > Peaking** (ALL files only, FS7M2): Peaking Type (Normal / Color), Color (B&W / Yellow, Red and Blue by the manual's order), Normal Peaking Level and Color Peaking Level (0 to 99). The switch Setting (stored inverted: 1 = Off) and two further values of the row are not decoded.
 - **VF > Zebra** (ALL files only, FS7M2): Zebra 1 and Zebra 2 with on / off, level in % (0 to 107 / 0 to 109) and Zebra 1 aperture level (1 to 20 %). Zebra Select is the combination of the two on flags (1 = Zebra 1 only, 2 = Zebra 2 only, Both = both on). The camera stores a copy of both values in another ID; the program keeps the copy in step with every change (one undo step).
 - **Fixed:** the check boxes of the VF display preview showed the default state instead of the state of the file when a file was opened first.
 - **Audio Output > Headphone Out** (Mono / Stereo), **Output Limiter** (On / Off) and **HDMI Output CH** (CH1/CH2, CH3/CH4); the channel level selections CH1-CH4 Level are complete (ALL files only, FS7M2).
 - **The window remembers its position and size** (and whether it was maximised) between runs; the saved values are checked, so a window that would end up off the screen (for example after unplugging a monitor) opens at the default place. **View > Reset window size and position** puts the window back to the default size, centred.
-- **VF tab: sixteen elements of the display preview are connected to the file** (VF > Display On/Off, stored in the first values of ALL 00175; marked with a dot): Shutter, ND filter value, Gain, Rec/Play status, Color Temp., Frame rate, Battery, Timecode, Audio level meter, Media status, Focus and Zoom position, Gamma, Timecode lock and Clip name show the state of the loaded file and change it (undo / redo work). The other elements stay a preview until their positions are decoded.
+- **VF Setting: Color Mode (Color / B&W)** and **Peaking Frequency (Normal / High)** are decoded.
+- **VF tab: Focus Area Marker** is part of the display preview; its check box is greyed out while Focus Assist Indicator is off, as in the camera menu.
+- **VF tab: the display preview follows edits made in the table**, and Center Marker is connected to VF > Marker > Center Marker.
+- **VF tab: the virtual monitor draws the markers** of VF > Marker in the chosen colour (center marker, safety zone, aspect marker as line or mask with the picture ratio, aspect safety zone, user box, 100 % marker).
+- **VF tab: the Marker block sits directly below the virtual monitor**, so a marker can be changed and seen at the same time.
+- **The last used tab is remembered** and shown again at the next start (the first tab when a file has no such tab).
+- **TC/UB: Users Bit Setting** can be edited as eight hex digits; **Peaking Color** Blue is confirmed.
+- **TC Display Select Users Bit** and **Peaking Color Red** are confirmed.
+- **Marker: Aspect Select 1.66:1 and Aspect Marker Line** are confirmed.
+- **About: third-party licenses** are listed in the About text and can be read in the program (button "Third-party licenses…"); the notices file is bundled into the EXE.
+- **VF tab: Video Signal Monitor** is connected as well, so every check box of the display preview is connected to the file and the dots behind the names are gone.
+- **VF tab: the elements of the virtual monitor no longer overlap** (GPS, Clip Name and the bottom row moved along one axis only).
+- **TC Mode Clock** and **Marker Setting (On / Off)** are decoded.
+- **VF tab: all elements of the display preview are connected to the file** (VF > Display On/Off, stored in the first values of ALL 00175; marked with a dot): Shutter, ND filter value, Gain, Rec/Play status, Color Temp., Frame rate, Battery, Timecode, Audio level meter, Media status, Focus and Zoom position, SteadyShot, Focus mode, Auto shutter, AGC, Auto iris, AE mode, White balance mode, Rec format, Wi-Fi condition, Auto ND filter, GPS, Gamma, Timecode lock and Clip name show the state of the loaded file and change it (undo / redo work). The other elements stay a preview until their positions are decoded.
 - **VF tab with a virtual camera monitor** (ALL files): compact check boxes for the display elements (shutter, gain, ND, iris, focus, rec format, gamma, clip name, timecode, audio meters, battery, ...) and below them a picture of the camera monitor where the elements switched on appear at their fixed places with example values (positions from the figure of the manual). It is a preview for now: the choices are not stored in the file until the settings of VF > Display On/Off are decoded. All on / All off buttons.
 - **Audio > CH1&2 / CH3&4 AGC Mode** (Mono / Stereo) and **CH1-CH4 Level** (Audio Input Level / channel input level / combined; CH1 and CH3 seen, the combined entry is assumed), ALL files only, FS7M2.
 - **Audio > Audio Input Level, Limiter Mode (switch and level) and AGC Spec** (ALL files only, FS7M2). **1 kHz Tone on Color Bars** (Off / On, stored inverted: 1 = Off).

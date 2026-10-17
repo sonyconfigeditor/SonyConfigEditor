@@ -47,6 +47,7 @@ COMMON=(
     --add-data "id_map.json:."
     --add-data "defaults.json:."
     --add-data "LICENSE:."
+    --add-data "THIRD_PARTY_NOTICES.md:."
     --add-data "assets:assets"
     --add-data "translations:translations"
     --add-data "templates:templates"

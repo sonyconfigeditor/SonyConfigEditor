@@ -300,7 +300,7 @@
     "subgroup": "VF › Zebra",
     "order": 2,
     "mirror": "00481",
-    "evidence": "FS7M2 round 84 (2026-10-16, ALL only; the manual lists VF > Zebra as All File only): see Zebra 1 (00132): ALL 00133 `0,100` -> `1,90`; field 0 is the on flag of Zebra 2, field 1 its level in %.",
+    "evidence": "FS7M2 round 84 (2026-10-16, ALL only; the manual lists VF > Zebra as All File only): see Zebra 1 (00132): ALL 00133 `0,100` -> `1,90`; field 0 is the on flag of Zebra 2, field 1 its level in %. Round 105 (2026-10-17): Zebra Select Zebra 1 -> Both (1 and 2) changed 00133 from `0,100` to `1,100` and its copy 00481 the same way (Zebra 2 on).",
     "widget": {
       "type": "stepfields",
       "unit": 1,
@@ -3353,7 +3353,7 @@
   "00175": {
     "name": "Recording format descriptor (list of 55 values)",
     "status": "likely",
-    "evidence": "Position 42 (0-based) always equals field 16 of 00150 (codec index: 0 XAVC-I, 1 XAVC-L, 2 MPEG HD422, 6 RAW, 7 RAW & XAVC-I, 8 RAW & XAVC-L, 9 RAW & MPEG HD422, 10 ProRes 422 HQ, 11 ProRes 422) in all 14 ALL files; position 51 follows the frame rate/format (UHD/HD 25p 4, UHD 29.97p 5, HD or UHD 59.94 7, DCI 29.97p 1, DCI 59.94p 0); positions 40, 44, 49, 52 differ for DCI and the RAW-variant file 002. Position 43 mirrors field 17 of 00150 (RAW output format index: 0, 1, 3 seen) VF > Display On/Off (round 78, 2026-10-16, ALL only, SCENE unchanged): the first 42 values are the switches of the display elements in the order of the menu (without Setting, from Shutter Setting at 0; Gamma at 30, Clip Name at 33; the codec index follows at 42; some items hold more than one value): 0 = shown, 1 = hidden. Clip Name Off -> On changed position 33 from 1 to 0 and Gamma, Timecode, Audio Level Meter, Battery Remain and Color Temp. On -> Off changed positions 30, 4, 6, 7 and 10 from 0 to 1 (the four early positions are not yet assigned to the items; the menu order of the manual would give 6, 8, 9 and 11). Positions 39-41 (Level Gauge, Lens Info, Notice Message) are 1, 2, 1 in the factory state. Round 79 (2026-10-16): Shutter Setting and Gain Setting On -> Off changed positions 0 and 2 from 0 to 1, Color Temp. and Battery Remain Off -> On changed positions 4 and 6 from 1 to 0; with the menu order Color Temp. = 4, Frame Rate / Interval = 5, Battery Remain = 6, Timecode = 7, Audio Level Meter = 10 (the pair assignment inside {4, 6} and {7, 10} follows the menu order). Round 80 (2026-10-16): ND Filter Value, Rec/Play Status, Frame Rate / Interval, Audio Manual, Media Status, Focus Position (Off), Zoom Position (Off), SteadyShot, Focus Area Indicator, Focus Indicator, AGC, Auto Iris, Auto Exposure Level, SDI/HDMI Rec Control, Timecode Lock, Focus Assist Indicator, Video Level Warning and Level Gauge On -> Off changed positions 1, 3, 5, 8, 9, 11, 12 (0 -> 2), 14 (0 -> 2), 16, 19, 21, 22, 25, 29, 31, 35, 36 and, outside the flags, 50 and 53 (0 -> 1). Assigned by their neighbours: ND Filter Value 1, Rec/Play Status 3, Frame Rate / Interval 5, Audio Manual 8 (and 9), Media Status 11, Focus Position 12, Zoom Position 14 (the three-state items hold 2 when Off), Timecode Lock 31. The other positions (16, 19, 21, 22, 25, 29, 35, 36) are not assigned yet. ALL 00231 field 2 (Zoom Speed row) went from 0 to 2 in the same round. Rounds 81 and 82 (2026-10-16): the files are not in step with the task lists (the user switched many items in several steps); seen: Iris Position = position 13 (0 -> 1 when switched Off, between Focus Position 12 and Zoom Position 14); further changes at 17, 20, 28, 34 (round 82) and 39 (1 -> 0), 47 (0 -> 1) (round 81) are not assigned yet; the state of the camera has to be read off the menu to align the positions. Round 83 (2026-10-16, ALL only): Auto ND Filter, AE Mode, White Balance Mode and Rec Format On -> Off changed positions 23, 24, 27 and 55 from 0 to 1 (not assigned to the items; the positions do not follow the menu order throughout, one switch lies at 55, behind the recording format values). Round 90 (2026-10-16): Video Signal Monitor Setting Off -> Waveform: the only unexplained change was position 38 of this ID from 0 to 1 (hypothesis: Video Signal Monitor on; not confirmed).",
+    "evidence": "Position 42 (0-based) always equals field 16 of 00150 (codec index: 0 XAVC-I, 1 XAVC-L, 2 MPEG HD422, 6 RAW, 7 RAW & XAVC-I, 8 RAW & XAVC-L, 9 RAW & MPEG HD422, 10 ProRes 422 HQ, 11 ProRes 422) in all 14 ALL files; position 51 follows the frame rate/format (UHD/HD 25p 4, UHD 29.97p 5, HD or UHD 59.94 7, DCI 29.97p 1, DCI 59.94p 0); positions 40, 44, 49, 52 differ for DCI and the RAW-variant file 002. Position 43 mirrors field 17 of 00150 (RAW output format index: 0, 1, 3 seen) VF > Display On/Off (round 78, 2026-10-16, ALL only, SCENE unchanged): the first 42 values are the switches of the display elements in the order of the menu (without Setting, from Shutter Setting at 0; Gamma at 30, Clip Name at 33; the codec index follows at 42; some items hold more than one value): 0 = shown, 1 = hidden. Clip Name Off -> On changed position 33 from 1 to 0 and Gamma, Timecode, Audio Level Meter, Battery Remain and Color Temp. On -> Off changed positions 30, 4, 6, 7 and 10 from 0 to 1 (the four early positions are not yet assigned to the items; the menu order of the manual would give 6, 8, 9 and 11). Positions 39-41 (Level Gauge, Lens Info, Notice Message) are 1, 2, 1 in the factory state. Round 79 (2026-10-16): Shutter Setting and Gain Setting On -> Off changed positions 0 and 2 from 0 to 1, Color Temp. and Battery Remain Off -> On changed positions 4 and 6 from 1 to 0; with the menu order Color Temp. = 4, Frame Rate / Interval = 5, Battery Remain = 6, Timecode = 7, Audio Level Meter = 10 (the pair assignment inside {4, 6} and {7, 10} follows the menu order). Round 80 (2026-10-16): ND Filter Value, Rec/Play Status, Frame Rate / Interval, Audio Manual, Media Status, Focus Position (Off), Zoom Position (Off), SteadyShot, Focus Area Indicator, Focus Indicator, AGC, Auto Iris, Auto Exposure Level, SDI/HDMI Rec Control, Timecode Lock, Focus Assist Indicator, Video Level Warning and Level Gauge On -> Off changed positions 1, 3, 5, 8, 9, 11, 12 (0 -> 2), 14 (0 -> 2), 16, 19, 21, 22, 25, 29, 31, 35, 36 and, outside the flags, 50 and 53 (0 -> 1). Assigned by their neighbours: ND Filter Value 1, Rec/Play Status 3, Frame Rate / Interval 5, Audio Manual 8 (and 9), Media Status 11, Focus Position 12, Zoom Position 14 (the three-state items hold 2 when Off), Timecode Lock 31. The other positions (16, 19, 21, 22, 25, 29, 35, 36) are not assigned yet. ALL 00231 field 2 (Zoom Speed row) went from 0 to 2 in the same round. Rounds 81 and 82 (2026-10-16): the files are not in step with the task lists (the user switched many items in several steps); seen: Iris Position = position 13 (0 -> 1 when switched Off, between Focus Position 12 and Zoom Position 14); further changes at 17, 20, 28, 34 (round 82) and 39 (1 -> 0), 47 (0 -> 1) (round 81) are not assigned yet; the state of the camera has to be read off the menu to align the positions. Round 83 (2026-10-16, ALL only): Auto ND Filter, AE Mode, White Balance Mode and Rec Format On -> Off changed positions 23, 24, 27 and 55 from 0 to 1 (not assigned to the items; the positions do not follow the menu order throughout, one switch lies at 55, behind the recording format values). Round 90 (2026-10-16): Video Signal Monitor Setting Off -> Waveform: the only unexplained change was position 38 of this ID from 0 to 1 (hypothesis: Video Signal Monitor on; not confirmed). Round 94 (2026-10-17, after the second reset; all six items On -> Off): HXR-IFR5 Rec Control, SteadyShot, Focus Mode, Focus Area Indicator, Focus Area Ind. (Push AF) and Focus Indicator changed positions 16, 17, 19 (0 -> 1), 49 (1 -> 0), 53 and 54 (0 -> 1). By the menu order SteadyShot = 16, Focus Mode = 17, Focus Area Indicator = 19 (these three agree with the earlier rounds 80 and 82); HXR-IFR5 Rec Control, Push AF and Focus Indicator are the three at 49, 53 and 54 (not separated; 49 changed the other way round, 1 -> 0). Round 95 (2026-10-17): Focus Indicator back to On, Auto Shutter, AGC, Auto ND Filter, Auto Iris and AE Mode On -> Off changed positions 19 (1 -> 0), 20, 21, 22, 23 and 55 (0 -> 1). Combining all rounds (sets of positions per item): Focus Indicator = 19, Focus Mode = 17, Auto Shutter = 20 (certain); SteadyShot and Focus Area Indicator are 16 and 53 (not separated); HXR-IFR5 Rec Control and Push AF are 49 and 54; AGC and Auto Iris are 21 and 22; Auto ND Filter and AE Mode are 23 and 55; White Balance Mode and Rec Format are 24 and 27; Wi-Fi Condition and Clip Number are 28 and 34. The earlier assumption that the positions follow the menu order is wrong for these items. Round 96 (2026-10-17): SteadyShot, Push AF, AGC and Auto ND Filter back to On, Wi-Fi Condition and White Balance Mode to Off changed positions 16, 54, 21, 55 (1 -> 0) and 28, 24 (0 -> 1). That separates the pairs of round 95: SteadyShot = 16 and Focus Area Indicator = 53, Push AF = 54 and HXR-IFR5 Rec Control = 49, AGC = 21 and Auto Iris = 22, Auto ND Filter = 55 and AE Mode = 23, White Balance Mode = 24 and Rec Format = 27, Wi-Fi Condition = 28 and Clip Number = 34. Polarity: 0 = shown, 1 = hidden everywhere except HXR-IFR5 Rec Control (position 49: 1 = shown); the three-state items hold 2 when Off. Round 97 (2026-10-17, all six items On -> Off): Auto Exposure Level, SDI/HDMI Rec Control, Focus Assist Indicator, Video Level Warning, Level Gauge and GPS changed positions 8, 25, 29, 35, 36, 50 (0 -> 1) and 39 (1 -> 0). GPS = 39 (shown = 1, like HXR-IFR5 Rec Control; Notice Message = 47 by elimination with round 81). Auto Exposure Level, SDI/HDMI Rec Control, Focus Assist Indicator, Video Level Warning and Level Gauge lie on 25, 29, 35, 36 and 50 in an order that is not yet known (the same five positions changed in round 80); position 8 also changed (an extra value, unexplained). Round 98 (2026-10-17): Auto Exposure Level, Focus Assist Indicator and Level Gauge back to On, Lens Info Off -> Meter, Focus Area Marker On -> Off, Audio Manual On -> Off changed positions 8, 35, 50 (1 -> 0), 40 (2 -> 0), 37 and 9 (0 -> 1). So Audio Manual = 9 (position 8 is not Audio Manual: it flipped back with the three items switched on), Lens Info = 40 (three-state: 2 = Off, 0 = Meter), Focus Area Marker = 37. Auto Exposure Level, Focus Assist Indicator and Level Gauge are 8, 35 and 50 in an unknown order; SDI/HDMI Rec Control and Video Level Warning occupy 25, 29 and 36 (one of them two positions). Round 99 (2026-10-17): Auto Exposure Level On -> Off, Video Level Warning Off -> On, Notice Message On -> Off, Video Signal Monitor Setting Off -> Vector changed positions 50 (0 -> 1), 29 (1 -> 0), 47 (0 -> 1) and 38 (0 -> 2). So Auto Exposure Level = 50, Video Level Warning = 29, Notice Message = 47 (confirmed), and position 38 is the Setting of Video Signal Monitor (three-state: 0 = Off, 2 = Vector; Waveform presumably 1). Focus Assist Indicator and Level Gauge are 8 and 35 (order unknown); SDI/HDMI Rec Control occupies 25 and 36. Round 100 (2026-10-17): Focus Assist Indicator On -> Off, Level Gauge On -> Off, Video Signal Monitor Setting Vector -> Waveform, SDI/HDMI Rec Control Off -> On changed positions 8 and 35 (0 -> 1), 38 (2 -> 1) and 25 (1 -> 0). So SDI/HDMI Rec Control = 25 (36 did not move), Waveform = 1 (Video Signal Monitor Setting: 0 Off, 1 Waveform, 2 Vector). Focus Assist Indicator and Level Gauge both switched in the same round, so they are still 8 and 35 in an unknown order; position 36 is not yet assigned to a menu item. Round 101 (2026-10-17): Focus Assist Indicator Off -> On (Level Gauge stayed Off), Video Level Warning On -> Off, Display On/Off Setting On -> Off changed positions 35 (1 -> 0), 29 (0 -> 1) and 48 (0 -> 1). So Focus Assist Indicator = 35, Level Gauge = 8, and position 48 is the master switch Setting of VF > Display On/Off (0 = On, 1 = Off). Position 36 is still not assigned to a menu item. Round 102 (2026-10-17, extra round): Marker Setting On -> Off and Display On/Off Focus Area Marker Off -> On (possible only while Focus Assist Indicator is On, otherwise greyed) changed positions 36 and 37 (1 -> 0). So Focus Area Marker takes two positions, 37 and 36 (in round 98 only 37 moved because 36 already was 1 since round 97); 36 is therefore not a separate menu item. Round 103 (2026-10-17, extra round): Media Status On -> Off changed only position 11 (0 -> 1); the same switch hides both Media Status displays of the monitor. Round 104 (2026-10-17): Display On/Off Setting Off -> On changed only position 48 (1 -> 0), which confirms 48 as the master switch (0 = On, 1 = Off).",
     "group": "video",
     "subgroup": "System › Rec Format (companion values)"
   },
@@ -7183,7 +7183,7 @@
     "group": "video",
     "subgroup": "VF › Peaking",
     "order": 1,
-    "evidence": "FS7M2 round 85 (2026-10-16, ALL only; the manual lists VF > Peaking as All File only; the switch Setting stayed Off): Peaking Type Normal -> Color, Color B&W -> Yellow, Color Peaking Level 50 -> 70 and Normal Peaking Level 50 -> 45 changed only ALL 00120 `1,3,50,0,0,0,50` -> `1,3,70,2,1,0,45`: field 2 Color Peaking Level (0 to 99, stored 1:1), field 3 Color (0 B&W, 1 Red, 2 Yellow, 3 Blue; Red and Blue follow the order of the manual), field 4 Peaking Type (0 Normal, 1 Color), field 6 Normal Peaking Level (0 to 99, stored 1:1). Fields 0, 1 and 5 (1, 3, 0) did not change and are unknown (field 0 is not the switch Setting, which was Off; the manual also lists a Frequency).",
+    "evidence": "FS7M2 round 85 (2026-10-16, ALL only; the manual lists VF > Peaking as All File only; the switch Setting stayed Off): Peaking Type Normal -> Color, Color B&W -> Yellow, Color Peaking Level 50 -> 70 and Normal Peaking Level 50 -> 45 changed only ALL 00120 `1,3,50,0,0,0,50` -> `1,3,70,2,1,0,45`: field 2 Color Peaking Level (0 to 99, stored 1:1), field 3 Color (0 B&W, 1 Red, 2 Yellow, 3 Blue; Red and Blue follow the order of the manual), field 4 Peaking Type (0 Normal, 1 Color), field 6 Normal Peaking Level (0 to 99, stored 1:1). Fields 0, 1 and 5 (1, 3, 0) did not change and are unknown (field 0 is not the switch Setting, which was Off; the manual also lists a Frequency). Round 93 (2026-10-17, after a second full reset of the camera, ALL only): VF > Peaking > Setting Off -> On changed only field 0 of ALL 00120 from 1 to 0 (1 = Off, 0 = On, inverted like the display switches). This is the first of the switches called Setting; the file of that round also differs from the first factory file in 00454 (`1,1` -> `1,2`) and 00494 (1 -> 0), which belong to the state of the camera after the reset, not to Peaking. Round 100 (2026-10-17): Peaking Frequency Normal -> High changed only field 5 of ALL 00120 from 0 to 1 (0 Normal, 1 High; other options, if any, not seen). Round 104 (2026-10-17): Peaking Color B&W (first entry) -> Blue (last entry) changed field 3 from 0 to 3, so Blue = 3 (confirmed). Round 105: Peaking Color Blue -> Red changed field 3 from 3 to 1, so Red = 1 (confirmed).",
     "widget": {
       "type": "stepfields",
       "unit": 1,
@@ -7193,14 +7193,30 @@
       ],
       "max_raw": 32767,
       "min_raw": 0,
-      "note": "Peaking: type, colour and levels 0 to 99 (manual). Fields 0, 1 and 5 of this row (1, 3, 0 in the factory state) are not decoded and stay unchanged; the switch Setting is not stored in the file.",
+      "note": "Peaking: setting, type, frequency, colour and levels 0 to 99 (manual). Field 0 is the switch Setting (1 = Off, 0 = On, inverted); field 1 (3 in the factory state) is not decoded and stays unchanged.",
       "fields": [
+        {
+          "index": 0,
+          "label": "Setting",
+          "choices": {
+            "1": "Off",
+            "0": "On"
+          }
+        },
         {
           "index": 4,
           "label": "Peaking Type",
           "choices": {
             "0": "Normal",
             "1": "Color"
+          }
+        },
+        {
+          "index": 5,
+          "label": "Frequency",
+          "choices": {
+            "0": "Normal",
+            "1": "High"
           }
         },
         {
@@ -7212,9 +7228,9 @@
           "label": "Color",
           "choices": {
             "0": "B&W",
-            "1": "Red – assumption",
+            "1": "Red",
             "2": "Yellow",
-            "3": "Blue – assumption"
+            "3": "Blue"
           }
         },
         {
@@ -7230,7 +7246,7 @@
     "group": "video",
     "subgroup": "VF › Marker",
     "order": 1,
-    "evidence": "FS7M2 round 86 (2026-10-16, ALL only; the manual lists VF > Marker as All File only; the switch Setting stayed Off): Center Marker Off -> 3 changed ALL 00075 0 -> 1 (on flag) and ALL 00076 3 -> 2 (marker type, index 0 to 3 = marker 1 to 4; the factory value 3 is marker 4). Safety Zone Off -> On changed 00078 0 -> 1, Safety Area 90 -> 92.5 % changed 00079 90000 -> 92500 (value in 1/1000 %), Color White -> Red changed 00510 0 -> 5.",
+    "evidence": "FS7M2 round 86 (2026-10-16, ALL only; the manual lists VF > Marker as All File only; the switch Setting stayed Off): Center Marker Off -> 3 changed ALL 00075 0 -> 1 (on flag) and ALL 00076 3 -> 2 (marker type, index 0 to 3 = marker 1 to 4; the factory value 3 is marker 4). Safety Zone Off -> On changed 00078 0 -> 1, Safety Area 90 -> 92.5 % changed 00079 90000 -> 92500 (value in 1/1000 %), Color White -> Red changed 00510 0 -> 5. Round 106: Center Marker Off -> On (type unchanged) changed 00075 from 0 to 1 again.",
     "widget": {
       "type": "derived",
       "options": [
@@ -7377,7 +7393,7 @@
     "group": "video",
     "subgroup": "VF › Marker",
     "order": 6,
-    "evidence": "FS7M2 round 87 (2026-10-16, ALL; the SCENE file saved at the same time did not change; the switch Setting stayed Off): Aspect Marker Off -> Mask changed ALL 00080 0 -> 1 (on flag) and ALL 00081 0 -> 1 (marker style: 0 Line, 1 Mask; Line is assumed). Aspect Select 4:3 -> 2.35:1 changed 00082 0 -> 8, Aspect Mask 12 -> 5 changed 00083, Aspect Safety Area 90 -> 80 % changed 00085 90000 -> 80000.",
+    "evidence": "FS7M2 round 87 (2026-10-16, ALL; the SCENE file saved at the same time did not change; the switch Setting stayed Off): Aspect Marker Off -> Mask changed ALL 00080 0 -> 1 (on flag) and ALL 00081 0 -> 1 (marker style: 0 Line, 1 Mask; Line is assumed). Aspect Select 4:3 -> 2.35:1 changed 00082 0 -> 8, Aspect Mask 12 -> 5 changed 00083, Aspect Safety Area 90 -> 80 % changed 00085 90000 -> 80000. Round 106: Aspect Marker Off -> Line changed only 00080 from 0 to 1 (00081 stayed 0), so Line = on with style 0 (confirmed); Mask = style 1.",
     "widget": {
       "type": "derived",
       "options": [
@@ -7395,7 +7411,7 @@
           }
         },
         {
-          "label": "Line – assumption",
+          "label": "Line",
           "match": {
             "00080": {
               "0": "1"
@@ -7451,12 +7467,12 @@
     "group": "video",
     "subgroup": "VF › Marker",
     "order": 8,
-    "evidence": "FS7M2 round 87 (2026-10-16, ALL; the SCENE file saved at the same time did not change; the switch Setting stayed Off): Aspect Select 4:3 -> 2.35:1 changed ALL 00082 from 0 to 8. The other choices of the manual (1.66:1, 1.85:1, 2.4:1) are not seen yet; the index does not run 0 to 4, so they stay unknown. Round 90: Aspect Select 2.35:1 -> 1.85:1 changed 00082 from 8 to 7, so 7 = 1.85:1 and 8 = 2.35:1; 1.66:1 = 6 and 2.4:1 = 9 are assumed (neighbouring codes), 4:3 = 0 was seen.",
+    "evidence": "FS7M2 round 87 (2026-10-16, ALL; the SCENE file saved at the same time did not change; the switch Setting stayed Off): Aspect Select 4:3 -> 2.35:1 changed ALL 00082 from 0 to 8. The other choices of the manual (1.66:1, 1.85:1, 2.4:1) are not seen yet; the index does not run 0 to 4, so they stay unknown. Round 90: Aspect Select 2.35:1 -> 1.85:1 changed 00082 from 8 to 7, so 7 = 1.85:1 and 8 = 2.35:1; 1.66:1 = 6 and 2.4:1 = 9 are assumed (neighbouring codes), 4:3 = 0 was seen. Round 106 (2026-10-17): Aspect Select 4:3 -> 1.66:1 changed 00082 from 0 to 6, so 1.66:1 = 6 (confirmed).",
     "widget": {
       "type": "choice",
       "choices": {
         "0": "4:3",
-        "6": "1.66:1 – assumption",
+        "6": "1.66:1",
         "7": "1.85:1",
         "8": "2.35:1",
         "9": "2.4:1 – assumption"
@@ -7612,30 +7628,75 @@
     "group": "video",
     "subgroup": "TC/UB › Timecode",
     "order": 1,
-    "evidence": "FS7M2 round 91 (2026-10-16, ALL only; the manual lists TC/UB as All File only; the user counts it as round 91, archive/round_91): Mode Preset -> Regen and Run Rec Run -> Free Run (locked by Regen) changed ALL 00158 from 1 to 0 (and 00260, see there). Mode and Run cannot be separated yet (round 92 asks for Preset with Free Run). Earlier observation: switching S&Q Motion on sets 00158 to 2. Round 92: TC Mode Regen -> Preset with Run already on Free Run changed 00158 from 0 to 2. So the value combines mode and run: 0 = Regen, 1 = Preset with Rec Run, 2 = Preset with Free Run (Clock, which also runs free, is not seen).",
+    "evidence": "FS7M2 round 91 (2026-10-16, ALL only; the manual lists TC/UB as All File only; the user counts it as round 91, archive/round_91): Mode Preset -> Regen and Run Rec Run -> Free Run (locked by Regen) changed ALL 00158 from 1 to 0 (and 00260, see there). Mode and Run cannot be separated yet (round 92 asks for Preset with Free Run). Earlier observation: switching S&Q Motion on sets 00158 to 2. Round 92: TC Mode Regen -> Preset with Run already on Free Run changed 00158 from 0 to 2. So the value combines mode and run: 0 = Regen, 1 = Preset with Rec Run, 2 = Preset with Free Run (Clock, which also runs free, is not seen). Round 101 (2026-10-17): TC Mode Preset -> Clock changed 00158 from 1 to 3 (Clock = 3). Round 105 (2026-10-17): TC Mode Clock -> Preset (the Preset time 01:02:03:04 was then entered) changed 00158 from 3 to 1 (Preset with Rec Run); the Preset time itself changed no ID of the file (it is not stored in the ALL file).",
     "widget": {
       "type": "choice",
       "choices": {
         "0": "Regen",
         "1": "Preset (Rec Run)",
-        "2": "Preset (Free Run)"
+        "2": "Preset (Free Run)",
+        "3": "Clock"
       },
-      "note": "Timecode mode and run are one value: Regen = 0, Preset with Rec Run = 1, Preset with Free Run = 2 (also 2 while S&Q Motion is on); Clock is not seen yet."
+      "note": "Timecode mode and run are one value: Regen = 0, Preset with Rec Run = 1, Preset with Free Run = 2 (also 2 while S&Q Motion is on), Clock = 3."
     }
   },
   "00176": {
     "name": "TC Display Select",
-    "status": "likely",
+    "status": "confirmed",
     "group": "video",
     "subgroup": "TC/UB › TC Display",
     "order": 1,
-    "evidence": "FS7M2 round 92 (2026-10-16, ALL only; the manual lists TC/UB as All File only): TC Display > Display Select Timecode -> Duration changed ALL 00176 from 0 to 3 (the codes of Users Bit and the gap at 1 and 2 are not seen yet).",
+    "evidence": "FS7M2 round 92 (2026-10-16, ALL only; the manual lists TC/UB as All File only): TC Display > Display Select Timecode -> Duration changed ALL 00176 from 0 to 3 (the codes of Users Bit and the gap at 1 and 2 are not seen yet). Round 104: Display Select Timecode -> Duration changed 00176 from 0 to 3 again (the menu order is Timecode, Users Bit, Duration; the code of Users Bit is not seen). Round 105 (2026-10-17): Display Select Duration -> Users Bit changed 00176 from 3 to 1, so Users Bit = 1 (menu order Timecode 0, Users Bit 1, Duration 3).",
     "widget": {
       "type": "choice",
       "choices": {
         "0": "Timecode",
+        "1": "Users Bit",
         "3": "Duration"
       }
+    }
+  },
+  "00246": {
+    "name": "Color Mode",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "VF › VF Setting",
+    "order": 2,
+    "evidence": "FS7M2 round 99 (2026-10-17, ALL only): VF Setting > Color Mode Color -> B&W changed only ALL 00246 from 0 to 1 (and the Display On/Off flags of the other items of that round).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Color",
+        "1": "B&W"
+      }
+    }
+  },
+  "00074": {
+    "name": "Setting",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "VF › Marker",
+    "order": 0,
+    "evidence": "FS7M2 round 102 (2026-10-17, ALL only, extra round): VF > Marker > Setting On -> Off changed ALL 00074 from 1 to 0 (the file of that round also differs in 00175, see there).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00284": {
+    "name": "Users Bit Setting",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "TC/UB › Users Bit",
+    "order": 2,
+    "evidence": "FS7M2 round 104 (2026-10-17, ALL only): Users Bit > Setting 00 00 00 00 -> 12 34 56 78 changed only ALL 00284 from `0,0,0,0,` to `18,52,86,120,`: four bytes, each pair of hex digits stored as one decimal number (0x12 = 18, 0x34 = 52, 0x56 = 86, 0x78 = 120), with a trailing comma.",
+    "widget": {
+      "type": "hexbytes",
+      "count": 4,
+      "note": "Eight hex digits (four pairs), stored as four decimal bytes."
     }
   }
 }

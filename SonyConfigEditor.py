@@ -33,7 +33,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.2.0"
-_date = "2026-10-16"
+_date = "2026-10-17"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -56,7 +56,7 @@ SUBGROUP_ORDER = [
     "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
     "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
-    "Recording › S&Q Motion", "Audio › Input", "Audio › Output", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "VF › Marker", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
+    "Recording › S&Q Motion", "Audio › Input", "Audio › Output", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
 ]
 REORDER_BY_LOCK = {"Camera › ISO/Gain/EI"}      # sub-groups whose usable rows move to the top, the greyed-out ones follow below a divider line
 CATEGORIES = ()      # the menus are tabs now; a heading per menu inside a tab would only repeat the tab name (the mechanism for headings is kept)
@@ -387,6 +387,27 @@ def save_settings(**changes) -> None:
 
 def save_language(code: str) -> None:
     save_settings(language=code)
+
+
+def hexbytes_text(raw: str, count: int) -> str:
+    """Values stored as decimal bytes ("18,52,86,120,") as hex digit pairs ("12345678"); raises ValueError for anything else."""
+    items = [x.strip() for x in raw.split(",") if x.strip() != ""]
+    if len(items) != count or not all(0 <= int(x) <= 255 for x in items):
+        raise ValueError(raw)
+    return "".join(f"{int(x):02X}" for x in items)
+
+
+def hexbytes_raw(text: str, count: int, raw: str) -> str | None:
+    """The reverse: ``count`` pairs of hex digits as the decimal bytes of the file (keeps a trailing comma of the old value); None when invalid."""
+    text = text.strip().replace(" ", "")
+    if len(text) != 2 * count or any(c not in "0123456789abcdefABCDEF" for c in text):
+        return None
+    return ",".join(str(int(text[i:i + 2], 16)) for i in range(0, len(text), 2)) + ("," if raw.rstrip().endswith(",") else "")
+
+
+def saved_tab(value) -> str:
+    """The tab (main menu) from the settings file: only a known key counts (the file is user-editable), otherwise the first tab."""
+    return value if isinstance(value, str) and value in GROUP_ICONS else GROUPS[0][0]
 
 
 GEOMETRY_PATTERN = re.compile(r"(\d+)x(\d+)\+(-?\d+)\+(-?\d+)")
@@ -823,6 +844,8 @@ def describe_value(info: dict | None, raw: str, params: dict) -> str:
             return widget["choices"].get(parts[0], raw)
         if kind == "checkbox":
             return tr("On") if parts[widget.get("index", 0)] == widget.get("on", "1") else tr("Off")
+        if kind == "hexbytes":
+            return hexbytes_text(raw, widget.get("count", 4))
         if kind == "counter":
             number = int(parts[widget["index"]])
             scale = widget.get("scale")
@@ -1179,27 +1202,28 @@ ABOUT_TEXTS = [
     "Unofficial, independent project: it is not affiliated with Sony and is neither supported nor reviewed by Sony. Sony, PXW-FS7 and PXW-FS7M2 and other product and brand names mentioned are the property of their respective owners and are used here only to name the compatible devices.",
     "The file formats were researched by comparing the author's own files in order to achieve interoperability. The program contains neither Sony software nor Sony material.",
     "Use at your own risk: the software is provided without any warranty (see license text). Files created with this program change settings of your camera. Before loading them, back up the current state (save an All File to the SD card). Flawless operation with every camera and every firmware cannot be guaranteed.",
-    "Uses: customtkinter (MIT License) and the Python standard library (Tkinter).",
+    "Uses: customtkinter (MIT License), darkdetect (BSD License), packaging (BSD License), Pillow (MIT-CMU License) and the Python standard library (Tkinter, Tcl/Tk). The EXE is built with PyInstaller and contains its bootloader (GPL-2.0-or-later with an exception for the bundled program). The license texts are under \"Third-party licenses\".",
 ]
 
 
 class LicenseDialog(ctk.CTkToplevel):
-    """Shows the text of the LICENSE file."""
+    """Shows the text of the LICENSE file, or of another notice file of the program folder (THIRD_PARTY_NOTICES.md)."""
 
-    def __init__(self, app, invisible: bool = False):
-        super().__init__(app)
+    def __init__(self, app, invisible: bool = False, filename: str = "LICENSE", title: str = "License text", parent=None):
+        parent = parent or app      # opened from the About dialog it belongs to that dialog, so it is not hidden behind it
+        super().__init__(parent)
         apply_window_icon(self)
         if invisible:
             self.attributes("-alpha", 0)
-        self.title(tr("License text"))
-        self.transient(app)
-        self.geometry(f"{app._sc(640)}x{app._sc(480)}")
+        self.title(tr(title))
+        self.transient(parent)
+        self.geometry("580x420")      # customtkinter scales the size of its own windows itself (no _sc here)
         box = ctk.CTkTextbox(self, wrap="word")
         box.pack(fill="both", expand=True, padx=12, pady=(12, 6))
         try:
-            text = (BASE_DIR / "LICENSE").read_text(encoding="utf-8")
+            text = (BASE_DIR / filename).read_text(encoding="utf-8")
         except OSError:
-            text = "MIT License (LICENSE file not found)"
+            text = tr("{file} not found.").format(file=filename)
         box.insert("1.0", text)
         box.configure(state="disabled")
         ctk.CTkButton(self, text=tr("Close"), width=app._tr_width("Close", 100), command=self.destroy).pack(pady=(0, 12))
@@ -1298,10 +1322,12 @@ class AboutDialog(ctk.CTkToplevel):
         row = ctk.CTkFrame(self, fg_color="transparent")
         row.pack(pady=(0, 16))
         ctk.CTkButton(row, text=tr("License text…"), width=app._tr_width("License text…", 130), command=self.show_license).pack(side="left", padx=6)
+        ctk.CTkButton(row, text=tr("Third-party licenses…"), width=app._tr_width("Third-party licenses…", 170),
+                      command=lambda: self.show_license("THIRD_PARTY_NOTICES.md", "Third-party licenses")).pack(side="left", padx=6)
         ctk.CTkButton(row, text=tr("Close"), width=app._tr_width("Close", 100), command=self.destroy).pack(side="left", padx=6)
 
-    def show_license(self):
-        dialog = LicenseDialog(self.app, invisible=self.invisible)
+    def show_license(self, filename: str = "LICENSE", title: str = "License text"):
+        dialog = LicenseDialog(self.app, invisible=self.invisible, filename=filename, title=title, parent=self)
         if not self.invisible:
             dialog.after(50, dialog.grab_set)
             self.wait_window(dialog)
@@ -1329,7 +1355,7 @@ MONITOR_ELEMENTS = [
     ("extraw_fmt",   "Rec Format (EXT RAW)",  "EXT RAW 4K",       0.995, 0.380, "e", True,  16),
     ("tc_lock",      "Timecode Lock",         "EXT-LK",           0.995, 0.450, "e", True,  17),
     ("wifi",         "Wi-Fi Condition",       "Wi-Fi",            0.995, 0.520, "e", True,  18),
-    ("gps",          "GPS",                   "GPS",              0.955, 0.170, "e", False, 19),
+    ("gps",          "GPS",                   "GPS",              0.912, 0.170, "e", False, 19),
     ("zoom_pos",     "Zoom Position",         "Z 24",             0.007, 0.170, "w", True,  39),
     ("steadyshot",   "SteadyShot",            "((•))",            0.007, 0.240, "w", True,  37),
     ("focus_mode",   "Focus Mode",            "MF",               0.007, 0.310, "w", True,  36),
@@ -1341,23 +1367,37 @@ MONITOR_ELEMENTS = [
     ("wb_mode",      "White Balance Mode",    "ATW",              0.007, 0.700, "w", True,  30),
     ("rec_control",  "SDI/HDMI Rec Control",  "RecCtrl STOP",     0.007, 0.765, "w", True,  29),
     ("media_util",   "Media Status",          "SD  🔒  ◎",        0.007, 0.830, "w", True,  28),
-    ("clip_name",    "Clip Name",             "A001C001_1234567A", 0.500, 0.870, "c", True,  25),
-    ("timecode",     "Timecode",              "TCG 00:00:00:00",  0.007, 0.955, "w", True,  27),
-    ("audio_meter",  "Audio Level Meter",     "Ch1 ▮▮▮▮▮▮▯▯▯▯▯▯\nCh2 ▮▮▮▮▮▮▮▯▯▯▯▯", 0.275, 0.955, "w", True,  24),
-    ("level_gauge",  "Level Gauge",           "━━━●━━━",         0.560, 0.955, "w", True,  23),
-    ("media_ab",     "Media Status (A/B)",    "A 000min  B 000min", 0.995, 0.955, "e", True,  22),
+    ("clip_name",    "Clip Name",             "A001C001_1234567A", 0.500, 0.860, "c", True,  25),
+    ("timecode",     "Timecode",              "TCG 00:00:00:00",  0.007, 0.948, "w", True,  27),
+    ("audio_meter",  "Audio Level Meter",     "Ch1 ▮▮▮▮▮▮▯▯▯▯▯▯\nCh2 ▮▮▮▮▮▮▮▯▯▯▯▯", 0.275, 0.948, "w", True,  24),
+    ("level_gauge",  "Level Gauge",           "━━━●━━━",         0.560, 0.948, "w", True,  23),
+    ("media_ab",     "Media Status (A/B)",    "A 000min  B 000min", 0.995, 0.948, "e", True,  22),
     ("signal_mon",   "Video Signal Monitor",  "▁▂▃▅▇▆▄▂▁\nLUT 709", 0.995, 0.700, "e", True,  21),
     ("focus_assist", "Focus Assist Indicator", "▭",               0.500, 0.500, "c", False, 20),
+    ("focus_area_marker", "Focus Area Marker", "┌ ┐\n└ ┘",   0.500, 0.640, "c", False, 0),
     ("center_marker", "Center Marker",        "┼",                0.500, 0.500, "c", False, 0),
 ]
 MONITOR_ASPECT = 434 / 242
 MONITOR_DEFAULT_OFF = {"gps", "focus_assist", "center_marker"}
 # Elements connected to the file: key -> position in ALL 00175. The first 42 values of 00175 are the switches of VF > Display On/Off in the order of the
 # menu (without Setting): 0 = shown, 1 = hidden; some menu items hold more than one value, so the positions follow the menu order only roughly. Seen so far (rounds 78, 79): the elements below; the others are a preview only.
-MONITOR_FLAGS = {"shutter": 0, "nd": 1, "gain": 2, "recmode": 3, "colortemp": 4, "fps": 5, "battery": 6, "timecode": 7, "audio_meter": 10, "media_ab": 11,
-                 "focus_pos": 12, "focus_bar": 12, "iris": 13, "zoom_pos": 14, "gamma": 30, "tc_lock": 31, "clip_name": 33}
-MONITOR_FLAG_OFF = {"focus_pos": 2, "focus_bar": 2, "zoom_pos": 2}      # three-state items (Meter / Feet / Off) hold 2 when switched off, the others 1
+MONITOR_FLAGS = {"shutter": 0, "nd": 1, "gain": 2, "recmode": 3, "colortemp": 4, "fps": 5, "battery": 6, "timecode": 7, "audio_meter": 10, "media_ab": 11, "media_util": 11,
+                 "focus_pos": 12, "focus_bar": 12, "iris": 13, "zoom_pos": 14, "steadyshot": 16, "focus_mode": 17, "auto_shutter": 20, "agc": 21, "auto_iris": 22, "ae_mode": 23, "wb_mode": 24,
+                 "format": 27, "framerate": 27, "codec": 27, "wifi": 28, "gamma": 30, "tc_lock": 31, "clip_name": 33, "gps": 39, "auto_nd": 55, "rec_control": 25, "level_gauge": 8, "focus_assist": 35,
+                 "focus_area_marker": 37, "signal_mon": 38, "extraw_rec": 3, "extraw_fmt": 27}
+MONITOR_FLAG_OFF = {"focus_pos": 2, "focus_bar": 2, "zoom_pos": 2, "gps": 0, "signal_mon": 0}      # three-state items (Meter / Feet / Off) hold 2 when switched off, the others 1
 DISPLAY_FLAGS_ID = "00175"
+MONITOR_FLAG_ALSO = {"focus_area_marker": (36,)}      # further positions that always get the same value as the main one (Focus Area Marker: 37 and 36)
+MONITOR_REQUIRES = {"focus_area_marker": "focus_assist"}      # element -> element that must be on (otherwise the camera greys the item out)
+MONITOR_FIELDS = {"center_marker": ("00075", 0)}      # elements whose switch is not in 00175: key -> (ID, field); 1 = shown, 0 = hidden (VF > Marker > Center Marker)
+MONITOR_FLAG_ON = {"gps": 1, "signal_mon": 1}      # the value of an element that is shown, where it is not 0 (GPS: 1 = shown)
+
+
+# VF > Marker as it is drawn in the preview: the IDs it reads, the colours of Marker Color (00510) and the picture ratios of Aspect Select (00082)
+MARKER_IDS = ("00074", "00075", "00078", "00079", "00080", "00081", "00082", "00083", "00084", "00085", "00245", "00323", "00324", "00325", "00326", "00327", "00360", "00510")
+MARKER_COLORS = {"0": "#ffffff", "1": "#ffe600", "2": "#00e5ff", "3": "#00e000", "4": "#ff00ff", "5": "#ff2020", "6": "#3050ff"}
+MARKER_ASPECTS = {"0": 4 / 3, "6": 1.66, "7": 1.85, "8": 2.35, "9": 2.4}
+USER_BOX_GRID = (960, 540)      # assumed units of User Box width / height / position (the ranges fit a 960 x 540 grid; sign of the positions assumed: right / down)
 
 
 class MonitorPreview(tk.Canvas):
@@ -1366,6 +1406,7 @@ class MonitorPreview(tk.Canvas):
     def __init__(self, master, width: int, bg: str, visible: dict):
         super().__init__(master, width=width, height=round(width / MONITOR_ASPECT), background=bg, highlightthickness=0)
         self.visible = visible
+        self.markers = None     # state of VF > Marker (see App._marker_state); None = no such rows in the file
         self._family = tkfont.nametofont("TkFixedFont").actual("family")
         self.redraw()
 
@@ -1380,18 +1421,63 @@ class MonitorPreview(tk.Canvas):
         size = max(6, pw // 52)
         font = (self._family, -size)
         pad = max(1, size // 5)
+        self._draw_markers(pw, ph)
         for key, _label, text, x, y, anchor, boxed, _number in MONITOR_ELEMENTS:
-            if not self.visible.get(key):
+            if not self.visible.get(key) or (key in MONITOR_REQUIRES and not self.visible.get(MONITOR_REQUIRES[key])):
                 continue
             item = self.create_text(x * pw, y * ph, text=text, anchor={"w": "w", "e": "e", "c": "center"}[anchor], font=font, fill="#111111", justify="left")
             if boxed:
                 x0, y0, x1, y1 = self.bbox(item)
                 self.tag_lower(self.create_rectangle(x0 - pad, y0 - pad, x1 + pad, y1 + pad, fill="#f3f3f3", outline="#555555"), item)
-        if self.visible.get("center_marker"):
+        marks = self.markers
+        if self.visible.get("center_marker") and (marks is None or marks["on"]):
             cx, cy = pw / 2, ph / 2
-            self.create_rectangle(cx - pw * 0.095, cy - ph * 0.22, cx + pw * 0.095, cy + ph * 0.22, outline="#444444")
-            self.create_line(cx - 6, cy, cx + 6, cy, fill="#444444")
-            self.create_line(cx, cy - 6, cx, cy + 6, fill="#444444")
+            arm = max(6, pw // 60)
+            color = marks["color"] if marks else "#444444"
+            for line in ((cx - arm, cy, cx + arm, cy), (cx, cy - arm, cx, cy + arm)):
+                self._stroke(self.create_line, line, color)
+
+    def _stroke(self, make, coords, color):
+        """A line / rectangle in the marker colour with a dark edge, so that it can be seen on the light example picture."""
+        thick = max(1, int(self.cget("width")) // 400)
+        colour_option = "fill" if make == self.create_line else "outline"
+        make(*coords, width=thick + 2, **{colour_option: "#202020"})
+        make(*coords, width=thick, **{colour_option: color})
+
+    def _frame(self, pw: int, ph: int, ratio: float) -> tuple[float, float, float, float]:
+        """The rectangle of the given picture ratio, centred in the picture (letterbox or pillarbox)."""
+        w, h = (pw, pw / ratio) if ratio > pw / ph else (ph * ratio, ph)
+        return (pw - w) / 2, (ph - h) / 2, (pw + w) / 2, (ph + h) / 2
+
+    def _draw_markers(self, pw: int, ph: int):
+        """Safety zone, aspect marker / mask, user box and 100 % marker of VF > Marker (assumptions are marked in the info text of the panel)."""
+        m = self.markers
+        if not m or not m["on"]:
+            return
+        color = m["color"]
+        rect = lambda box: self._stroke(self.create_rectangle, box, color)
+        if m["aspect"]:
+            x0, y0, x1, y1 = self._frame(pw, ph, m["aspect"])
+            if m["aspect_style"] == "mask":
+                stipple = ("gray12", "gray25", "gray50", "gray75", "")[min(4, m["mask"] // 3)]
+                for box in ((0, 0, pw, y0), (0, y1, pw, ph), (0, y0, x0, y1), (x1, y0, pw, y1)):
+                    if box[2] - box[0] > 0.5 and box[3] - box[1] > 0.5:
+                        self.create_rectangle(*box, fill="#000000", outline="", stipple=stipple)
+            rect((x0, y0, x1, y1))
+            if m["aspect_safety"]:
+                k = m["aspect_safety"]
+                cx, cy, w, h = (x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) * k, (y1 - y0) * k
+                rect((cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2))
+        if m["safety"]:
+            k = m["safety"]
+            rect((pw * (1 - k) / 2, ph * (1 - k) / 2, pw * (1 + k) / 2, ph * (1 + k) / 2))
+        if m["full"]:
+            rect((3, 3, pw - 3, ph - 3))
+        if m["user_box"]:
+            w, h, dx, dy = m["user_box"]
+            gx, gy = USER_BOX_GRID
+            cx, cy = pw / 2 + dx / gx * pw, ph / 2 + dy / gy * ph
+            rect((cx - w / gx * pw / 2, cy - h / gy * ph / 2, cx + w / gx * pw / 2, cy + h / gy * ph / 2))
 
 
 class RowLabel(tk.Frame):
@@ -1570,7 +1656,7 @@ class App(ctk.CTk):
         if isinstance(saved_dir, str) and is_safe_dir(saved_dir):      # no network (UNC) paths from the file: checking them would contact a foreign server
             self._last_dir = Path(saved_dir)
         self._collapsed: dict[str, bool] = {}   # block -> collapsed (no longer used: the tabs show one block at a time)
-        self._tab = "camera"                     # the selected tab (main menu), kept while the app runs
+        self._tab = saved_tab(load_settings().get("tab"))      # the selected tab (main menu), kept while the app runs and saved when it closes; a file without it shows the first tab
         self._tab_scroll: dict[str, float] = {}  # tab -> scroll position (pixels) it was left at; forgotten when another file / profile is shown
         self._sub_collapsed: set[str] = set()   # collapsed sub-groups (by title, kept while the app runs)
         self._cat_collapsed: set[str] = set()   # collapsed categories ("Paint")
@@ -2316,16 +2402,38 @@ class App(ctk.CTk):
         except ValueError:
             return None
 
+    def _field_flags(self) -> dict[str, bool]:
+        """State of the elements switched by a field of another row (MONITOR_FIELDS); elements whose row is missing are left out."""
+        result = {}
+        for key, (ident, pos) in MONITOR_FIELDS.items():
+            var = self.vars.get(ident)
+            values = var.get().split(",") if var is not None else []
+            if pos < len(values):
+                result[key] = values[pos] != "0"
+        return result
+
     def _write_display_flags(self, changes: dict[str, bool]):
         """Show / hide connected display elements in the file (one undo step)."""
+        for key, on in changes.items():
+            if key in MONITOR_FIELDS:
+                ident, pos = MONITOR_FIELDS[key]
+                var = self.vars.get(ident)
+                if var is not None:
+                    values = var.get().split(",")
+                    if pos < len(values) and values[pos] != ("1" if on else "0"):
+                        values[pos] = "1" if on else "0"
+                        var.set(",".join(values))
         flags = self._display_flags()
         if flags is None:
+            self._refresh_vf_preview()
             return
         new = list(flags)
         for key, on in changes.items():
             index = MONITOR_FLAGS.get(key)
             if index is not None and index < len(new):
-                new[index] = 0 if on else MONITOR_FLAG_OFF.get(key, 1)
+                for i in (index, *MONITOR_FLAG_ALSO.get(key, ())):
+                    if i < len(new):
+                        new[i] = MONITOR_FLAG_ON.get(key, 0) if on else MONITOR_FLAG_OFF.get(key, 1)
         if new != flags:
             self.vars[DISPLAY_FLAGS_ID].set(",".join(str(v) for v in new))
             self._refresh_vf_preview()       # elements that share a switch (Focus Position and its bar) follow
@@ -2334,17 +2442,57 @@ class App(ctk.CTk):
         """After undo / redo / loading: the connected check boxes show the state of the file."""
         panel = getattr(self, "_vf_panel", None)
         flags = self._display_flags()
-        if panel is None or flags is None:
+        if panel is None:
             return
         try:
             for key, index in MONITOR_FLAGS.items():
-                if index < len(flags):
+                if flags is not None and index < len(flags):
                     on = flags[index] != MONITOR_FLAG_OFF.get(key, 1)
                     panel.monitor_vars[key].set(on)
                     self._monitor_visible[key] = on
+            for key, on in self._field_flags().items():
+                panel.monitor_vars[key].set(on)
+                self._monitor_visible[key] = on
+            panel.monitor.markers = self._marker_state()
+            self._update_monitor_locks(panel)
             panel.monitor.redraw()
         except tk.TclError:
             pass
+
+    def _marker_state(self) -> dict | None:
+        """State of VF > Marker for the preview (None when the file has no such rows). The master switch Setting hides all markers (assumption)."""
+        if "00074" not in self.vars or "00075" not in self.vars:
+            return None
+
+        def first(ident, default="0"):
+            var = self.vars.get(ident)
+            return var.get().split(",")[0] if var is not None else default
+
+        def number(ident, default=0):
+            try:
+                return int(first(ident, str(default)))
+            except ValueError:
+                return default
+
+        aspect_on = first("00080") == "1"
+        return {
+            "on": first("00074") == "1",
+            "color": MARKER_COLORS.get(first("00510"), "#ffffff"),
+            "safety": number("00079") / 100000 if first("00078") == "1" else 0,
+            "aspect": MARKER_ASPECTS.get(first("00082")) if aspect_on else None,
+            "aspect_style": "mask" if first("00081") == "1" else "line",
+            "mask": max(0, min(15, number("00083"))),
+            "aspect_safety": number("00085") / 100000 if first("00084") == "1" else 0,
+            "full": first("00360") == "1",
+            "user_box": (number("00324"), number("00325"), number("00326"), number("00327")) if first("00323") == "1" else None,
+        }
+
+    def _update_monitor_locks(self, panel):
+        """Check boxes whose element depends on another one (Focus Area Marker needs Focus Assist Indicator) are greyed out while it is off."""
+        for key, need in MONITOR_REQUIRES.items():
+            box = panel.monitor_boxes.get(key)
+            if box is not None:
+                box.configure(state="normal" if panel.monitor_vars[need].get() else "disabled")
 
     def _build_vf_preview(self, parent) -> tk.Frame:
         """Panel of the VF tab: compact check boxes for the display elements and, below, the virtual monitor of the camera with the
@@ -2356,28 +2504,32 @@ class App(ctk.CTk):
             for key, index in MONITOR_FLAGS.items():
                 if index < len(flags):
                     self._monitor_visible[key] = flags[index] != MONITOR_FLAG_OFF.get(key, 1)      # the file wins over the preview state
+        self._monitor_visible.update(self._field_flags())
         panel = tk.Frame(parent, bg=self._c["bg"])
         head = tk.Frame(panel, bg=self._c["bg"])
         head.pack(fill="x")
         tk.Label(head, text=tr("Display preview"), anchor="w", bg=self._c["bg"], fg=self._c["accent"], font=self._font_bold).pack(side="left", padx=self._sc(5))
         info = InfoLabel(head)
-        info.set_info(tr("Check boxes marked with a dot are connected to the file (VF > Display On/Off); the others are a preview only, their settings are not decoded yet. The elements are shown with example values at their places on the camera monitor."))
+        info.set_info(tr("The check boxes are connected to the file (VF > Display On/Off, Marker > Center Marker). The elements are shown with example values at their places on the camera monitor; the markers of VF > Marker are drawn over them."))
         info.pack(side="left", padx=self._sc(4))
         boxes = tk.Frame(panel, bg=self._c["bg"])
         monitor = MonitorPreview(panel, self._sc(760), "#6b6b6b", self._monitor_visible)
         variables = {}
+        boxes_by_key = {}
 
         def set_all(on: bool):
             for key, var in variables.items():
                 var.set(on)
                 monitor.visible[key] = on
             monitor.redraw()
-            self._write_display_flags({key: on for key in MONITOR_FLAGS})
+            self._write_display_flags({key: on for key in (*MONITOR_FLAGS, *MONITOR_FIELDS)})
+            self._update_monitor_locks(panel)
 
         def toggled(key, var):
             monitor.set_visible(key, var.get())
-            if key in MONITOR_FLAGS:
+            if key in MONITOR_FLAGS or key in MONITOR_FIELDS:
                 self._write_display_flags({key: var.get()})
+            self._update_monitor_locks(panel)
 
         for text, value in ((tr("All on"), True), (tr("All off"), False)):
             ctk.CTkButton(head, text=text, width=self._tr_width(text, 80), height=24, command=lambda v=value: set_all(v)).pack(side="left", padx=self._sc(4))
@@ -2385,12 +2537,15 @@ class App(ctk.CTk):
         for i, (key, label, *_rest) in enumerate(MONITOR_ELEMENTS):
             var = tk.BooleanVar(value=self._monitor_visible.get(key, True))
             variables[key] = var
-            box = ctk.CTkCheckBox(boxes, text=label + (" ●" if key in MONITOR_FLAGS else ""), variable=var, checkbox_width=18, checkbox_height=18,
+            box = ctk.CTkCheckBox(boxes, text=label, variable=var, checkbox_width=18, checkbox_height=18,
                                   command=lambda k=key, v=var: toggled(k, v))
+            boxes_by_key[key] = box
             box.grid(row=i // columns, column=i % columns, sticky="w", padx=self._sc(8), pady=self._sc(2))
         boxes.pack(fill="x", pady=(self._sc(4), self._sc(6)))
         monitor.pack(pady=(0, self._sc(4)))
-        panel.monitor, panel.monitor_vars = monitor, variables      # for the tests
+        monitor.markers = self._marker_state()
+        panel.monitor, panel.monitor_vars, panel.monitor_boxes = monitor, variables, boxes_by_key      # for the tests
+        self._update_monitor_locks(panel)
         self._vf_panel = panel
         return panel
 
@@ -2711,6 +2866,8 @@ class App(ctk.CTk):
             return self._build_multichoice_widget(key, var, spec)
         if spec["type"] == "counter":
             return self._build_counter_widget(var, spec)
+        if spec["type"] == "hexbytes":
+            return self._build_hexbytes_widget(var, spec)
         if spec["type"] == "derived":
             return self._build_derived_widget(key, var, spec)
         if spec["type"] == "checkbox":
@@ -3149,6 +3306,46 @@ class App(ctk.CTk):
         row.pack(padx=4, pady=4)
         return row
 
+    def _build_hexbytes_widget(self, var: tk.StringVar, spec: dict):
+        """Entry for a value that holds bytes (Users Bit: eight hex digits, shown and typed as hex, stored as decimal bytes)."""
+        count = spec.get("count", 4)
+        try:
+            hexbytes_text(var.get(), count)
+        except ValueError:
+            return None
+        frame = ctk.CTkFrame(self._row_parent, fg_color="transparent", border_width=0, border_color=CHANGED_COLOR)
+        row = self._marked_row(frame)
+        entry = ctk.CTkEntry(row, width=self._sc(130), justify="center")
+        entry.pack(side="left", padx=4)
+
+        def show():
+            try:
+                text = hexbytes_text(var.get(), count)
+            except ValueError:
+                return
+            entry.delete(0, "end")
+            entry.insert(0, text)
+
+        def commit(_event=None):
+            new = hexbytes_raw(entry.get(), count, var.get())
+            if new is not None and new != var.get():
+                var.set(new)
+            show()
+
+        entry.bind("<Return>", commit)
+        entry.bind("<FocusOut>", commit)
+        entry.commit = commit
+        show()
+        frame._refresh = show
+        raw = ctk.CTkLabel(frame, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray", wraplength=430, justify="left")
+        raw.pack(anchor="w", padx=4)
+        var.trace_add("write", lambda *_a: raw.configure(text=tr("Raw value: {value}").format(value=var.get())))
+        if spec.get("note"):
+            note = InfoLabel(frame)
+            note.set_info(spec["note"])
+            note.pack(anchor="w", padx=4)
+        return frame
+
     def _build_counter_widget(self, var: tk.StringVar, spec: dict):
         """Number entry with -10/-1/+1/+10 buttons for one field of a value (the other fields stay untouched)."""
         idx, lo, hi, unit = spec["index"], spec["min"], spec["max"], spec.get("unit", "")
@@ -3457,6 +3654,7 @@ class App(ctk.CTk):
             state = self._window_settings()
             if state:
                 save_settings(window=state)
+            save_settings(tab=self._tab)
             self.destroy()
 
     def _default_window_size(self) -> tuple[int, int]:
@@ -4167,6 +4365,8 @@ class App(ctk.CTk):
         if self.var_changed.get() and not self._busy:
             self._schedule_filter()
         self._paint_mark(key)
+        if key == DISPLAY_FLAGS_ID or key in MARKER_IDS:
+            self._refresh_vf_preview()      # the display preview follows edits in the table
 
     def _paint_mark(self, key: str):
         """Yellow frame of a row while its value differs from the loaded file. A dropdown that is a combination of several parameters

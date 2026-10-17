@@ -247,3 +247,29 @@ VF, rounds 89 and 90: Aspect Safety Zone = ALL `00084` (0 Off, 1 On), User Box V
 TC/UB, first round: HDMI TC Out = ALL `00260` (0 Off, 1 On, likely). Timecode Mode (Preset / Regen / Clock) and Run (Rec Run / Free Run) changed only ALL `00158` (1 -> 0 with Preset / Rec Run -> Regen / Free Run; Regen locks Run; the value is also 2 with S&Q Motion on); TC Format is locked (NDF only) in PAL-based formats.
 
 TC/UB, second round: ALL `00158` holds timecode mode and run together: 0 = Regen, 1 = Preset with Rec Run, 2 = Preset with Free Run (also 2 with S&Q Motion on); `00176` = TC Display Select (0 Timecode, 3 Duration seen); `00283` = Users Bit Mode (0 Fix, 1 Time).
+
+VF > Peaking, Setting: field 0 of ALL `00120` is the switch Setting, stored inverted (1 = Off, 0 = On). After a second full reset of the camera the files differ from the first factory file in `00454` (second field 1 -> 2) and `00494` (1 -> 0); both belong to the camera state, not to the setting that was changed (after the reset only the time and date were set, so the factory state of these two values is not unique).
+
+VF > Display On/Off, after the second reset: SteadyShot = position 16 and Focus Mode = 17 of ALL `00175` (Focus Area Indicator = 19); HXR-IFR5 Rec Control, Focus Area Ind. (Push AF) and Focus Indicator lie at 49, 53 and 54 (not separated; position 49 changes the other way round, 1 -> 0).
+
+VF > Display On/Off, set arithmetic over several rounds: Focus Mode = 17, Auto Shutter = 20, Focus Indicator = 19 of ALL `00175` (certain); the remaining switches are known as pairs: SteadyShot / Focus Area Indicator = 16 / 53, HXR-IFR5 Rec Control / Push AF = 49 / 54, AGC / Auto Iris = 21 / 22, Auto ND Filter / AE Mode = 23 / 55, White Balance Mode / Rec Format = 24 / 27, Wi-Fi Condition / Clip Number = 28 / 34. The positions do not follow the order of the menu.
+
+VF > Display On/Off, pairs separated: SteadyShot = 16, Focus Mode = 17, Focus Indicator = 19, Auto Shutter = 20, AGC = 21, Auto Iris = 22, AE Mode = 23, White Balance Mode = 24, Rec Format = 27, Wi-Fi Condition = 28, Clip Number = 34, Focus Area Indicator = 53, Push AF = 54, Auto ND Filter = 55, HXR-IFR5 Rec Control = 49 (the only switch that is 1 when shown). The positions after 41 belong to the same list.
+
+VF > Display On/Off, last group: GPS = position 39 of ALL `00175` (shown = 1, like HXR-IFR5 Rec Control), Notice Message = 47 (by elimination); Auto Exposure Level, SDI/HDMI Rec Control, Focus Assist Indicator, Video Level Warning and Level Gauge occupy 25, 29, 35, 36 and 50 (order not separated yet).
+
+VF > Display On/Off, more: Audio Manual = position 9, Lens Info = 40 (three-state: 0 Meter, 2 Off), Focus Area Marker = 37; Auto Exposure Level, Focus Assist Indicator and Level Gauge lie on 8, 35 and 50, SDI/HDMI Rec Control and Video Level Warning on 25, 29 and 36 (order not separated yet).
+
+VF > Display On/Off, more: Auto Exposure Level = position 50, Video Level Warning = 29, Notice Message = 47 (confirmed), position 38 = Setting of Video Signal Monitor (0 Off, 2 Vector). Focus Assist Indicator and Level Gauge lie on 8 and 35, SDI/HDMI Rec Control on 25 and 36. VF Setting > Color Mode = ALL `00246` (0 Color, 1 B&W).
+
+VF > Display On/Off, more: SDI/HDMI Rec Control = position 25; Video Signal Monitor Setting at 38 is 0 Off, 1 Waveform, 2 Vector. Focus Assist Indicator and Level Gauge are still 8 and 35 in unknown order; position 36 is not assigned. VF > Peaking > Frequency = field 5 of ALL `00120` (0 Normal, 1 High).
+
+VF > Display On/Off, completed: Level Gauge = position 8, Focus Assist Indicator = 35, master switch Setting = 48 (0 On, 1 Off); position 36 is not assigned. TC/UB > Timecode Mode: Clock = 3 in ALL `00158` (0 Regen, 1 Preset+Rec Run, 2 Preset+Free Run, 3 Clock).
+
+VF > Marker > Setting = ALL `00074` (1 On, 0 Off). VF > Display On/Off > Focus Area Marker occupies positions 36 and 37 of `00175` (selectable only while Focus Assist Indicator is On), so position 36 is no separate item.
+
+TC/UB > Users Bit > Setting = ALL `00284`: four bytes, each pair of hex digits stored as one decimal number with a trailing comma (`12 34 56 78` = `18,52,86,120,`). VF > Peaking > Color: Blue = 3 (field 3 of `00120`). Display On/Off master switch Setting = position 48 of `00175` (confirmed). TC Display > Display Select has three entries in the menu (Timecode, Users Bit, Duration); Timecode = 0 and Duration = 3, the code of Users Bit is not seen yet.
+
+TC/UB > TC Display > Display Select: Timecode = 0, Users Bit = 1, Duration = 3 (ALL `00176`). VF > Peaking > Color: Red = 1, Yellow = 2, Blue = 3, B&W = 0. The Preset time of TC/UB > Timecode > Setting is not stored in the ALL file (entering 01:02:03:04 changed no value). Zebra Select Both switches Zebra 2 on (`00133` and its copy `00481`, first value 1).
+
+VF > Marker: Aspect Select 1.66:1 = 6 (ALL `00082`: 0 4:3, 6 1.66:1, 7 1.85:1, 8 2.35:1, 9 2.4:1 assumed); Aspect Marker Line = `00080` 1 with `00081` 0 (Mask = `00081` 1).
