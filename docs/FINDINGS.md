@@ -273,3 +273,5 @@ TC/UB > Users Bit > Setting = ALL `00284`: four bytes, each pair of hex digits s
 TC/UB > TC Display > Display Select: Timecode = 0, Users Bit = 1, Duration = 3 (ALL `00176`). VF > Peaking > Color: Red = 1, Yellow = 2, Blue = 3, B&W = 0. The Preset time of TC/UB > Timecode > Setting is not stored in the ALL file (entering 01:02:03:04 changed no value). Zebra Select Both switches Zebra 2 on (`00133` and its copy `00481`, first value 1).
 
 VF > Marker: Aspect Select 1.66:1 = 6 (ALL `00082`: 0 4:3, 6 1.66:1, 7 1.85:1, 8 2.35:1, 9 2.4:1 assumed); Aspect Marker Line = `00080` 1 with `00081` 0 (Mask = `00081` 1).
+
+Camera > Country > NTSC/PAL Area = ALL `00159` (0 NTSC Area, 1 PAL Area; one observation). Switching the area also changes the frame rate of the format in `00150` (50p -> 59.94p in the example), its companion values (`00173`, `00282`, `00407`) and the Flicker Reduce frequency (`00228`, 50 Hz -> 60 Hz).

@@ -391,5 +391,12 @@
   "Third-party licenses": "Licenze di terze parti",
   "{file} not found.": "{file} non trovato.",
   "Uses: customtkinter (MIT License), darkdetect (BSD License), packaging (BSD License), Pillow (MIT-CMU License) and the Python standard library (Tkinter, Tcl/Tk). The EXE is built with PyInstaller and contains its bootloader (GPL-2.0-or-later with an exception for the bundled program). The license texts are under \"Third-party licenses\".": "Utilizza: customtkinter (licenza MIT), darkdetect (licenza BSD), packaging (licenza BSD), Pillow (licenza MIT-CMU) e la libreria standard di Python (Tkinter, Tcl/Tk). L'EXE è creato con PyInstaller e contiene il suo bootloader (GPL-2.0-or-later con un'eccezione per il programma incluso). I testi delle licenze si trovano sotto «Licenze di terze parti».",
-  "The check boxes are connected to the file (VF > Display On/Off, Marker > Center Marker). The elements are shown with example values at their places on the camera monitor; the markers of VF > Marker are drawn over them.": "Le caselle sono collegate al file (VF > Display On/Off, Marker > Center Marker). Gli elementi sono mostrati con valori di esempio al loro posto sul monitor della camera; i marcatori di VF > Marker sono disegnati sopra."
+  "The check boxes are connected to the file (VF > Display On/Off, Marker > Center Marker). The elements are shown with example values at their places on the camera monitor; the markers of VF > Marker are drawn over them.": "Le caselle sono collegate al file (VF > Display On/Off, Marker > Center Marker). Gli elementi sono mostrati con valori di esempio al loro posto sul monitor della camera; i marcatori di VF > Marker sono disegnati sopra.",
+  "NTSC / PAL Area": "Area NTSC / PAL",
+  "NTSC Area": "Area NTSC",
+  "PAL Area": "Area PAL",
+  "Country": "Paese",
+  "On the switch the camera also changes the frame rate of the recording format to the other television system (50p -> 59.94p, 25p -> 29.97p and so on) and its companion values, and the Flicker Reduce frequency follows (PAL 50 Hz, NTSC 60 Hz). The program does the same: the format moves to the closest frame rate of the new system.": "Al cambio la camera modifica anche la frequenza dei fotogrammi del formato di registrazione verso l'altro sistema televisivo (50p -> 59,94p, 25p -> 29,97p, ecc.) con i suoi valori associati, e la frequenza di Flicker Reduce segue (PAL 50 Hz, NTSC 60 Hz). Il programma fa lo stesso: il formato passa alla frequenza più vicina del nuovo sistema.",
+  "Recent files": "File recenti",
+  "(none)": "(nessuno)"
 }

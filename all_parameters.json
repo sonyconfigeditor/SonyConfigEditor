@@ -737,7 +737,18 @@
                   ],
                   "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
                 }
-              ]
+              ],
+              "companions": {
+                "00282": {
+                  "0": "4"
+                },
+                "00173": {
+                  "1": "1"
+                },
+                "00407": {
+                  "0": "1"
+                }
+              }
             },
             {
               "label": "3840×2160 50p – assumption",
@@ -768,7 +779,18 @@
                   ],
                   "reason": "only with Imager Scan Mode Normal (resolution above 2K)"
                 }
-              ]
+              ],
+              "companions": {
+                "00282": {
+                  "0": "2"
+                },
+                "00173": {
+                  "1": "0"
+                },
+                "00407": {
+                  "0": "0"
+                }
+              }
             },
             {
               "label": "6 – 3840×2160 29.97p",
@@ -7697,6 +7719,37 @@
       "type": "hexbytes",
       "count": 4,
       "note": "Eight hex digits (four pairs), stored as four decimal bytes."
+    }
+  },
+  "00159": {
+    "name": "NTSC / PAL Area",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › Country",
+    "order": 1,
+    "evidence": "FS7M2 round 107 (2026-10-17, ALL only, extra round): Camera > Country > NTSC/PAL Area PAL Area -> NTSC Area changed ALL 00159 from 1 to 0 (0 = NTSC, 1 = PAL) and, as side effects of the new area, the frame rate of the format in 00150 (fields 2 and 3: 1 / 50 -> 1001 / 60000, i.e. 50p -> 59.94p), its companions 00173 (`2,0` -> `2,1`), 00282 (first field 2 -> 4) and 00407 (0 -> 1), and Flicker Reduce Frequency 00228 (0 -> 1, 50 Hz -> 60 Hz). Only this one observation (the file before the round held 3840x2160 at 50p). The companion values of the two formats involved (3840x2160 XAVC-I 50p and 59.94p) were taken from the files of rounds 106 and 107: 00282 field 0 = 2 / 4, 00173 field 1 = 0 / 1, 00407 = 0 / 1.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "NTSC Area",
+        "1": "PAL Area"
+      },
+      "note": "On the switch the camera also changes the frame rate of the recording format to the other television system (50p -> 59.94p, 25p -> 29.97p and so on) and its companion values, and the Flicker Reduce frequency follows (PAL 50 Hz, NTSC 60 Hz). The program does the same: the format moves to the closest frame rate of the new system.",
+      "companions": {
+        "0": {
+          "00228": {
+            "0": "1"
+          }
+        },
+        "1": {
+          "00228": {
+            "0": "0"
+          }
+        }
+      },
+      "area_format": {
+        "ntsc": "0"
+      }
     }
   }
 }

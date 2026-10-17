@@ -45,15 +45,15 @@ WARNING_COLOR = "#e57373"
 # main menus of the camera = the tabs of the parameter table (in the order of the camera's menu); a parameter belongs to the tab of the first part of its
 # "subgroup" in the databases ("Paint › Gamma" -> Paint); parameters without a database entry and the sub-group "Other" are in Unknown.
 # Icons are Unicode symbols (no image files). Video, TC/UB and Media follow as soon as parameters of those menus are decoded.
-MENUS = [("camera", "Camera", "📹"), ("paint", "Paint", "🎨"), ("audio", "Audio", "🔊"), ("vf", "VF", "👁"), ("tcub", "TC/UB", "⏱"), ("recording", "Recording", "⏺"),
-         ("file", "File", "📁"), ("system", "System", "⚙"), ("unknown", "Unknown", "❓")]
+MENUS = [("system", "System", "⚙"), ("camera", "Camera", "📹"), ("paint", "Paint", "🎨"), ("audio", "Audio", "🔊"), ("vf", "VF", "👁"), ("tcub", "TC/UB", "⏱"),
+         ("recording", "Recording", "⏺"), ("file", "File", "📁"), ("unknown", "Unknown", "❓")]
 GROUPS = [(key, title) for key, title, _icon in MENUS]
 GROUP_ICONS = {key: icon for key, _title, icon in MENUS}
 MENU_OF_PREFIX = {title: key for key, title, _icon in MENUS if key != "unknown"}
 DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a menu (parameters get "subgroup" in the databases; others: "Other"); Paint as in the camera: White first
 SUBGROUP_ORDER = [
-    "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
+    "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
     "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
     "Recording › S&Q Motion", "Audio › Input", "Audio › Output", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
@@ -403,6 +403,27 @@ def hexbytes_raw(text: str, count: int, raw: str) -> str | None:
     if len(text) != 2 * count or any(c not in "0123456789abcdefABCDEF" for c in text):
         return None
     return ",".join(str(int(text[i:i + 2], 16)) for i in range(0, len(text), 2)) + ("," if raw.rstrip().endswith(",") else "")
+
+
+RECENT_LIMIT = 10
+
+
+def clean_recent(value) -> list[str]:
+    """The list of recent files from the settings file (user-editable input): plain local paths only, at most RECENT_LIMIT, no duplicates."""
+    result: list[str] = []
+    if not isinstance(value, list):
+        return result
+    for item in value:
+        if (isinstance(item, str) and 0 < len(item) < 1024 and not any(ord(c) < 32 for c in item) and not item.startswith((chr(92) * 2, "//"))
+                and item not in result):
+            result.append(item)
+    return result[:RECENT_LIMIT]
+
+
+def with_recent(recent: list[str], path) -> list[str]:
+    """The list with ``path`` moved to the front (newest first)."""
+    text = str(path)
+    return clean_recent([text] + [x for x in recent if x != text])
 
 
 def saved_tab(value) -> str:
@@ -1529,6 +1550,53 @@ class ModelDialog(ctk.CTkToplevel):
         self.destroy()
 
 
+def onoff_labels(choices: dict) -> tuple[str, str] | None:
+    """(key of On, key of Off) when the choices are exactly On and Off (any order, in the language of the catalog), otherwise None."""
+    if len(choices) != 2 or set(choices.values()) != {tr("On"), tr("Off")}:
+        return None
+    on = next(k for k, v in choices.items() if v == tr("On"))
+    off = next(k for k, v in choices.items() if v == tr("Off"))
+    return on, off
+
+
+class OnOffBox(ctk.CTkCheckBox):
+    """Check box in place of a dropdown that offers only Off and On. It speaks the language of the dropdown (``set(label)``, ``label()``), so the
+    rules of the row keep working: ``set_blocked(reason)`` greys it out while the other state is not possible (`requires`), locks and
+    `enabled_when` set its state like that of any other input."""
+
+    def __init__(self, master, on_label: str, off_label: str, text: str = "", **kw):
+        self.on_label, self.off_label = on_label, off_label
+        self.state_var = tk.BooleanVar(value=False)
+        self.blocked = ""
+        super().__init__(master, text=text, variable=self.state_var, width=24, checkbox_width=22, checkbox_height=22, **kw)
+
+    def set(self, value, from_variable_callback=False):
+        """A label of the dropdown (On / Off in the language of the catalog; anything else is Off) or the plain True / False of customtkinter."""
+        if isinstance(value, str):
+            value = value == self.on_label
+        super().set(bool(value), from_variable_callback)
+
+    def label(self) -> str:
+        return self.on_label if self._check_state else self.off_label
+
+    def get(self) -> str:
+        """Like the dropdown: the label of the state that is shown."""
+        return self.label()
+
+    def configure(self, require_redraw=False, **kw):
+        kw.pop("values", None)
+        super().configure(require_redraw=require_redraw, **kw)
+
+    def set_blocked(self, reason: str, locked: bool):
+        """The other state is not possible: grey the box out (unless a row lock decides the state) and say why on hover."""
+        self.blocked = reason
+        if not hasattr(self, "_state_before_lock"):
+            self.configure(state="disabled" if reason else "normal")
+        if not hasattr(self, "_block_tip"):
+            self._block_tip = Tooltip(self)
+        self._block_tip.text = reason
+
+
 class Tooltip:
     """Small text window shown while the mouse is over a widget."""
 
@@ -1800,6 +1868,8 @@ class App(ctk.CTk):
             button.pack(side="left", padx=(4, 0), pady=2)
 
         def popup(button, menu):
+            if menu is file_menu:
+                self._fill_recent_menu()
             menu.tk_popup(button.winfo_rootx(), button.winfo_rooty() + button.winfo_height())
             menu.grab_release()
 
@@ -1810,6 +1880,8 @@ class App(ctk.CTk):
         file_menu = new_menu(bar)
         add(file_menu, "new", "New…", self.new_file, "Ctrl+N")
         add(file_menu, "open", "Open…", self.open_file, "Ctrl+O")
+        self._recent_menu = new_menu(file_menu)
+        file_menu.add_cascade(label=tr("Recent files"), menu=self._recent_menu)
         add(file_menu, "save", "Save", self.save, "Ctrl+S")
         add(file_menu, "save_as", "Save As…", self.save_as, "Ctrl+Shift+S")
         file_menu.add_separator()
@@ -2043,6 +2115,39 @@ class App(ctk.CTk):
         return table
 
     # -- actions ----------------------------------------------------------- #
+    def _remember_recent(self, path: Path):
+        """Put the file at the top of the list of recent files (File menu); kept in the settings file."""
+        self._recent = with_recent(getattr(self, "_recent", None) or clean_recent(load_settings().get("recent_files")), path)
+        save_settings(recent_files=self._recent)
+
+    def _recent_existing(self) -> list[str]:
+        """Recent files that still exist (checked when the menu opens; network paths are not checked)."""
+        if not hasattr(self, "_recent"):
+            self._recent = clean_recent(load_settings().get("recent_files"))
+        found = []
+        for item in self._recent:
+            try:
+                if Path(item).is_file():
+                    found.append(item)
+            except (OSError, ValueError):
+                pass
+        return found
+
+    def _fill_recent_menu(self):
+        """Rebuild the submenu File > Recent files (newest first, numbered 1 to 10)."""
+        menu = self._recent_menu
+        menu.delete(0, "end")
+        items = self._recent_existing()
+        if not items:
+            menu.add_command(label=tr("(none)"), state="disabled")
+            return
+        for number, item in enumerate(items, 1):
+            menu.add_command(label=f"{number}  {Path(item).name}   –   {Path(item).parent}", command=lambda i=item: self.open_recent(i))
+
+    def open_recent(self, item: str):
+        if self._confirm_discard(tr("Open")):
+            self.open_path(Path(item))
+
     def open_file(self):
         path = filedialog.askopenfilename(
             title=tr("Open file"),
@@ -2101,6 +2206,7 @@ class App(ctk.CTk):
             return False
         self._last_dir = path.parent
         save_settings(last_dir=str(path.parent))
+        self._remember_recent(path)
         self.scene.number = path.stem if len(path.stem) == 3 and path.stem.isdigit() else ""
         return self._adopt("all" if ext == ".all" else "scene")
 
@@ -2916,8 +3022,12 @@ class App(ctk.CTk):
                 labels.append(tr("{value} (unknown)").format(value=cur))
             readonly = spec.get("readonly", False)
             cell = field_cell(f)
-            menu = ctk.CTkOptionMenu(cell, values=labels, width=self._menu_width(list(f.get("choices", {}).values()) + labels, f.get("width", 190)), dynamic_resizing=False,
-                                     state="disabled" if readonly else "normal")
+            pair = onoff_labels(f["choices"]) if ("choices_by" not in f and not readonly and not f.get("only_models")) else None
+            if pair:
+                menu = OnOffBox(cell, choices[pair[0]], choices[pair[1]], text=f.get("label", "") if (len(fields) > 1 and not spec.get("show_labels")) else "")
+            else:
+                menu = ctk.CTkOptionMenu(cell, values=labels, width=self._menu_width(list(f.get("choices", {}).values()) + labels, f.get("width", 190)), dynamic_resizing=False,
+                                         state="disabled" if readonly else "normal")
             menu.set(choices.get(cur, tr("{value} (unknown)").format(value=cur)))
 
             def pick(label):
@@ -2939,11 +3049,18 @@ class App(ctk.CTk):
                     var.set(",".join(items))
                 # values the camera changes by itself with this choice (taken from sample files) ...
                 self._apply_companions(key, spec.get("companions", {}).get(new))
+                if spec.get("area_format") and old != new:
+                    self._switch_area_format(key, spec["area_format"], new)      # NTSC <-> PAL: the frame rate of the recording format follows
                 # ... and the values of the last time this choice was active come back
                 if old != new and (key, new) in self._stash:
                     self._set_values(key, self._stash[(key, new)])
 
-            menu.configure(command=pick)
+            def on_box(label=None):
+                if label is not None:       # called with a label like a dropdown (the tests do this)
+                    menu.set(label)
+                pick(menu.label())
+
+            menu.configure(command=on_box if pair else pick)
             if cell is menu_row:
                 menu.pack(side="left", padx=(0, 6))
             else:
@@ -3030,10 +3147,16 @@ class App(ctk.CTk):
                     ok, reason = self._option_state(spec.get("requires", {}).get(k))
                     if not ok:
                         disabled[v] = reason
-                self._fill_menu(menu, labels, disabled)
+                if isinstance(menu, OnOffBox):
+                    menu.blocked = disabled.get(menu.off_label if menu._check_state else menu.on_label, "")      # the state it could switch to is not possible
+                    menu.set_blocked(menu.blocked, False)
+                else:
+                    self._fill_menu(menu, labels, disabled)
                 rule = getattr(menu, "_enabled_when", None)
                 if rule and not hasattr(menu, "_state_before_lock"):      # a row lock (greyed row) has priority
                     menu.configure(state="normal" if current(rule["field"]) in rule["in"] else "disabled")
+                    if isinstance(menu, OnOffBox) and menu.blocked:
+                        menu.configure(state="disabled")
             for entry in ecs_entries:
                 rule = entry._enabled_when
                 if rule and not hasattr(entry, "_state_before_lock"):
@@ -3452,13 +3575,22 @@ class App(ctk.CTk):
             labels = list(choices.values())
             if cur not in choices:
                 labels.append(tr("{value} (unknown)").format(value=cur))
-            menu = ctk.CTkOptionMenu(cell, values=labels, width=self._menu_width(labels, 100), dynamic_resizing=False)
+            pair = onoff_labels(f["choices"])
+            if pair:
+                menu = OnOffBox(cell, choices[pair[0]], choices[pair[1]])
+            else:
+                menu = ctk.CTkOptionMenu(cell, values=labels, width=self._menu_width(labels, 100), dynamic_resizing=False)
             menu.set(choices.get(cur, tr("{value} (unknown)").format(value=cur)))
             def choose(lab):
                 self._last_key = None   # every dropdown choice is its own undo step
                 next((set_item(idx, k) for k, v in choices.items() if v == lab), None)
 
-            menu.configure(command=choose)
+            def on_box(label=None):
+                if label is not None:
+                    menu.set(label)
+                choose(menu.label())
+
+            menu.configure(command=on_box if pair else choose)
             menu.pack()
 
             def refresh_choice():
@@ -3728,6 +3860,59 @@ class App(ctk.CTk):
             self._hpos = len(self._hist) - 1
         self._last_key, self._last_t = key, now
         self._update_history_buttons()
+
+    # nominal frame rates of the other television system (the 24p family exists in both and stays)
+    AREA_NOMINAL = {True: {25: 30, 50: 60, 100: 120}, False: {30: 25, 60: 50, 120: 100}}
+
+    def _switch_area_format(self, key: str, area: dict, new: str):
+        """NTSC / PAL Area was switched: the recording format moves to the frame rate of the new system (50p -> 59.94p, 25p -> 29.97p, 50i -> 59.94i and the
+        other way round), same codec, resolution and scan if the format list has it, else the closest rate; the companion values of the format follow. One undo step
+        together with the switch; the rows are marked as changed like after any edit."""
+        ntsc = new == area["ntsc"]
+        fkey = area.get("format_id", "00150")
+        var = self.vars.get(fkey)
+        widget = (self.param_db.get(fkey) or {}).get("widget") or {}
+        formats = next((x for x in widget.get("selectors", []) if x.get("filter_field")), None)
+        if var is None or formats is None:
+            return
+        cur = [x.strip() for x in var.get().split(",")]
+        field = int(formats["filter_field"])
+        try:
+            rate = int(cur[3]) / int(cur[2])
+        except (ValueError, ZeroDivisionError, IndexError):
+            return
+        nominal = round(rate)
+        if nominal == 24 or (cur[2] == "1001") == ntsc and cur[2] in ("1001", "1"):
+            return      # the 24p family exists in both systems; a rate of the right system stays
+        wanted = self.AREA_NOMINAL[ntsc].get(nominal)
+        fits = lambda o: o["values"].get("2") == ("1001" if ntsc else "1") and self._option_state(o.get("requires"))[0]
+        pool = [o for o in formats["options"] if o["values"].get(str(field)) == cur[field] and fits(o)]
+        same = [o for o in pool if all(o["values"].get(i) == cur[int(i)] for i in "014")]        # width, height, scan
+        for group in (same, pool):
+            group = [o for o in group if wanted is None or round(int(o["values"]["3"]) / int(o["values"]["2"])) == wanted] or group
+            if group:
+                best = min(group, key=lambda o: abs(int(o["values"]["3"]) / int(o["values"]["2"]) - rate))
+                break
+        else:
+            return
+        busy = self._busy
+        self._busy = True
+        try:
+            items = var.get().split(",")
+            for i, v in best["values"].items():
+                i = int(i)
+                if i < len(items):
+                    lead = items[i][: len(items[i]) - len(items[i].lstrip())]
+                    items[i] = lead + v
+            var.set(",".join(items))
+            refresh = getattr(self.entries.get(fkey), "_refresh", None)
+            if refresh:
+                refresh()
+        finally:
+            self._busy = busy
+        self._apply_companions(key, best.get("companions"))      # recorded under the key of the area switch: one undo step for the whole switch
+        self._record(key, merge=True)
+        self._update_warnings()
 
     def _apply_companions(self, key: str, companions: dict | None):
         """Set dependent values in other parameters (e.g. 00175, 00454) that must follow a format choice.
@@ -4434,6 +4619,7 @@ class App(ctk.CTk):
         self.scene.number = path.stem if len(path.stem) == 3 and path.stem.isdigit() else self.scene.number
         self._last_dir = path.parent
         save_settings(last_dir=str(path.parent))
+        self._remember_recent(path)
         self._populate()
         self.lbl_status.configure(text=tr("Saved: {path}").format(path=path))
         self._saved = self._state_key()
