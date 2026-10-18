@@ -3391,11 +3391,19 @@
     "PXW-FS7M2"
   ],
   "00426": {
-    "name": "DCI 4096 / RAW flag (?)",
-    "status": "hypothesis",
-    "evidence": "1 in 002 (RAW & XAVC-I), 005, 006 (DCI 4096x2160), 016 (RAW) and 017 (RAW & XAVC-I); 0 in all other files",
+    "name": "Distortion Comp.",
+    "status": "likely",
     "group": "video",
-    "subgroup": "System › Rec Format (companion values)"
+    "subgroup": "System › Lens",
+    "order": 2,
+    "evidence": "Round 117 (2026-10-18, FS7M2, ALL only): Lens > Distortion Comp. Off -> Auto changed ALL 00426 from 1 to 0 (0 = Auto, 1 = Off). Earlier observation (files of the Mk1 and Mk2): 00426 is 1 in the formats DCI 4096 and RAW and 0 elsewhere; the camera does not apply the distortion correction in these 4K modes (manual), so the format choice sets this value as a companion. Shading Compensation and Chroma Aberration Comp. are not stored in the files.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Auto",
+        "1": "Off"
+      }
+    }
   },
   "00407": {
     "name": "ProRes flag (?)",
@@ -7749,6 +7757,839 @@
       },
       "area_format": {
         "ntsc": "0"
+      }
+    }
+  },
+  "00161": {
+    "name": "Date Mode",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Clock Set",
+    "order": 2,
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only; the manual lists System > Clock Set as All File), Date Mode YYMMDD -> DDMMYY changed ALL 00161 from 0 to 2 (MMDDYY = 1 assumed from the menu order). Round 117: Date Mode DDMMYY -> MMDDYY changed 00161 from 2 to 1 (0 YYMMDD, 1 MMDDYY, 2 DDMMYY).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "YYMMDD",
+        "1": "MMDDYY",
+        "2": "DDMMYY"
+      }
+    }
+  },
+  "00162": {
+    "name": "12H/24H",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › Clock Set",
+    "order": 3,
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only; the manual lists System > Clock Set as All File), 12H/24H 24h -> 12h changed ALL 00162 from 1 to 0 (0 = 12H, 1 = 24H).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "12H",
+        "1": "24H"
+      }
+    }
+  },
+  "00163": {
+    "name": "Time Zone",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › Clock Set",
+    "order": 1,
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only; the manual lists System > Clock Set as All File), Time Zone UTC +1:00 (Europe) -> UTC +5:30 (Mumbai) changed ALL 00163 from `1,0` to `5,30`: hours and minutes of the offset to UTC. How negative zones are stored is not seen yet (the menu offers UTC -12:00 to +14:00 in 30 minute steps). Round 116 (2026-10-18): Time Zone UTC +5:30 -> UTC -5:00 (New York) changed 00163 from `5,30` to `-5,0`: west of UTC the hours are negative and the minutes stay 0 (how a zone like -3:30 is stored is not seen yet). Round 117: Time Zone UTC -5:00 -> UTC -3:30 (Newfoundland) changed 00163 from `-5,0` to `-3,-30`: west of UTC both the hours and the minutes are negative.",
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        -12,
+        14
+      ],
+      "max_raw": 32767,
+      "min_raw": -32768,
+      "note": "Offset to UTC: hours and minutes (menu: UTC -12:00 to +14:00 in steps of 30 minutes). West of UTC both values are negative (-3,-30 = UTC -3:30).",
+      "fields": [
+        {
+          "index": 0,
+          "label": "Hours",
+          "range": [
+            -12,
+            14
+          ]
+        },
+        {
+          "index": 1,
+          "label": "Minutes",
+          "choices": {
+            "0": "0",
+            "30": "30",
+            "-30": "-30"
+          }
+        }
+      ]
+    }
+  },
+  "00003": {
+    "name": "Low BATT",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Camera Battery Alarm",
+    "order": 1,
+    "evidence": "FS7M2 round 109 (2026-10-18, ALL only): Camera Battery Alarm > Low BATT 10 % -> 25 % changed ALL 00003 from 10 to 25 (stored in %, the menu offers 5 % to 50 % in steps of 5 %).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 5,
+      "max": 50,
+      "small": 5,
+      "large": 10,
+      "snap": 5,
+      "unit": "%",
+      "note": "5 % to 50 % in steps of 5 % (manual), stored as the percentage."
+    }
+  },
+  "00177": {
+    "name": "Rec Lamp",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Rec Lamp",
+    "order": 1,
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only): Rec Lamp On -> Off changed the second value of ALL 00177 from 0 to 1; FS7M2 round 109 (2026-10-18, ALL only): Off -> On changed it back (1 -> 0). Field 1 of the row is not decoded and stays unchanged.",
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 1,
+          "label": "Rec Lamp",
+          "choices": {
+            "0": "On",
+            "1": "Off"
+          }
+        }
+      ]
+    }
+  },
+  "00248": {
+    "name": "Language",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Language",
+    "order": 1,
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only): Language English -> Deutsch changed ALL 00248 from 0 to 2; FS7M2 round 109 (2026-10-18, ALL only): Deutsch -> English changed it back (2 -> 0). The other languages of the camera are not seen. Round 118: the user's list of the camera (in the camera's order, each in its own language and script): English, Français, Deutsch, Español, Русский, two entries in Asian scripts, Português, Bahasa Indonesia (9 entries); English = 0 and Deutsch = 2 fit that order, so the numbers of the others are assumed to be the positions in the list.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "English",
+        "1": "Français – assumption",
+        "2": "Deutsch",
+        "3": "Español – assumption",
+        "4": "Русский – assumption",
+        "5": "Asian script 1 – assumption",
+        "6": "Asian script 2 – assumption",
+        "7": "Português – assumption",
+        "8": "Bahasa Indonesia – assumption"
+      },
+      "note": "The numbers are the positions in the camera's list of nine languages; only English (0) and Deutsch (2) were seen in a file, the others follow the order of the list."
+    }
+  },
+  "00495": {
+    "name": "Fan Control",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Fan Control",
+    "order": 1,
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only): Fan Control Setting Auto -> Minimum changed ALL 00495 from 0 to 1; FS7M2 round 109 (2026-10-18, ALL only): Minimum -> Off in Rec changed it from 1 to 2 (0 Auto, 1 Minimum, 2 Off in Rec). Round 110: Off in Rec -> Auto changed it from 2 to 0.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Auto",
+        "1": "Minimum",
+        "2": "Off in Rec"
+      }
+    }
+  },
+  "00420": {
+    "name": "HOLD with Rec Button",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › HOLD Switch Setting",
+    "order": 1,
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only): HOLD Switch Setting > with Rec Button On -> Off changed ALL 00420 from 0 to 1 (0 = On, 1 = Off).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "On",
+        "1": "Off"
+      }
+    }
+  },
+  "00421": {
+    "name": "HOLD with Hand Grip Remote",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › HOLD Switch Setting",
+    "order": 2,
+    "evidence": "FS7M2 round 109 (2026-10-18, ALL only): HOLD Switch Setting > with Hand Grip Remote On -> Off changed ALL 00421 from 0 to 1 (0 = On, 1 = Off).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "On",
+        "1": "Off"
+      }
+    }
+  },
+  "00357": {
+    "name": "Assignable Dial / IRIS Dial and directions",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › Assignable Dial",
+    "order": 1,
+    "evidence": "FS7M2 round 109 (2026-10-18, ALL only): Assignable Dial IRIS -> Focus and IRIS Dial IRIS -> Audio Input Level changed ALL 00357 from `1,1,0,0` to `4,5,0,0`: field 0 = Assignable Dial, field 1 = IRIS Dial (function numbers in the order of the menu list: Off, IRIS, ISO/Gain/EI, ND Filter, Focus, Audio Input Level; 1, 4 and 5 seen). Fields 2 and 3 (`0,0`) are probably the two dial directions (not decoded yet). Round 115: Assignable Dial Direction Normal -> Opposite changed field 2 of ALL 00357 from 0 to 1 (0 = Normal, 1 = Opposite). Field 3 is probably IRIS Dial Direction (not seen yet). Round 116: IRIS Dial Direction Normal -> Opposite changed field 3 of 00357 from 0 to 1 (0 = Normal, 1 = Opposite): field 3 = IRIS Dial Direction is confirmed.",
+    "widget": {
+      "type": "fields",
+      "show_labels": true,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Assignable Dial",
+          "choices": {
+            "0": "Off – assumption",
+            "1": "IRIS",
+            "2": "ISO/Gain/EI – assumption",
+            "3": "ND Filter – assumption",
+            "4": "Focus",
+            "5": "Audio Input Level"
+          }
+        },
+        {
+          "index": 1,
+          "label": "IRIS Dial",
+          "choices": {
+            "0": "Off – assumption",
+            "1": "IRIS",
+            "2": "ISO/Gain/EI – assumption",
+            "3": "ND Filter – assumption",
+            "4": "Focus",
+            "5": "Audio Input Level"
+          }
+        },
+        {
+          "index": 2,
+          "label": "Assignable Dial Direction",
+          "choices": {
+            "0": "Normal",
+            "1": "Opposite"
+          }
+        },
+        {
+          "index": 3,
+          "label": "IRIS Dial Direction",
+          "choices": {
+            "0": "Normal",
+            "1": "Opposite"
+          }
+        }
+      ],
+      "note": "Function of the assignable dial and of the ND/IRIS dial in the IRIS position, and the dial directions."
+    }
+  },
+  "00004": {
+    "name": "BATT Empty",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Camera Battery Alarm",
+    "order": 2,
+    "evidence": "FS7M2 round 110 (2026-10-18, ALL only): Camera Battery Alarm > BATT Empty 3 % -> 5 % changed ALL 00004 from 3 to 5 (stored in %, the menu offers 3 % to 7 %; 00003 is Low BATT).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 3,
+      "max": 7,
+      "small": 1,
+      "large": 1,
+      "unit": "%",
+      "note": "3 % to 7 % (manual), stored as the percentage."
+    }
+  },
+  "00001": {
+    "name": "DC Low Voltage1 (Camera DC IN Alarm)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › Camera DC IN Alarm",
+    "order": 1,
+    "evidence": "FS7M2 round 110 (2026-10-18, ALL only): Camera DC IN Alarm > DC Low Voltage1 11.5 V -> 13 V changed ALL 00001 from 11500 to 13000 (stored in millivolts, the menu offers 11.5 V to 17 V). The Mk1 files hold 14000 for this ID in most files. 00367 is probably the same setting of the Ext. Unit DC IN Alarm (not tested).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "scale": 0.001,
+      "decimals": 1,
+      "unit": "V",
+      "small": 100,
+      "large": 500,
+      "min": 11500,
+      "max": 17000,
+      "note": "11.5 V to 17 V (manual), stored in millivolts."
+    }
+  },
+  "00002": {
+    "name": "DC Low Voltage2 (Camera DC IN Alarm)",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › Camera DC IN Alarm",
+    "order": 2,
+    "evidence": "FS7M2 round 110 (2026-10-18, ALL only): Camera DC IN Alarm > DC Low Voltage2 11 V -> (reported 12.5 V) changed ALL 00002 from 11000 to 11500, not to 12500; the camera may limit Voltage2 to Voltage1 at the time it was set (Voltage1 was still 11.5 V). The menu offers 11.0 V to 14.0 V. To be checked with a new setting (round 111). Round 111 (2026-10-18): DC Low Voltage2 -> 12.5 V (Voltage1 now 13.0 V) changed 00002 from 11500 to 12500, so the camera accepts values above Voltage1 only after it was raised (the earlier 11500 was a limit by the old Voltage1 = 11.5 V); stored in millivolts.",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "scale": 0.001,
+      "decimals": 1,
+      "unit": "V",
+      "small": 100,
+      "large": 500,
+      "min": 11000,
+      "max": 14000,
+      "note": "11.0 V to 14.0 V (manual), stored in millivolts; the camera limits it by Voltage1 (the lower value is set first)."
+    }
+  },
+  "00047": {
+    "name": "Assignable Button <1> to <10>",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Assignable Button",
+    "order": 1,
+    "evidence": "FS7M2 round 110 (2026-10-18, ALL only): Assignable Button <1> S&Q Motion -> Zebra changed the first value of ALL 00047 from 26 to 2 (the row holds the function numbers of the ten buttons: `26,0,24,6,24,0,0,0,0,0` before). Zebra = 2 follows the order of the menu list (Off, Marker, Zebra, ...); S&Q Motion = 26. The other numbers (24, 6, 0) are not named yet. The Mk1 files hold six values. The user's report of the state before round 110 (text answer): <1> S&Q Motion, <2> Off, <3> User Menu, <4> Focus Magnifier x4/x8, <5> User Menu, <6> to <10> Off, which gives the function numbers 26 S&Q Motion, 0 Off, 24 User Menu, 6 Focus Magnifier x4/x8, and 2 Zebra (round 110). Counted in the order of the manual's list, Off = 0, Marker = 1, Zebra = 2, Peaking = 3, Video Signal Monitor = 4, DURATION/TC/U-BIT = 5, Focus Magnifier x4/x8 = 6 fit; User Menu (24) and S&Q Motion (26) are four places lower than the manual's list would give, so four entries of that list are not in the camera's list (round 111 sets the first buttons to known functions to check the order). Round 111: <2> Marker, <3> Peaking, <4> Video Signal Monitor, <5> Focus Magnifier x4/x8, <6> DURATION/TC/U-BIT changed the row from `2,0,24,6,24,0,0,0,0,0` to `2,1,3,4,6,5,0,0,0,0`: Marker = 1, Peaking = 3, Video Signal Monitor = 4, DURATION/TC/U-BIT = 5, Focus Magnifier x4/x8 = 6: the numbers follow the order of the manual's list up to here. The camera list has 17 entries between Focus Magnifier x4/x8 (6) and User Menu (24); the manual's text names 21 there. The camera's own selection list of one button (copied by the user, 40 entries): Off, Marker, Zebra, Peaking, Video Signal Monitor, DURATION/TC/U-BIT, Focus Magnifier x4/x8, Focus Magnifier x4, Focus Magnifier x8, Push AF/Focus Hold, Focus Area, Focus Area (Push AF), VF Mode, ND Filter Position, IRIS, AGC, Auto ND Filter, SHUTTER, Auto Exposure Level, Push Auto Iris, Push AGC, Push Auto ND, Spotlight, Backlight, ATW, ATW Hold, SteadyShot, Color Bars, User Menu, Rec Lamp, S&Q Motion, Picture Cache Rec, Rec Review, Thumbnail, Shot Mark1, Shot Mark2, Clip Flag OK, Clip Flag NG, Clip Flag Keep, High/Low Key. Counted from 0 this gives User Menu = 28 and S&Q Motion = 30, but the file holds 24 and 26: the stored numbers are four lower after the first entries, so four numbers are skipped somewhere between Focus Magnifier x4/x8 (6) and User Menu (24); the numbers are not simply the list positions (round 112 checks entries spread over the list). Round 112 (2026-10-18; the user suggested to use all ten buttons in such rounds): Focus Magnifier x4, Push AF/Focus Hold, VF Mode, SHUTTER, ATW, Color Bars on <1> to <6> changed the row from `2,1,3,4,6,5,0,0,0,0` to `7,9,10,13,20,23,0,0,0,0`: Focus Magnifier x4 = 7, Push AF/Focus Hold = 9, VF Mode = 10 (list position 12), SHUTTER = 13 (list position 17), ATW = 20 (position 24), Color Bars = 23 (position 27). So two list entries between Push AF/Focus Hold and VF Mode (Focus Area, Focus Area (Push AF)) and two between VF Mode and SHUTTER (two of ND Filter Position, IRIS, AGC, Auto ND Filter) have no number in this sequence; from SHUTTER to the end the numbers follow the list (ATW, Color Bars, User Menu 24, S&Q Motion 26 fit), the numbers of the entries after S&Q Motion are predicted that way (round 113 checks them). Round 113 (2026-10-18, all ten buttons): Focus Area, Focus Area (Push AF), ND Filter Position, IRIS, AGC, Auto ND Filter, Auto Exposure Level, Push Auto ND, Clip Flag OK, High/Low Key on <1> to <10> changed the row from `7,9,10,13,20,23,0,0,0,0` to `38,39,40,11,12,41,14,42,34,37`: Focus Area = 38, Focus Area (Push AF) = 39, ND Filter Position = 40, IRIS = 11, AGC = 12, Auto ND Filter = 41, Auto Exposure Level = 14, Push Auto ND = 42, Clip Flag OK = 34, High/Low Key = 37. So the numbers 38 to 42 (Focus Area, Focus Area (Push AF), ND Filter Position, Auto ND Filter, Push Auto ND) are at the end of the sequence; the rest follows the list with the numbers 19 (between the Backlight and the ATW) and 32 / 33 (between Shot Mark2 and Clip Flag OK) not belonging to an entry of the list (functions that this camera does not show). Still predicted: Focus Magnifier x8 = 8, Push Auto Iris 15, Push AGC 16, Spotlight 17, Backlight 18, ATW Hold 21, SteadyShot 22, Rec Lamp 25, Picture Cache Rec 27, Rec Review 28, Thumbnail 29, Shot Mark1 30, Shot Mark2 31, Clip Flag NG 35, Clip Flag Keep 36 (rounds 114 and 115). Round 114 (2026-10-18, all ten buttons): Focus Magnifier x8, Push Auto Iris, Push AGC, Spotlight, Backlight, ATW Hold, SteadyShot, Rec Lamp, Picture Cache Rec, Rec Review on <1> to <10> changed the row from `38,39,40,11,12,41,14,42,34,37` to `8,15,16,18,19,21,22,25,28,29`: Focus Magnifier x8 = 8, Push Auto Iris = 15, Push AGC = 16, Spotlight = 18, Backlight = 19, ATW Hold = 21, SteadyShot = 22, Rec Lamp = 25, Picture Cache Rec = 28, Rec Review = 29. The numbers 17 (where Push Auto ND stood in the list) and 27 are not used by an entry of the camera's list: the functions that are numbered at the end (38 to 42) leave their old numbers free (17 = Push Auto ND). Still predicted: Thumbnail 30, Shot Mark1 31, Shot Mark2 32 (one of 30 to 33 stays free), Clip Flag NG 35, Clip Flag Keep 36 (round 115). Round 115 (2026-10-18): Thumbnail, Shot Mark1, Shot Mark2, Clip Flag NG, Clip Flag Keep on <1> to <5> changed the row from `8,15,16,18,19,21,22,25,28,29` to `30,32,33,35,36,21,22,25,28,29`: Thumbnail = 30, Shot Mark1 = 32, Shot Mark2 = 33, Clip Flag NG = 35, Clip Flag Keep = 36. All 40 functions of the camera's list are measured now; the numbers 17, 27 and 31 are free (and 19 is Backlight); the order in the file is the order of the list with Focus Area, Focus Area (Push AF), ND Filter Position, Auto ND Filter and Push Auto ND moved to 38 to 42. The Mk1 has six assignable buttons: its files hold six values for this ID (e.g. `26,11,24,6,24,22`: S&Q Motion, IRIS, User Menu, Focus Magnifier x4/x8, User Menu, SteadyShot with the same numbers); the program shows six fields for the Mk1.",
+    "widget": {
+      "type": "fields",
+      "show_labels": true,
+      "fields": [
+        {
+          "index": 0,
+          "label": "<1>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220
+        },
+        {
+          "index": 1,
+          "label": "<2>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220
+        },
+        {
+          "index": 2,
+          "label": "<3>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220
+        },
+        {
+          "index": 3,
+          "label": "<4>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220
+        },
+        {
+          "index": 4,
+          "label": "<5>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220
+        },
+        {
+          "index": 5,
+          "label": "<6>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220
+        },
+        {
+          "index": 6,
+          "label": "<7>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220,
+          "models": [
+            "PXW-FS7M2"
+          ]
+        },
+        {
+          "index": 7,
+          "label": "<8>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220,
+          "models": [
+            "PXW-FS7M2"
+          ]
+        },
+        {
+          "index": 8,
+          "label": "<9>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220,
+          "models": [
+            "PXW-FS7M2"
+          ]
+        },
+        {
+          "index": 9,
+          "label": "<10>",
+          "choices": {
+            "0": "Off",
+            "1": "Marker",
+            "2": "Zebra",
+            "3": "Peaking",
+            "4": "Video Signal Monitor",
+            "5": "DURATION/TC/U-BIT",
+            "6": "Focus Magnifier x4/x8",
+            "7": "Focus Magnifier x4",
+            "8": "Focus Magnifier x8",
+            "9": "Push AF/Focus Hold",
+            "10": "VF Mode",
+            "11": "IRIS",
+            "12": "AGC",
+            "13": "SHUTTER",
+            "14": "Auto Exposure Level",
+            "15": "Push Auto Iris",
+            "16": "Push AGC",
+            "18": "Spotlight",
+            "19": "Backlight",
+            "20": "ATW",
+            "21": "ATW Hold",
+            "22": "SteadyShot",
+            "23": "Color Bars",
+            "24": "User Menu",
+            "25": "Rec Lamp",
+            "26": "S&Q Motion",
+            "28": "Picture Cache Rec",
+            "29": "Rec Review",
+            "30": "Thumbnail",
+            "32": "Shot Mark1",
+            "33": "Shot Mark2",
+            "34": "Clip Flag OK",
+            "35": "Clip Flag NG",
+            "36": "Clip Flag Keep",
+            "37": "High/Low Key",
+            "38": "Focus Area",
+            "39": "Focus Area (Push AF)",
+            "40": "ND Filter Position",
+            "41": "Auto ND Filter",
+            "42": "Push Auto ND"
+          },
+          "width": 220,
+          "models": [
+            "PXW-FS7M2"
+          ]
+        }
+      ],
+      "note": "Function of the ten assignable buttons. The numbers are not the positions in the camera's list (five functions are numbered at the end, some numbers stay free)."
+    }
+  },
+  "00257": {
+    "name": "GPS",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › GPS",
+    "order": 1,
+    "evidence": "FS7M2 round 116 (2026-10-18, ALL only): GPS On -> Off and IR Remote Setting On -> Off changed ALL 00257 and 00264 from 1 to 0; FS7M2 round 117 (2026-10-18, ALL only): GPS Off -> On changed only 00257 from 0 to 1, so 00257 = GPS (1 = On, 0 = Off) and 00264 = IR Remote Setting. In the Mk1 files 00257 varies (23 x 1, 6 x 0).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00264": {
+    "name": "IR Remote Setting",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › IR Remote",
+    "order": 1,
+    "evidence": "FS7M2 round 116 (2026-10-18, ALL only): IR Remote Setting On -> Off (together with GPS) changed ALL 00264 from 1 to 0; round 117 separated 00257 as GPS (00264 did not change when GPS was switched back on), so 00264 is IR Remote Setting by elimination (1 = On, 0 = Off).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      }
+    }
+  },
+  "00477": {
+    "name": "ND Dial Direction",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › ND Dial",
+    "order": 1,
+    "evidence": "FS7M2 round 118 (2026-10-18, ALL only): ND Dial > ND Dial Direction Normal -> Opposite changed only ALL 00477 from 0 to 1 (0 = Normal, 1 = Opposite). 00477 is one of the IDs that only the Mk2 files have (00341, 00444, 00472-00477), probably the settings of the variable electronic ND of the Mk2.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Normal",
+        "1": "Opposite"
       }
     }
   }

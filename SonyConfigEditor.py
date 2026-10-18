@@ -33,7 +33,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.2.0"
-_date = "2026-10-17"
+_date = "2026-10-18"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -53,7 +53,7 @@ MENU_OF_PREFIX = {title: key for key, title, _icon in MENUS if key != "unknown"}
 DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a menu (parameters get "subgroup" in the databases; others: "Other"); Paint as in the camera: White first
 SUBGROUP_ORDER = [
-    "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)",
+    "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)", "System › Assignable Button", "System › Assignable Dial", "System › Rec Lamp", "System › Fan Control", "System › ND Dial", "System › HOLD Switch Setting", "System › Lens", "System › Language", "System › Clock Set", "System › GPS", "System › IR Remote", "System › Camera Battery Alarm", "System › Camera DC IN Alarm",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
     "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
     "Recording › S&Q Motion", "Audio › Input", "Audio › Output", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
@@ -1418,7 +1418,7 @@ MONITOR_FLAG_ON = {"gps": 1, "signal_mon": 1}      # the value of an element tha
 MARKER_IDS = ("00074", "00075", "00078", "00079", "00080", "00081", "00082", "00083", "00084", "00085", "00245", "00323", "00324", "00325", "00326", "00327", "00360", "00510")
 MARKER_COLORS = {"0": "#ffffff", "1": "#ffe600", "2": "#00e5ff", "3": "#00e000", "4": "#ff00ff", "5": "#ff2020", "6": "#3050ff"}
 MARKER_ASPECTS = {"0": 4 / 3, "6": 1.66, "7": 1.85, "8": 2.35, "9": 2.4}
-USER_BOX_GRID = (960, 540)      # assumed units of User Box width / height / position (the ranges fit a 960 x 540 grid; sign of the positions assumed: right / down)
+USER_BOX_GRID = (960, 540)      # units of User Box width / height (distance from the centre to the edge, manual) and position; the ranges fit a 960 x 540 grid; sign of the positions assumed: right / down
 
 
 class MonitorPreview(tk.Canvas):
@@ -1498,7 +1498,7 @@ class MonitorPreview(tk.Canvas):
             w, h, dx, dy = m["user_box"]
             gx, gy = USER_BOX_GRID
             cx, cy = pw / 2 + dx / gx * pw, ph / 2 + dy / gy * ph
-            rect((cx - w / gx * pw / 2, cy - h / gy * ph / 2, cx + w / gx * pw / 2, cy + h / gy * ph / 2))
+            rect((cx - w / gx * pw, cy - h / gy * ph, cx + w / gx * pw, cy + h / gy * ph))      # width / height = distance from the centre to the edge (manual)
 
 
 class RowLabel(tk.Frame):
@@ -2981,6 +2981,7 @@ class App(ctk.CTk):
         if spec["type"] == "axis_pairs":
             return self._build_axis_widget(var, spec)
         fields = spec["fields"] if spec["type"] == "fields" else [{"index": None, "choices": spec["choices"]}]
+        fields = [f for f in fields if self.scene.model in f.get("models", [self.scene.model])]      # a field can exist on one model only (the Mk1 has six assignable buttons, the Mk2 ten)
         parts = var.get().split(",")
         if any(f["index"] is not None and f["index"] >= len(parts) for f in fields) or len(parts) < spec.get("min_fields", 0):
             return None       # another camera model stores a different shape: the plain text field is shown

@@ -275,3 +275,23 @@ TC/UB > TC Display > Display Select: Timecode = 0, Users Bit = 1, Duration = 3 (
 VF > Marker: Aspect Select 1.66:1 = 6 (ALL `00082`: 0 4:3, 6 1.66:1, 7 1.85:1, 8 2.35:1, 9 2.4:1 assumed); Aspect Marker Line = `00080` 1 with `00081` 0 (Mask = `00081` 1).
 
 Camera > Country > NTSC/PAL Area = ALL `00159` (0 NTSC Area, 1 PAL Area; one observation). Switching the area also changes the frame rate of the format in `00150` (50p -> 59.94p in the example), its companion values (`00173`, `00282`, `00407`) and the Flicker Reduce frequency (`00228`, 50 Hz -> 60 Hz).
+
+System > Clock Set: Time Zone = ALL `00163` (two values: hours and minutes of the offset to UTC, `1,0` = UTC+1:00, `5,30` = UTC+5:30), Date Mode = `00161` (0 YYMMDD, 2 DDMMYY, MMDDYY = 1 assumed), 12H/24H = `00162` (0 = 12H, 1 = 24H). Date and Time themselves are not stored in the file.
+
+System menu (ALL file): Rec Lamp = second value of `00177` (0 On, 1 Off); Fan Control = `00495` (0 Auto, 1 Minimum, 2 Off in Rec); HOLD Switch Setting: with Rec Button = `00420`, with Hand Grip Remote = `00421` (0 On, 1 Off); Language = `00248` (0 English, 2 Deutsch seen); Assignable Dial / IRIS Dial = fields 0 and 1 of `00357` (function numbers in the order of the menu list: 0 Off, 1 IRIS, 2 ISO/Gain/EI, 3 ND Filter, 4 Focus, 5 Audio Input Level; 1, 4 and 5 seen); Camera Battery Alarm > Low BATT = `00003` (percent, 5 % to 50 % in steps of 5 %).
+
+System menu (ALL file), more: Camera Battery Alarm > BATT Empty = `00004` (percent, 3 % to 7 %); Camera DC IN Alarm > DC Low Voltage1 = `00001` (millivolts, 11.5 V to 17 V; one observation), DC Low Voltage2 = `00002` (millivolts, 11.0 V to 14.0 V; hypothesis: the camera may limit it by Voltage1); the function numbers of the ten Assignable Buttons are the ten values of `00047` (Zebra = 2, S&Q Motion = 26; the others are not named yet).
+
+System > Assignable Button <1> to <10> = the ten values of ALL `00047` (function numbers, not the positions in the camera's list: 0 Off, 1 Marker, 2 Zebra, 3 Peaking, 4 Video Signal Monitor, 5 DURATION/TC/U-BIT, 6 Focus Magnifier x4/x8, 7 Focus Magnifier x4, 9 Push AF/Focus Hold, 10 VF Mode, 13 SHUTTER, 20 ATW, 23 Color Bars, 24 User Menu, 26 S&Q Motion; four list entries have no number: two between Push AF/Focus Hold and VF Mode, two between VF Mode and SHUTTER; the rest of the list follows these numbers).
+
+Assignable Button numbers (ALL `00047`), complete picture: 0 Off, 1 Marker, 2 Zebra, 3 Peaking, 4 Video Signal Monitor, 5 DURATION/TC/U-BIT, 6 Focus Magnifier x4/x8, 7 Focus Magnifier x4, 9 Push AF/Focus Hold, 10 VF Mode, 11 IRIS, 12 AGC, 13 SHUTTER, 14 Auto Exposure Level, 20 ATW, 23 Color Bars, 24 User Menu, 26 S&Q Motion, 34 Clip Flag OK, 37 High/Low Key, and at the end 38 Focus Area, 39 Focus Area (Push AF), 40 ND Filter Position, 41 Auto ND Filter, 42 Push Auto ND (the others follow the list; the numbers 19, 32 and 33 belong to no entry of the camera's list).
+
+Assignable Button numbers (ALL `00047`), more: 8 Focus Magnifier x8, 15 Push Auto Iris, 16 Push AGC, 18 Spotlight, 19 Backlight, 21 ATW Hold, 22 SteadyShot, 25 Rec Lamp, 28 Picture Cache Rec, 29 Rec Review; the numbers 17 and 27 are free (the functions that are numbered at the end of the sequence, 38 to 42, left their old numbers).
+
+Assignable Buttons, last numbers (ALL `00047`): 30 Thumbnail, 32 Shot Mark1, 33 Shot Mark2, 35 Clip Flag NG, 36 Clip Flag Keep (31 is free). All functions of the camera's list are known now. System > Assignable Dial > Assignable Dial Direction = field 2 of `00357` (0 Normal, 1 Opposite); field 3 is probably IRIS Dial Direction.
+
+System > Clock Set > Time Zone west of UTC: negative hours (`-5,0` = UTC -5:00). System > Assignable Dial > IRIS Dial Direction = field 3 of `00357` (0 Normal, 1 Opposite). System > GPS and System > IR Remote > Setting are `00257` and `00264` (1 = On, 0 = Off; the two are not separated yet).
+
+System menu (ALL file), more: GPS = `00257`, IR Remote > Setting = `00264` (1 = On, 0 = Off); Lens > Distortion Comp. = `00426` (0 Auto, 1 Off; the format choice sets it to Off in DCI 4096 and RAW formats); Date Mode MMDDYY = 1 (`00161`: 0 YYMMDD, 1 MMDDYY, 2 DDMMYY); Time Zone west of UTC: both values negative (`-3,-30` = UTC -3:30).
+
+System > ND Dial > ND Dial Direction = ALL `00477` (0 Normal, 1 Opposite), an ID that only the Mk2 files have. System > Language: the camera lists nine languages (English, Francais, Deutsch, Espanol, Russian, two in Asian scripts, Portuguese, Indonesian); English = 0 and Deutsch = 2 in `00248` match the positions in that list.

@@ -3,7 +3,7 @@
 Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
 Newest first; the version is only raised for a release.
 
-## [Unreleased] - 2026-10-17
+## [Unreleased] - 2026-10-18
 ### Added
 - **TC/UB tab** (ALL files only, FS7M2, first items): timecode mode and run as one setting (Regen, Preset with Rec Run, Preset with Free Run), TC Display Select (Timecode, Duration seen), Users Bit Mode (Fix / Time) and HDMI TC Out (Off / On).
 - **VF > Marker** (ALL files only, FS7M2): Center Marker (Off, 1 to 4), Safety Zone (Off / On), Safety Area (80 / 90 / 92.5 / 95 %), Marker Color (White ... Blue), Aspect Marker (Off / Line / Mask), Aspect Select (4:3, 2.35:1 seen), Aspect Mask (0 to 15) and Aspect Safety Area, Aspect Safety Zone, the user box (on / off, width, height, horizontal and vertical position), 100% Marker and Guide Frame; **VF Setting > Brightness** (-99 to +99).
@@ -26,6 +26,7 @@ Newest first; the version is only raised for a release.
 - **VF tab: Video Signal Monitor** is connected as well, so every check box of the display preview is connected to the file and the dots behind the names are gone.
 - **VF tab: the elements of the virtual monitor no longer overlap** (GPS, Clip Name and the bottom row moved along one axis only).
 - **System > Country > NTSC / PAL Area** is decoded and stands at the very top of the System tab, which is now the first tab. Switching it moves the recording format to the closest frame rate of the new television system (50p to 59.94p, 25p to 29.97p, 50i to 59.94i and back) with the values that go with the format, and sets the Flicker Reduce frequency; the changed rows get the yellow frame.
+- **System menu, first items decoded:** Clock Set (Time Zone, Date Mode, 12H/24H), Rec Lamp, Fan Control, HOLD Switch Setting, Language, Assignable Dial / IRIS Dial and the Camera Battery Alarm (Low BATT, BATT Empty) and Camera DC IN Alarm levels, the function of the ten Assignable Buttons, dial directions, Distortion Comp., GPS and IR Remote switches, ND Dial Direction and the language list. The user box marker is drawn with the size the manual describes (distance from the centre to the edge).
 - **File > Recent files** lists the last ten files (newest first, also after saving) and is remembered between runs.
 - **Dropdowns that offer only On and Off are check boxes now** (also inside multi-value rows such as Zebra); rules between items (greyed-out choices, locks, dependent items) keep working: a check box that cannot be switched is greyed out with the reason on hover.
 - **TC Mode Clock** and **Marker Setting (On / Off)** are decoded.
