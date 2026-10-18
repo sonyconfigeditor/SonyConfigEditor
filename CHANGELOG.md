@@ -1,47 +1,31 @@
 # Changelog
 
 Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
-Newest first; the version is only raised for a release.
+Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen in einen neuen obersten Eintrag (`## [Unreleased] - <Datum>`), die Version wird nur auf Anweisung erhöht.
 
-## [Unreleased] - 2026-10-18
+## [0.3.0] - 2026-10-18
+The parameter database grew from 142 to 236 decoded entries (the FS7M2 ALL file has 321 values); 18 earlier entries are better confirmed now.
+
 ### Added
-- **TC/UB tab** (ALL files only, FS7M2, first items): timecode mode and run as one setting (Regen, Preset with Rec Run, Preset with Free Run), TC Display Select (Timecode, Duration seen), Users Bit Mode (Fix / Time) and HDMI TC Out (Off / On).
-- **VF > Marker** (ALL files only, FS7M2): Center Marker (Off, 1 to 4), Safety Zone (Off / On), Safety Area (80 / 90 / 92.5 / 95 %), Marker Color (White ... Blue), Aspect Marker (Off / Line / Mask), Aspect Select (4:3, 2.35:1 seen), Aspect Mask (0 to 15) and Aspect Safety Area, Aspect Safety Zone, the user box (on / off, width, height, horizontal and vertical position), 100% Marker and Guide Frame; **VF Setting > Brightness** (-99 to +99).
-- **Fixed:** a SCENE value was wrongly paired with the marker color when switching between SCENE and ALL files (equal values by chance); the marker color stays in the ALL file only.
-- **VF > Peaking** (ALL files only, FS7M2): Peaking Type (Normal / Color), Color (B&W / Yellow, Red and Blue by the manual's order), Normal Peaking Level and Color Peaking Level (0 to 99). The switch Setting (stored inverted: 1 = Off) and two further values of the row are not decoded.
-- **VF > Zebra** (ALL files only, FS7M2): Zebra 1 and Zebra 2 with on / off, level in % (0 to 107 / 0 to 109) and Zebra 1 aperture level (1 to 20 %). Zebra Select is the combination of the two on flags (1 = Zebra 1 only, 2 = Zebra 2 only, Both = both on). The camera stores a copy of both values in another ID; the program keeps the copy in step with every change (one undo step).
-- **Fixed:** the check boxes of the VF display preview showed the default state instead of the state of the file when a file was opened first.
-- **Audio Output > Headphone Out** (Mono / Stereo), **Output Limiter** (On / Off) and **HDMI Output CH** (CH1/CH2, CH3/CH4); the channel level selections CH1-CH4 Level are complete (ALL files only, FS7M2).
-- **The window remembers its position and size** (and whether it was maximised) between runs; the saved values are checked, so a window that would end up off the screen (for example after unplugging a monitor) opens at the default place. **View > Reset window size and position** puts the window back to the default size, centred.
-- **VF Setting: Color Mode (Color / B&W)** and **Peaking Frequency (Normal / High)** are decoded.
-- **VF tab: Focus Area Marker** is part of the display preview; its check box is greyed out while Focus Assist Indicator is off, as in the camera menu.
-- **VF tab: the display preview follows edits made in the table**, and Center Marker is connected to VF > Marker > Center Marker.
-- **VF tab: the virtual monitor draws the markers** of VF > Marker in the chosen colour (center marker, safety zone, aspect marker as line or mask with the picture ratio, aspect safety zone, user box, 100 % marker).
-- **VF tab: the Marker block sits directly below the virtual monitor**, so a marker can be changed and seen at the same time.
-- **The last used tab is remembered** and shown again at the next start (the first tab when a file has no such tab).
-- **TC/UB: Users Bit Setting** can be edited as eight hex digits; **Peaking Color** Blue is confirmed.
-- **TC Display Select Users Bit** and **Peaking Color Red** are confirmed.
-- **Marker: Aspect Select 1.66:1 and Aspect Marker Line** are confirmed.
-- **About: third-party licenses** are listed in the About text and can be read in the program (button "Third-party licenses…"); the notices file is bundled into the EXE.
-- **VF tab: Video Signal Monitor** is connected as well, so every check box of the display preview is connected to the file and the dots behind the names are gone.
-- **VF tab: the elements of the virtual monitor no longer overlap** (GPS, Clip Name and the bottom row moved along one axis only).
-- **System > Country > NTSC / PAL Area** is decoded and stands at the very top of the System tab, which is now the first tab. Switching it moves the recording format to the closest frame rate of the new television system (50p to 59.94p, 25p to 29.97p, 50i to 59.94i and back) with the values that go with the format, and sets the Flicker Reduce frequency; the changed rows get the yellow frame.
-- **System menu, first items decoded:** Clock Set (Time Zone, Date Mode, 12H/24H), Rec Lamp, Fan Control, HOLD Switch Setting, Language, Assignable Dial / IRIS Dial and the Camera Battery Alarm (Low BATT, BATT Empty) and Camera DC IN Alarm levels, the function of the ten Assignable Buttons, dial directions, Distortion Comp., GPS and IR Remote switches, ND Dial Direction and the language list. The user box marker is drawn with the size the manual describes (distance from the centre to the edge).
-- **File > Recent files** lists the last ten files (newest first, also after saving) and is remembered between runs.
-- **Dropdowns that offer only On and Off are check boxes now** (also inside multi-value rows such as Zebra); rules between items (greyed-out choices, locks, dependent items) keep working: a check box that cannot be switched is greyed out with the reason on hover.
-- **TC Mode Clock** and **Marker Setting (On / Off)** are decoded.
-- **VF tab: all elements of the display preview are connected to the file** (VF > Display On/Off, stored in the first values of ALL 00175; marked with a dot): Shutter, ND filter value, Gain, Rec/Play status, Color Temp., Frame rate, Battery, Timecode, Audio level meter, Media status, Focus and Zoom position, SteadyShot, Focus mode, Auto shutter, AGC, Auto iris, AE mode, White balance mode, Rec format, Wi-Fi condition, Auto ND filter, GPS, Gamma, Timecode lock and Clip name show the state of the loaded file and change it (undo / redo work). The other elements stay a preview until their positions are decoded.
-- **VF tab with a virtual camera monitor** (ALL files): compact check boxes for the display elements (shutter, gain, ND, iris, focus, rec format, gamma, clip name, timecode, audio meters, battery, ...) and below them a picture of the camera monitor where the elements switched on appear at their fixed places with example values (positions from the figure of the manual). It is a preview for now: the choices are not stored in the file until the settings of VF > Display On/Off are decoded. All on / All off buttons.
-- **Audio > CH1&2 / CH3&4 AGC Mode** (Mono / Stereo) and **CH1-CH4 Level** (Audio Input Level / channel input level / combined; CH1 and CH3 seen, the combined entry is assumed), ALL files only, FS7M2.
-- **Audio > Audio Input Level, Limiter Mode (switch and level) and AGC Spec** (ALL files only, FS7M2). **1 kHz Tone on Color Bars** (Off / On, stored inverted: 1 = Off).
-- **Audio Output > Monitor Volume** (0 to 15) and **Alarm Volume** (0 to 7); Monitor CH CH3 confirmed (ALL files only, FS7M2).
-- **Audio > CH3 / CH4 Wind Filter** and **Audio Output > Monitor CH** (ALL files only, FS7M2; MIX ALL and CH1/CH2 are confirmed, the other channel choices follow the manual's order).
-- **Audio > CH3 / CH4 Level Control** (Auto / Manual), **CH3 / CH4 Input Level** (0 to 99) and **File > Scene File > Scene White Data** (Off / On), ALL files only, FS7M2.
-- **Audio > CH3 / CH4 Input Select** (ALL files only, FS7M2, likely): Off / Internal MIC / Shoe, and Shoe 2 for CH2 is now confirmed.
-- **Audio > CH1 / CH2 Input Select and CH1 Wind Filter** (ALL files only, FS7M2, likely): CH1 offers INPUT1, Internal MIC and Shoe 1 (ALL `00369`), CH2 INPUT1, INPUT2 and Internal MIC (`00370`), CH1 Wind Filter Off / On is field 0 of `00239`, CH2 Wind Filter field 0 of `00240`.
-- **Audio > INPUT1 / INPUT2 MIC Reference** (ALL files only; the SCENE file has no audio items): dropdowns -60 / -50 / -40 dB (factory value -50 dB), confirmed on the FS7M2 (ALL `00015` / `00016`). The Audio tab shows them.
-- **New file for the FS7M2 starts from the camera's factory state** (a SCENE and an ALL file saved after a full reset of the camera; the clip name, which the camera derives from its serial number, is replaced by a neutral "A"): both the SCENE side and the ALL side of a new file hold the real factory values. The FS7 keeps its neutral template. The Gamma Category row of a SCENE file now shows STD for the factory state (the camera leaves the S-Log3 flag set there), like the ALL file does.
-- **Program icon:** `assets/sonyconfigeditor.ico` (the logo without its wide transparent margin, seven sizes from 16 to 256 px) is embedded in the EXE (`build_exe.bat`, PyInstaller `--icon`, shown by Explorer) and used for the title bar and the taskbar of the program and its dialogs instead of the default icon.
+- **System tab** (first tab, ALL files, FS7M2): **Country > NTSC / PAL Area** at the very top (switching it moves the recording format to the closest frame rate of the other television system, 50p to 59.94p, 25p to 29.97p and back, with the values that go with the format, and sets the Flicker Reduce frequency; the changed rows get the yellow frame), Clock Set (Time Zone, Date Mode, 12H/24H), Rec Lamp, Fan Control, HOLD Switch Setting, Language, **all ten Assignable Buttons** (the complete function list; the FS7 files show their six buttons), Assignable Dial and ND/IRIS Dial with their directions, ND Dial Direction, Lens > Distortion Comp., GPS, IR Remote, Camera Battery / DC IN Alarm and the Ext. Unit alarms of the XDCA-FS7, and Rec/Out EI Applied (Cine EI).
+- **VF tab with a virtual camera monitor** (ALL files): every element of VF > Display On/Off is a check box connected to the file and shown at its place in a picture of the camera monitor; edits in the table show up in the picture at once, check boxes the camera greys out (for example Focus Area Marker without Focus Assist Indicator) are greyed out here, too. The markers of VF > Marker (center marker, safety zone, aspect marker as line or mask, user box, 100 % marker) are drawn in the chosen colour, and the Marker settings sit directly below the picture. No two elements overlap.
+- **VF menu:** Zebra 1 and 2 (the program keeps the camera's copy of the values in step), Peaking (type, frequency, colour, levels), Marker (all items), VF Setting Brightness and Color Mode.
+- **TC/UB tab:** timecode mode and run (including Clock), TC Display Select, Users Bit Setting (edited as eight hex digits) and Users Bit Mode, HDMI TC Out.
+- **Audio tab:** input select, wind filters, level control and levels of CH1 to CH4, input level, AGC, limiter, MIC reference, 1 kHz tone, monitor channel and volume, alarm volume, headphone out and HDMI output channels.
+- **Video tab:** SDI and HDMI output on / off, the output format of SDI and HDMI, the HDMI target device, the output display of SDI2 and HDMI, the 4K/2K to HD conversion and the Monitor LUT (category, LUT select, look profile select, user 3D LUT select, LUT on the outputs).
+- **Recording and Media tabs:** Interval Rec (time, number of frames, pre-lighting), Simul Rec (setting, rec button set), the Picture Cache Rec time, and Media > Clip (Auto Naming, Camera ID, Reel Number, Camera Position, title prefix; the rows that do not apply to the chosen naming are greyed out, as in the camera).
+- **Cine EI:** Exposure Index <L> / <M> / <H>, Shockless Gain, Rec/Out EI Applied and the Monitor LUT items; they are greyed out in Custom mode.
+- **File > Recent files** lists the last ten files (newest first, also after saving).
+- **The window remembers its position and size** (and whether it was maximised) and the **last used tab**; View > Reset window size and position puts the window back to the default size.
+- **Dropdowns that offer only On and Off are check boxes now** (also inside multi-value rows such as Zebra); greyed-out choices, locks and dependent items keep working, and a check box that cannot be switched shows the reason on hover.
+- **The tabs are separated by thin vertical lines**, and every tab is as wide as its text.
+- **About** shows the licenses of the components in use (including the PyInstaller bootloader of the Windows build) and has a button for the full texts.
+- **A new file for the FS7M2 starts from the camera's factory state** (SCENE and ALL side); the program icon is embedded in the EXE and used for all program windows.
+
+### Fixed
+- Opening several files of different types and models one after the other could end with the error "No more menus can be allocated" (Windows limits the number of window objects a program may own); the program now keeps the tables of the last files only as long as they fit.
+- A SCENE value was wrongly paired with the marker colour when switching between SCENE and ALL files; the marker colour stays in the ALL file only.
+- The check boxes of the VF display preview showed the default state instead of the state of the file when a file was opened first.
 
 ## [0.2.0] - 2026-10-14
 ### Added

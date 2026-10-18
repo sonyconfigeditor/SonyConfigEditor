@@ -295,3 +295,27 @@ System > Clock Set > Time Zone west of UTC: negative hours (`-5,0` = UTC -5:00).
 System menu (ALL file), more: GPS = `00257`, IR Remote > Setting = `00264` (1 = On, 0 = Off); Lens > Distortion Comp. = `00426` (0 Auto, 1 Off; the format choice sets it to Off in DCI 4096 and RAW formats); Date Mode MMDDYY = 1 (`00161`: 0 YYMMDD, 1 MMDDYY, 2 DDMMYY); Time Zone west of UTC: both values negative (`-3,-30` = UTC -3:30).
 
 System > ND Dial > ND Dial Direction = ALL `00477` (0 Normal, 1 Opposite), an ID that only the Mk2 files have. System > Language: the camera lists nine languages (English, Francais, Deutsch, Espanol, Russian, two in Asian scripts, Portuguese, Indonesian); English = 0 and Deutsch = 2 in `00248` match the positions in that list.
+
+System > Ext. Unit Battery Alarm = ALL `00361` to `00366` in the order of the menu (Near End: Info, Sony, Other; End: Info, Sony, Other; percent for Info, millivolts for Sony and Other), Ext. Unit DC IN Alarm > DC Low Voltage1 / 2 = `00367` / `00368` (millivolts). Near End: Info Battery (`00361`) is assigned by its place; its value did not follow the change in the test.
+
+Video > Output On/Off and Output Format = ALL `00170`: field 0 = SDI output (0 On, 1 Off), fields 2 and 3 = output format of SDI and HDMI (numbers from the output format list: SDI 17 = 1920x1080P Level A, 18 = Level B, 8 = 1920x1080i, 32 = none; HDMI 7 = 1920x1080P, 8 = 1920x1080i, 5 = 3840x2160p, 32 = none); the camera offers only combinations of the two that fit the recording format. Near End: Info Battery = `00361` (percent).
+
+Video > Output On/Off > HDMI = field 1 of ALL `00170` (0 On, 1 Off). Video > Output Display (SDI2, HDMI; the camera offers three combinations: SDI2 on + HDMI on, SDI2 on + HDMI off, SDI2 off + HDMI off) and Video > Output Setting > 4K/2K to HD Conv. (Edge Crop / Letter Box) changed field 4 of `00170` and the second values of `00172` and `00173` (not separated yet).
+
+Video > Output Setting > 4K/2K to HD Conv. = field 4 of ALL `00170` (1 Letter Box, 0 Edge Crop); the Output Display of SDI2 and HDMI is the second value of `00172` and of `00173` (the camera sets both together). Recording > Interval Rec: Interval Time and Number of Frames = the two values of `00454` (seconds, frames; the format choice resets the second value), Pre-Lighting = `00455` (0 Off, 3 = 10 s; 2 s and 5 s assumed 1 and 2). The Interval Rec switch Setting is not stored.
+
+Interval Rec: Number of Frames is limited to 1 to 12 (`00454` second value), Interval Time accepts 30 s; Pre-Lighting 5 s = 2 (`00455`: 0 Off, 2 = 5 s, 3 = 10 s). Picture Cache Rec (Setting, Cache Rec Time) did not change any value in the ALL file in the test; it is greyed out while Interval Rec is on, and the cache time entries are limited by the recording format.
+
+Recording > Simul Rec = ALL `00277`: first value Setting (1 Off, 0 On), second value Rec Button Set (0 Rec Button A+B and Handle Rec Button A+B, 2 Rec Button B + Handle Rec Button A, 1 = the other mixed entry by order). Recording > Picture Cache Rec > Setting = `00302` (0 On, 1 Off); the camera switches it off when Simul Rec is switched on. With Simul Rec on, Media > Clip > Auto Naming is fixed to Title (manual).
+
+Recording > Picture Cache Rec > Cache Rec Time = the second value of ALL `00151` (upper limit in seconds: 2 = '0-2 sec', 4 = '2-4 sec', 8 = '6-8 sec', ...; the list of the camera: 0-2, 2-4, 4-6, 6-8, 8-10, 10-12, 12-14, 13-15 sec); the Picture Cache Rec switch is not stored. Media > Clip > Auto Naming = `00286` (0 Cam ID + Reel#, 1 Title).
+
+Media > Clip: Camera ID = ALL `00181` (ASCII code of the letter A to Z), Reel Number = `00182` (001 to 999), Camera Position = `00183` (ASCII code of C / L / R); Title Prefix is the clip name `00285`; File > All File > File ID is the name in the header of the file. Recording > S&Q Motion > High Frame Rate Mode is the same value as Imager Scan Mode `00338` (Off 0, Center Scan 2; Full Scan 1 assumed); the S&Q frame rate changes by itself (60 to 72 in the example).
+
+System > Base Setting > Rec/Out EI Applied = ALL `00444` (0 Off, 1 On; only the Mk2 files have this ID; the item is active in Cine EI mode only).
+
+Video > Monitor LUT (Cine EI): Category = ALL `00412` (0 LUT, 1 Look Profile), LUT Select = `00414` (position in the list: P1 709(800%) 0, P3 HG8009G33 2, ...), Look Profile Select = `00413` (entry number minus one), MLUT on the outputs = the five values of `00416` (all became 1 when SDI1 & Internal Rec was switched to MLUT On; the camera links the outputs).
+
+Camera > ISO/Gain/EI > Exposure Index <L>, <M>, <H> = ALL `00402`, `00403`, `00404` (Cine EI; position in the camera's list with a third of a stop per step: 0 = 500 EI, 2 = 800, 5 = 1600, 8 = 3200, 10 = 5000, 12 = 10000 EI; the defaults are 2, 5, 8), Shockless Gain = `00281` (1 Off, 0 On). Video > Monitor LUT > Category User 3D LUT = 2, User 3D LUT Select = `00415` (entry number minus one). The HDMI value of the Monitor LUT output cannot be edited in the menu.
+
+Video > Output Setting > HDMI Target Device = ALL `00407` (1 Monitor, 0 Recorder). Video > Output Display: SDI2 = the second value of `00172`, HDMI = the second value of `00173` (1 On, 0 Off); with the HDMI target device Recorder the HDMI output display goes off by itself. Exposure Index <L> list of the camera: 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000 EI (positions 0 to 12); the list of <H> ends with 10000 EI at position 12.

@@ -2920,8 +2920,8 @@
     "name": "Clipname (Title Prefix)",
     "status": "confirmed",
     "group": "misc",
-    "subgroup": "File › Clip",
-    "order": 1,
+    "subgroup": "Media › Clip",
+    "order": 5,
     "evidence": "Text values (user clip names) and the default (derived from the serial number, manual: Clip > Title Prefix). Clip name = title prefix + clip number when Auto Naming is 'Title'."
   },
   "00192": {
@@ -3107,11 +3107,24 @@
     "scene_equivalent": "00084"
   },
   "00362": {
-    "name": "Level 115.00 % (?)",
-    "status": "hypothesis",
-    "evidence": "11500 (x0.01 %); related values 00001/00002 (11500/11000, 12500/12000, 14000/13500), 00363=11800, 00365/00366/00368=11000, 00367=11500: some set of level thresholds around 110-140 %, meaning unknown",
-    "group": "misc",
-    "subgroup": "Other"
+    "name": "Near End: Sony Battery",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Ext. Unit Battery Alarm",
+    "order": 2,
+    "evidence": "FS7M2 round 119 (2026-10-18, ALL only, with the XDCA-FS7 attached): Near End: Sony Battery 11.5 V -> 13 V changed ALL 00362 from 11500 to 13000 (millivolts).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "scale": 0.001,
+      "decimals": 1,
+      "unit": "V",
+      "small": 100,
+      "large": 500,
+      "min": 11500,
+      "max": 17000,
+      "note": "11.5 V to 17 V (manual), stored in millivolts."
+    }
   },
   "00324": {
     "name": "User Box Width",
@@ -3348,15 +3361,41 @@
     "covered_by": "00039"
   },
   "00454": {
-    "name": "Frame rate class flag (second field: 2 = more than 30 frames/s, 1 = up to 30 frames/s incl. 60i) (?)",
-    "status": "hypothesis",
-    "fields": [
-      "?",
-      "frame rate class"
-    ],
-    "evidence": "Second field 2 in the 59.94p files (006.ALL, 013.ALL, 014.ALL), 1 in all 25p/29.97p files and in 015.ALL (59.94i = 29.97 frames/s). Rule holds in all 14 ALL files: 2 if frames/s (field rate / 2 for interlaced) > 30, else 1",
+    "name": "Interval Rec: Interval Time / Number of Frames",
+    "status": "likely",
     "group": "video",
-    "subgroup": "System › Rec Format (companion values)"
+    "subgroup": "Recording › Interval Rec",
+    "order": 1,
+    "evidence": "FS7M2 round 123 (2026-10-18, ALL only; the manual lists Recording > Interval Rec: Interval Time, Number of Frames, Pre-Lighting as All File, the switch Setting is not stored): Interval Time 1 s -> 7 s and Number of Frames 2 -> 12 changed ALL 00454 from `1,2` to `7,12` (field 0 = Interval Time in seconds, field 1 = Number of Frames). Earlier observation: the format choice sets the second value to 1 or 2 by the frame rate class (the camera resets the interval settings when the format changes), which is why 00454 was listed with the format companions; the ranges of the two values are not known yet (the manual's list of options was not read for them). Round 124 (2026-10-18): Interval Time 7 s -> 30 s changed field 0 from 7 to 30 (30 is allowed); Number of Frames: the user reports that 12 is the maximum (60 is not accepted), so the range is 1 to 12. (In that round the recording format was changed from 3840x2160 59.94p XAVC-I to 1920x1080 59.94p XAVC-L, which did not touch 00454.)",
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        1,
+        99
+      ],
+      "max_raw": 32767,
+      "min_raw": 0,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Interval Time (s)",
+          "range": [
+            1,
+            99
+          ]
+        },
+        {
+          "index": 1,
+          "label": "Number of Frames",
+          "range": [
+            1,
+            12
+          ]
+        }
+      ],
+      "note": "Interval Rec: time between two frames in seconds and number of frames per recording (1 to 12). The range of the time is an assumption (30 s is possible); choosing a recording format resets the number of frames."
+    }
   },
   "00340": {
     "name": "Format related flag (not resolution) (?)",
@@ -3380,11 +3419,65 @@
     "subgroup": "System › Rec Format (companion values)"
   },
   "00170": {
-    "name": "Format index pair (fields 2 and 3) (?)",
-    "status": "hypothesis",
-    "evidence": "Fields 2/3: 32,5 (UHD 29.97p) -> 17,7 (HD 59.94p) -> 8,8 (HD 59.94i MPEG HD422); follows resolution/frame rate/codec. Not a pure format value: it also depends on the previous setting (e.g. 013 -> 014 unchanged, 018 -> 019 (8,8) -> (30,32)); possibly the SDI/HDMI output format that the camera adapts",
+    "name": "Video output: SDI / HDMI",
+    "status": "likely",
     "group": "video",
-    "subgroup": "System › Rec Format (companion values)"
+    "subgroup": "Video › Output",
+    "order": 1,
+    "evidence": "FS7M2 round 120 (2026-10-18, ALL only; the manual lists Video > Output On/Off and Output Format as All File): Output On/Off SDI On -> Off and Output Format (SDI 1920x1080P Level A + HDMI 1920x1080P -> SDI 1920x1080P Level B + HDMI '---') changed only ALL 00170 from `0,0,17,7,1` to `1,0,18,32,1` (and 00361, see there): field 0 = SDI output (0 On, 1 Off), fields 2 and 3 = the output format of SDI and HDMI (a number from the output format list; SDI 17 = 1920x1080P Level A, 18 = Level B, 8 = 1920x1080i, 32 = '---' (none); HDMI 7 = 1920x1080P, 8 = 1920x1080i, 5 = 3840x2160p, 32 = '---'). The camera offers only combinations of the two for the current recording format (the user's five in the 3840x2160 59.94p state: SDI '---' + HDMI 4096x2160p, SDI '---' + HDMI 3840x2160p, SDI 1080P Level A + HDMI 1080P, SDI 1080P Level B + HDMI '---', SDI 1080i + HDMI '---'); the numbers of 4096x2160p and of the SDI '---' next to it are not known. Field 1 is probably the HDMI output On/Off (not tested), field 4 is not decoded. Earlier observation from the recording format files: fields 2 and 3 followed the recording format (32,5 for UHD 29.97p; 17,7 for HD 59.94p; 8,8 for HD 59.94i MPEG HD422), which fits the output format the camera chooses. Round 121 (2026-10-18, ALL only): Output On/Off HDMI On -> Off, Output Display (SDI2 on + HDMI on -> SDI2 off + HDMI off; the table of the camera has three entries: SDI2 on + HDMI on, SDI2 on + HDMI off (greyed out), SDI2 off + HDMI off) and 4K/2K to HD Conv. Letter Box -> Edge Crop changed ALL 00170 from `1,0,18,32,1` to `1,1,18,32,0`, 00172 from `1,1` to `1,0` and 00173 from `2,1` to `2,0`: field 1 of 00170 = HDMI output (0 On, 1 Off) is confirmed; field 4 of 00170 (1 -> 0), the second value of 00172 (1 -> 0) and the second value of 00173 (1 -> 0) are the Output Display flags of SDI2 and HDMI and the 4K/2K to HD Conv. choice in an order that is not separated yet (round 122 changes them one at a time). Round 122: HDMI Output back On, Output Display back to the first entry (the second entry, SDI2 on + HDMI off, stayed greyed out), 4K/2K to HD Conv. back to Letter Box restored exactly the state of round 120 (00170 `1,0,18,32,1`, 00172 `1,1`, 00173 `2,1`): the same three values flipped back, so they are not separated. Menu facts (user): HDMI Target Device shows Monitor and can be set to Recorder; Output Color Space shows BT.709 and cannot be changed. Round 123 (2026-10-18): 4K/2K to HD Conv. Letter Box -> Edge Crop changed only field 4 of 00170 from 1 to 0 (1 = Letter Box, 0 = Edge Crop), so the other two values that flipped together with it in round 121 (the second values of 00172 and 00173) belong to the Output Display of SDI2 and HDMI (the table of the camera sets both together).",
+    "widget": {
+      "type": "fields",
+      "show_labels": true,
+      "fields": [
+        {
+          "index": 0,
+          "label": "SDI Output",
+          "choices": {
+            "0": "On",
+            "1": "Off"
+          }
+        },
+        {
+          "index": 1,
+          "label": "HDMI Output",
+          "choices": {
+            "0": "On",
+            "1": "Off"
+          }
+        },
+        {
+          "index": 2,
+          "label": "SDI Output Format",
+          "choices": {
+            "8": "1920×1080i",
+            "17": "1920×1080P (Level A)",
+            "18": "1920×1080P (Level B)",
+            "32": "---"
+          },
+          "width": 210
+        },
+        {
+          "index": 3,
+          "label": "HDMI Output Format",
+          "choices": {
+            "5": "3840×2160p",
+            "7": "1920×1080P",
+            "8": "1920×1080i",
+            "32": "---"
+          },
+          "width": 210
+        },
+        {
+          "index": 4,
+          "label": "4K/2K to HD Conv.",
+          "choices": {
+            "0": "Edge Crop",
+            "1": "Letter Box"
+          }
+        }
+      ],
+      "note": "SDI and HDMI output on / off, the output format of SDI and HDMI (only the combinations the camera offers for the recording format are possible; numbers of other formats are not known yet) and the conversion of 4K/2K to HD."
+    }
   },
   "_models": [
     "PXW-FS7",
@@ -3406,11 +3499,20 @@
     }
   },
   "00407": {
-    "name": "ProRes flag (?)",
-    "status": "hypothesis",
-    "evidence": "0 in all files except 020.ALL and 021.ALL (ProRes 422 HQ / 422): 1",
+    "name": "HDMI Target Device",
+    "status": "likely",
+    "evidence": "0 in all files except 020.ALL and 021.ALL (ProRes 422 HQ / 422): 1 FS7M2 round 131 (2026-10-18, ALL only, Cine EI): Video > Output Setting > HDMI Target Device Monitor -> Recorder changed ALL 00407 from 1 to 0 and the second value of 00173 from 1 to 0: 00407 = HDMI Target Device (1 Monitor, 0 Recorder), 00173 second value = Output Display of HDMI (the camera switches it off for a recorder). Earlier observation: the format choice sets 00407 to 1 or 0 as a companion (it was listed as a ProRes flag). FS7M2 round 132 (2026-10-18, ALL + SCENE): HDMI Target Device Recorder -> Monitor changed 00407 from 0 to 1 and the second value of 00173 from 0 to 1 again (the HDMI Output Display came back; the menu showed entry 1: SDI2 on + HDMI on): confirmed both ways.",
     "group": "video",
-    "subgroup": "System › Rec Format (companion values)"
+    "subgroup": "Video › Output Setting",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "1": "Monitor",
+        "0": "Recorder"
+      },
+      "note": "Which kind of device is on the HDMI output: with Recorder the output carries the picture of SDI1 (Cine EI), with Monitor that of SDI2; the Output Display of HDMI goes off with Recorder."
+    }
   },
   "00283": {
     "name": "Users Bit Mode",
@@ -3428,32 +3530,74 @@
     }
   },
   "00173": {
-    "name": "Pair of flags, second field 1 for ProRes (?)",
-    "status": "hypothesis",
+    "name": "Output Display HDMI",
+    "status": "likely",
     "fields": [
       "?",
       "ProRes flag"
     ],
-    "evidence": "2,0 in all files except 020.ALL and 021.ALL (ProRes): 2,1",
+    "evidence": "2,0 in all files except 020.ALL and 021.ALL (ProRes): 2,1 FS7M2 round 131 (2026-10-18, ALL only, Cine EI): second value = Output Display of HDMI (1 On, 0 Off), see 00172 and 00407. The format choice also sets this value as a companion (it was listed as a flag for ProRes).",
     "group": "video",
-    "subgroup": "System › Rec Format (companion values)"
+    "subgroup": "Video › Output Display",
+    "order": 2,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 1,
+          "label": "Output Display HDMI",
+          "choices": {
+            "1": "On",
+            "0": "Off"
+          }
+        }
+      ],
+      "note": "Whether menus and status information are shown in the HDMI output signal. The first value of the row is not decoded."
+    }
   },
   "00151": {
-    "name": "S&Q Motion: frame rate (fps); second field ? (2 in all files)",
+    "name": "S&Q Motion: frame rate / Picture Cache Rec: Cache Rec Time",
     "status": "confirmed",
     "group": "video",
     "fields": [
       "S&Q frame rate [fps]",
-      "? (2)"
+      "Cache Rec Time (upper limit in s)"
     ],
-    "evidence": "026.ALL (025 with S&Q Frame Rate 24): 60,2 -> 24,2; 027.ALL (026 with Frame Rate 48): 24,2 -> 48,2. 60 is the default; the default depends on the format (120 with RAW 2048x1080 / Imager Scan Mode 2K Center, 024.ALL). Field 22 of 00150 holds that default (it did not change with the frame rate). The second field is possibly the High Frame Rate Mode (planned test block 2).",
+    "evidence": "026.ALL (025 with S&Q Frame Rate 24): 60,2 -> 24,2; 027.ALL (026 with Frame Rate 48): 24,2 -> 48,2. 60 is the default; the default depends on the format (120 with RAW 2048x1080 / Imager Scan Mode 2K Center, 024.ALL). Field 22 of 00150 holds that default (it did not change with the frame rate). The second field is possibly the High Frame Rate Mode (planned test block 2). Round 124: the second value changed 2 -> 8 while Picture Cache Rec > Cache Rec Time was set from '0-2 sec' (first entry) to '6-8 sec' (fourth entry) and the format was changed; probably it is the Cache Rec Time (the upper limit in seconds), not the High Frame Rate Mode (round 126 changes the time alone). FS7M2 round 126 (2026-10-18, ALL only): Picture Cache Rec > Cache Rec Time '6-8 sec' -> '2-4 sec' changed the second value from 8 to 4 (round 124: '0-2 sec' -> '6-8 sec' changed it from 2 to 8): the second value is the upper limit of the Cache Rec Time in seconds (the camera's list: 0-2, 2-4, 4-6, 6-8, 8-10, 10-12, 12-14, 13-15 sec; 2, 4 and 8 seen, the others follow the pattern, 15 for the last entry assumed). The Setting of Picture Cache Rec is not stored in the file.",
     "widget": {
-      "type": "counter",
-      "index": 0,
-      "min": 1,
-      "max": 180,
-      "unit": "fps",
-      "note": "List according to the manual: 1 to 60 fps, with High Frame Rate Mode (XAVC-L) 72 to 180 fps (PAL up to 150), RAW only 2K with 120/240 (NTSC) or 100/200 (PAL), XAVC-I only up to 60. Which values are possible in the current state is not modelled yet."
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        1,
+        180
+      ],
+      "max_raw": 32767,
+      "min_raw": 0,
+      "fields": [
+        {
+          "index": 0,
+          "label": "S&Q frame rate [fps]",
+          "range": [
+            1,
+            180
+          ]
+        },
+        {
+          "index": 1,
+          "label": "Cache Rec Time",
+          "choices": {
+            "2": "0-2 sec",
+            "4": "2-4 sec",
+            "6": "4-6 sec – assumption",
+            "8": "6-8 sec",
+            "10": "8-10 sec – assumption",
+            "12": "10-12 sec – assumption",
+            "14": "12-14 sec – assumption",
+            "15": "13-15 sec – assumption"
+          }
+        }
+      ],
+      "note": "S&Q frame rate: 1 to 60 fps, with High Frame Rate Mode (XAVC-L) 72 to 180 fps (PAL up to 150), RAW only 2K with 120/240 (NTSC) or 100/200 (PAL), XAVC-I only up to 60; which values are possible in the current state is not modelled yet. Cache Rec Time: how many seconds Picture Cache Rec keeps before the start of the recording (list of the camera)."
     },
     "subgroup": "Recording › S&Q Motion",
     "order": 2
@@ -3462,10 +3606,10 @@
     "name": "Imager Scan Mode (0 Normal, 1 2K Full, 2 2K Center)",
     "status": "confirmed",
     "group": "video",
-    "evidence": "024.ALL: 0 -> 2 (2K Center, user); 028.ALL: 0 -> 1 (2K Full). Changes by itself nothing else except the S&Q default frame rate and 00175 position 43/00150 field 17 (RAW output). | Editable with availability rules: 2K modes only for formats up to 2K width (manual: recording resolution limited to 2K; 028.ALL), RAW 4096 only with Normal, RAW 2048 only with 2K Full/Center (manual); companions from 013 (Normal), 028 (2K Full), 024 (2K Center).",
+    "evidence": "024.ALL: 0 -> 2 (2K Center, user); 028.ALL: 0 -> 1 (2K Full). Changes by itself nothing else except the S&Q default frame rate and 00175 position 43/00150 field 17 (RAW output). | Editable with availability rules: 2K modes only for formats up to 2K width (manual: recording resolution limited to 2K; 028.ALL), RAW 4096 only with Normal, RAW 2048 only with 2K Full/Center (manual); companions from 013 (Normal), 028 (2K Full), 024 (2K Center). Round 127 (2026-10-18): Recording > S&Q Motion > Setting On with High Frame Rate Mode Off -> Center Scan changed 00152 (Setting) and 00338 from 0 to 2 (and the S&Q frame rate 00151 from 60 to 72 by itself), but not 00446: the High Frame Rate Mode of the Recording menu is the same value as Imager Scan Mode (Off = 0, Full Scan = 1 assumed, Center Scan = 2); only the Imager Scan Mode choice in the System menu also sets 00446.",
     "widget": {
       "type": "choice",
-      "note": "Impossible entries are greyed out (depending on recording format and RAW output). On the switch the camera sets default values (e.g. the S&Q frame rate).",
+      "note": "Impossible entries are greyed out (depending on recording format and RAW output). On the switch the camera sets default values (e.g. the S&Q frame rate). The Recording menu shows the same value as S&Q Motion > High Frame Rate Mode (Off, Full Scan, Center Scan).",
       "choices": {
         "0": "Normal",
         "1": "2K Full",
@@ -3618,7 +3762,7 @@
       "S&Q Motion Setting (0 Off, 1 On)",
       "? (0)"
     ],
-    "evidence": "025.ALL (013.ALL with S&Q Motion Setting = On, nothing else): 0,0 -> 1,0. When switched on the camera itself changes 00150 field 17 (RAW output format index) 0 -> 3 (= 2048x1080 59.94p; the manual: RAW S&Q is only supported in 2K), its mirror 00175 position 43 0 -> 3, and 00158 4 -> 2 (meaning of 00158 unknown). Switching S&Q off again was not recorded.",
+    "evidence": "025.ALL (013.ALL with S&Q Motion Setting = On, nothing else): 0,0 -> 1,0. When switched on the camera itself changes 00150 field 17 (RAW output format index) 0 -> 3 (= 2048x1080 59.94p; the manual: RAW S&Q is only supported in 2K), its mirror 00175 position 43 0 -> 3, and 00158 4 -> 2 (meaning of 00158 unknown). Switching S&Q off again was not recorded. Round 127: S&Q Setting Off -> On changed the first value from 0 to 1 again, together with High Frame Rate Mode Center Scan (00338 = 2) and the S&Q frame rate 60 -> 72 (00151).",
     "widget": {
       "type": "fields",
       "note": "When switched on, the camera itself changes: RAW output to 2048×1080 59.94p (index 3) and ID 00158 to 2 (from 025.ALL).",
@@ -4209,32 +4353,144 @@
         ]
       },
       "reason": "The gamma uses another dynamic range"
+    },
+    {
+      "ids": [
+        "00402",
+        "00403",
+        "00404",
+        "00444",
+        "00412",
+        "00413",
+        "00414",
+        "00415",
+        "00416"
+      ],
+      "when": {
+        "id": "00418",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "only in Cine EI mode"
+    },
+    {
+      "ids": [
+        "00181",
+        "00182",
+        "00183"
+      ],
+      "when": {
+        "id": "00286",
+        "field": 0,
+        "in": [
+          "1"
+        ]
+      },
+      "reason": "Auto Naming is Title"
+    },
+    {
+      "ids": [
+        "00285"
+      ],
+      "when": {
+        "id": "00286",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Auto Naming is Cam ID + Reel#"
+    },
+    {
+      "ids": [
+        "00286"
+      ],
+      "when": {
+        "id": "00277",
+        "field": 0,
+        "in": [
+          "0"
+        ]
+      },
+      "reason": "Simul Rec is On (the naming is Title)"
     }
   ],
   "_locks_comment": "Sub-groups whose widgets are greyed out (not editable, values stay visible) while the condition holds. Source: user (Cine EI mode: the whole Paint menu is greyed out).",
   "00181": {
-    "name": "Camera ID (ASCII code, 65 = A)",
-    "status": "likely",
+    "name": "Camera ID",
+    "status": "confirmed",
     "group": "misc",
-    "subgroup": "File › Clip",
+    "subgroup": "Media › Clip",
     "order": 2,
-    "evidence": "65 in all files = 'A' (manual: Clip > Camera ID A to Z); 00181-00183 follow the order of the manual: Camera ID, Reel Number, Camera Position"
+    "evidence": "FS7M2 round 127 (2026-10-18, ALL only): Media > Clip > Camera ID 'A' -> 'K' changed ALL 00181 from 65 to 75 (ASCII code of the letter).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "65": "A",
+        "66": "B",
+        "67": "C",
+        "68": "D",
+        "69": "E",
+        "70": "F",
+        "71": "G",
+        "72": "H",
+        "73": "I",
+        "74": "J",
+        "75": "K",
+        "76": "L",
+        "77": "M",
+        "78": "N",
+        "79": "O",
+        "80": "P",
+        "81": "Q",
+        "82": "R",
+        "83": "S",
+        "84": "T",
+        "85": "U",
+        "86": "V",
+        "87": "W",
+        "88": "X",
+        "89": "Y",
+        "90": "Z"
+      },
+      "note": "Used when Auto Naming is Cam ID + Reel#: the letter A to Z (stored as its ASCII code)."
+    }
   },
   "00182": {
-    "name": "Reel Number (001 to 999)",
-    "status": "likely",
+    "name": "Reel Number",
+    "status": "confirmed",
     "group": "misc",
-    "subgroup": "File › Clip",
+    "subgroup": "Media › Clip",
     "order": 3,
-    "evidence": "1 in all files (manual: Clip > Reel Number 001 to 999); between Camera ID and Camera Position"
+    "evidence": "FS7M2 round 127 (2026-10-18, ALL only): Media > Clip > Reel Number 001 -> 123 changed ALL 00182 from 1 to 123 (001 to 999).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 1,
+      "max": 999,
+      "small": 1,
+      "large": 10,
+      "note": "Used when Auto Naming is Cam ID + Reel#: 001 to 999."
+    }
   },
   "00183": {
-    "name": "Camera Position (ASCII code, 67 = C)",
-    "status": "likely",
+    "name": "Camera Position",
+    "status": "confirmed",
     "group": "misc",
-    "subgroup": "File › Clip",
+    "subgroup": "Media › Clip",
     "order": 4,
-    "evidence": "67 in all files = 'C' (manual: Clip > Camera Position C/L/R)"
+    "evidence": "FS7M2 round 127 (2026-10-18, ALL only): Media > Clip > Camera Position 'C' -> 'L' changed ALL 00183 from 67 to 76 (ASCII code of the letter; C, L and R are offered, R = 82 follows by the code).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "67": "C",
+        "76": "L",
+        "82": "R – assumption"
+      },
+      "note": "First character of the take number when Auto Naming is Cam ID + Reel#: C, L or R (stored as its ASCII code)."
+    }
   },
   "00039": {
     "group": "video",
@@ -8591,6 +8847,466 @@
         "0": "Normal",
         "1": "Opposite"
       }
+    }
+  },
+  "00361": {
+    "name": "Near End: Info Battery",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Ext. Unit Battery Alarm",
+    "order": 1,
+    "evidence": "FS7M2 round 119 (2026-10-18, ALL only, with the XDCA-FS7 attached): the user set Near End: Info Battery 5 % -> 30 % (reported), but ALL 00361 stayed 5 while its six neighbours 00362-00366 changed in the order of the menu (Near End: Info, Sony, Other, then End: Info, Sony, Other). So 00361 is Near End: Info Battery by its place; the stored value did not follow the reported change (to be repeated). Round 120 (2026-10-18): Near End: Info Battery 5 % -> 30 % changed ALL 00361 from 5 to 30 (the first try in round 119 did not reach the file).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 5,
+      "max": 100,
+      "small": 5,
+      "large": 10,
+      "snap": 5,
+      "unit": "%",
+      "note": "5 % to 100 % in steps of 5 % (manual), stored as the percentage."
+    }
+  },
+  "00363": {
+    "name": "Near End: Other Battery",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Ext. Unit Battery Alarm",
+    "order": 3,
+    "evidence": "FS7M2 round 119 (2026-10-18, ALL only, with the XDCA-FS7 attached): Near End: Other Battery 11.8 V -> 12.5 V changed ALL 00363 from 11800 to 12500 (millivolts).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "scale": 0.001,
+      "decimals": 1,
+      "unit": "V",
+      "small": 100,
+      "large": 500,
+      "min": 11500,
+      "max": 17000,
+      "note": "11.5 V to 17 V (manual), stored in millivolts."
+    }
+  },
+  "00364": {
+    "name": "End: Info Battery",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Ext. Unit Battery Alarm",
+    "order": 4,
+    "evidence": "FS7M2 round 119 (2026-10-18, ALL only, with the XDCA-FS7 attached): End: Info Battery 0 % -> 3 % changed ALL 00364 from 0 to 3 (stored in %, the menu offers 0 % to 5 %).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "min": 0,
+      "max": 5,
+      "small": 1,
+      "large": 1,
+      "unit": "%",
+      "note": "0 % to 5 % (manual), stored as the percentage."
+    }
+  },
+  "00365": {
+    "name": "End: Sony Battery",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Ext. Unit Battery Alarm",
+    "order": 5,
+    "evidence": "FS7M2 round 119 (2026-10-18, ALL only, with the XDCA-FS7 attached): End: Sony Battery 11.0 V -> 11.3 V changed ALL 00365 from 11000 to 11300 (millivolts).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "scale": 0.001,
+      "decimals": 1,
+      "unit": "V",
+      "small": 100,
+      "large": 500,
+      "min": 11000,
+      "max": 11500,
+      "note": "11.0 V to 11.5 V (manual), stored in millivolts."
+    }
+  },
+  "00366": {
+    "name": "End: Other Battery",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Ext. Unit Battery Alarm",
+    "order": 6,
+    "evidence": "FS7M2 round 119 (2026-10-18, ALL only, with the XDCA-FS7 attached): End: Other Battery 11.0 V -> 12.0 V changed ALL 00366 from 11000 to 12000 (millivolts).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "scale": 0.001,
+      "decimals": 1,
+      "unit": "V",
+      "small": 100,
+      "large": 500,
+      "min": 11000,
+      "max": 14000,
+      "note": "11.0 V to 14.0 V (manual), stored in millivolts."
+    }
+  },
+  "00367": {
+    "name": "DC Low Voltage1 (Ext. Unit DC IN Alarm)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Ext. Unit DC IN Alarm",
+    "order": 1,
+    "evidence": "FS7M2 round 119 (2026-10-18, ALL only, with the XDCA-FS7 attached): Ext. Unit DC IN Alarm > DC Low Voltage1 11.5 V -> 14 V changed ALL 00367 from 11500 to 14000 (millivolts).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "scale": 0.001,
+      "decimals": 1,
+      "unit": "V",
+      "small": 100,
+      "large": 500,
+      "min": 11500,
+      "max": 17000,
+      "note": "11.5 V to 17 V (manual), stored in millivolts."
+    }
+  },
+  "00368": {
+    "name": "DC Low Voltage2 (Ext. Unit DC IN Alarm)",
+    "status": "confirmed",
+    "group": "video",
+    "subgroup": "System › Ext. Unit DC IN Alarm",
+    "order": 2,
+    "evidence": "FS7M2 round 119 (2026-10-18, ALL only, with the XDCA-FS7 attached): Ext. Unit DC IN Alarm > DC Low Voltage2 11 V -> 13.5 V changed ALL 00368 from 11000 to 13500 (millivolts).",
+    "widget": {
+      "type": "counter",
+      "index": 0,
+      "scale": 0.001,
+      "decimals": 1,
+      "unit": "V",
+      "small": 100,
+      "large": 500,
+      "min": 11000,
+      "max": 14000,
+      "note": "11.0 V to 14.0 V (manual), stored in millivolts; the camera limits it by Voltage1 (the lower value is set first)."
+    }
+  },
+  "00455": {
+    "name": "Interval Rec: Pre-Lighting",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Recording › Interval Rec",
+    "order": 2,
+    "evidence": "FS7M2 round 123 (2026-10-18, ALL only; the manual lists Recording > Interval Rec: Interval Time, Number of Frames, Pre-Lighting as All File, the switch Setting is not stored): Pre-Lighting Off -> 10 s (the camera list offers Off, 2 s, 5 s, 10 s, ...) changed ALL 00455 from 0 to 3 (0 Off, 2 s = 1 and 5 s = 2 assumed by the order of the list; further entries after 10 s are not known). Round 124: Pre-Lighting 10 s -> 5 s changed 00455 from 3 to 2, so 5 s = 2 is confirmed.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "2 s – assumption",
+        "2": "5 s",
+        "3": "10 s"
+      }
+    }
+  },
+  "00277": {
+    "name": "Simul Rec",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Recording › Simul Rec",
+    "order": 1,
+    "evidence": "FS7M2 round 125 (2026-10-18, ALL only): Simul Rec Setting Off -> On and Rec Button Set 'Rec Button A B + Handle Rec Button A B' -> 'Rec Button B + Handle Rec Button A' changed ALL 00277 from `1, 0` to `0, 2` (field 0 = Setting, stored inverted: 1 = Off, 0 = On; field 1 = Rec Button Set: 0 = Rec Button A B and Handle Rec Button A B, 2 = Rec Button B + Handle Rec Button A, the menu's second entry 'Rec Button A + Handle Rec Button B' is 1 by order). The same round also changed 00302 from 0 to 1 (Picture Cache Rec switched off by Simul Rec, see there). Round 126: Simul Rec Setting On -> Off and Rec Button Set back to the first entry changed 00277 from `0, 2` to `1, 0` (as expected).",
+    "widget": {
+      "type": "fields",
+      "show_labels": true,
+      "fields": [
+        {
+          "index": 0,
+          "label": "Setting",
+          "choices": {
+            "1": "Off",
+            "0": "On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "Rec Button Set",
+          "width": 330,
+          "choices": {
+            "0": "Rec Button A B + Handle Rec Button A B",
+            "1": "Rec Button A + Handle Rec Button B – assumption",
+            "2": "Rec Button B + Handle Rec Button A"
+          }
+        }
+      ],
+      "note": "Simul Rec: record on both cards at once; Rec Button Set decides which start button controls which card. Not possible with some formats (for example XAVC-I 4K) and not together with Picture Cache Rec. While Simul Rec is on, the clip naming is fixed to Title."
+    }
+  },
+  "00286": {
+    "name": "Auto Naming",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Media › Clip",
+    "order": 1,
+    "evidence": "FS7M2 round 126 (2026-10-18, ALL only): Media > Clip > Auto Naming Title -> Cam ID + Reel# changed ALL 00286 from 1 to 0 (0 = Cam ID + Reel#, 1 = Title); the three entries after it (Camera ID, Reel Number, Camera Position) became selectable, the entries Title Prefix and Number Set are for Title. While Simul Rec is On the camera keeps Title (manual). The camera greys out Camera ID, Reel Number and Camera Position for Title and Title Prefix for Cam ID + Reel# (user, round 127); Number Set is not stored in any file (manual table: No), so it has no row.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Cam ID + Reel#",
+        "1": "Title"
+      },
+      "note": "How the clip names are made: camera ID + reel number + take number + date + random characters (Cam ID + Reel#) or title prefix + clip number (Title). Not possible while Simul Rec is on."
+    }
+  },
+  "00444": {
+    "name": "Rec/Out EI Applied",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "System › Base Setting",
+    "order": 5,
+    "evidence": "FS7M2 round 128 (2026-10-18, ALL only): Shooting Mode Custom -> Cine EI and Rec/Out EI Applied Off -> On changed, besides the known Cine EI companions (00023, 00031, 00039, 00069, 00104, 00108, 00125, 00340, 00418, 00423, 00499), only ALL 00444 from 0 to 1 (an ID that only the Mk2 files have; 0 = Off, 1 = On). The menu item is only active in Cine EI mode (manual). The Mk1 files hold an empty value for this ID. FS7M2 round 132 (2026-10-18, ALL + SCENE): Shooting Mode back to Custom left 00444 at 1 (the value stays when Cine EI is left).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      },
+      "note": "Only active in Cine EI mode: the Exposure Index is applied as ISO sensitivity of the recording and the outputs."
+    }
+  },
+  "00412": {
+    "name": "Monitor LUT Category",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Video › Monitor LUT",
+    "order": 1,
+    "evidence": "FS7M2 round 129 (2026-10-18, ALL only, Cine EI): Monitor LUT > Category LUT -> Look Profile changed ALL 00412 from 0 to 1 (0 LUT, 1 Look Profile; User 3D LUT = 2 assumed by the order of the list). Look Profile Select and LUT Select grey out depending on the category. Round 130: Category Look Profile -> User 3D LUT changed 00412 from 1 to 2 (confirmed).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "LUT",
+        "1": "Look Profile",
+        "2": "User 3D LUT"
+      },
+      "note": "Only in Cine EI mode: which kind of look the monitor output uses."
+    }
+  },
+  "00413": {
+    "name": "Look Profile Select",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Video › Monitor LUT",
+    "order": 3,
+    "evidence": "FS7M2 round 129 (2026-10-18, ALL only, Cine EI): Look Profile Select 1: LC-709 -> 3: SLog2-709 changed ALL 00413 from 0 to 2 (the number of the entry minus one; the list: 1 LC-709, 2 LC-709typeA, 3 SLog2-709, 4 Cine+709).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "1: LC-709",
+        "1": "2: LC-709typeA – assumption",
+        "2": "3: SLog2-709",
+        "3": "4: Cine+709 – assumption"
+      }
+    }
+  },
+  "00414": {
+    "name": "LUT Select",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Video › Monitor LUT",
+    "order": 2,
+    "evidence": "FS7M2 round 129 (2026-10-18, ALL only, Cine EI): LUT Select P1: 709(800%) -> P3: HG8009G33 changed ALL 00414 from 0 to 2 (position in the list of the camera: P1 709(800%), P2 HG8009G40, P3 HG8009G33, P4 S-Log2, P5 S-Log3, U1 to U6; 0 and 2 seen).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "P1: 709(800%)",
+        "1": "P2: HG8009G40 – assumption",
+        "2": "P3: HG8009G33",
+        "3": "P4: S-Log2 – assumption",
+        "4": "P5: S-Log3 – assumption",
+        "5": "U1 – assumption",
+        "6": "U2 – assumption",
+        "7": "U3 – assumption",
+        "8": "U4 – assumption",
+        "9": "U5 – assumption",
+        "10": "U6 – assumption"
+      },
+      "note": "P4 S-Log2 needs the colour space S-Gamut/SLog2, P5 S-Log3 the colour spaces with SLog3 (manual); U1 to U6 are user LUTs from the SD card."
+    }
+  },
+  "00416": {
+    "name": "Monitor LUT on the outputs",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Video › Monitor LUT",
+    "order": 4,
+    "evidence": "FS7M2 round 129 (2026-10-18, ALL only, Cine EI): SDI1 & Internal Rec MLUT Off -> MLUT On changed all five values of ALL 00416 from `0,0,0,0,0` to `1,1,1,1,1` (SDI2, HDMI and Viewfinder were greyed out or follow in the menu; the values are probably in the order of the menu: SDI1 & Internal Rec, SDI2, HDMI, Viewfinder, and one more that is not named in the menu). The values are told apart by editing HDMI alone (round 130). Round 130: HDMI > MLUT On -> MLUT Off could not be selected (the cursor skips HDMI although it is not greyed out; the camera shows the HDMI value, it follows HDMI Target Device by the manual): 00416 did not change; the order of its values stays assumed. FS7M2 round 132 (2026-10-18, ALL + SCENE): switching Shooting Mode back to Custom set all five values from 1 to 0 (MLUT is Cine EI only).",
+    "widget": {
+      "type": "fields",
+      "show_labels": true,
+      "fields": [
+        {
+          "index": 0,
+          "label": "SDI1 & Internal Rec",
+          "choices": {
+            "0": "MLUT Off",
+            "1": "MLUT On"
+          }
+        },
+        {
+          "index": 1,
+          "label": "SDI2",
+          "choices": {
+            "0": "MLUT Off",
+            "1": "MLUT On"
+          }
+        },
+        {
+          "index": 2,
+          "label": "HDMI",
+          "choices": {
+            "0": "MLUT Off",
+            "1": "MLUT On"
+          }
+        },
+        {
+          "index": 3,
+          "label": "Viewfinder",
+          "choices": {
+            "0": "MLUT Off",
+            "1": "MLUT On"
+          }
+        }
+      ],
+      "note": "Whether the monitor LUT is applied to the picture of each output (only in Cine EI mode). The camera links the outputs (the others follow SDI1 & Internal Rec); the order of the values is assumed from the menu."
+    }
+  },
+  "00402": {
+    "name": "Exposure Index <L>",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 20,
+    "evidence": "FS7M2 round 130 (2026-10-18, ALL only, Cine EI): Camera > ISO/Gain/EI > Exposure Index L: 800 EI -> 5000 EI changed 00402 from 2 to 10. The old values 2, 5 and 8 are 800, 1600 and 3200 EI (the defaults <L>, <M>, <H>: 800EI/4.7E, 1600EI/5.7E, 3200EI/6.7E), so the stored value is the position in the list of the camera with a step of a third of a stop (500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, ..., 10000); 0 and 12 are the minimum and maximum. Round 131: the user listed the camera's Exposure Index <L> list: 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000 EI (13 entries; position = stored value, 2 and 10 seen). For <H> the user had set 10000 EI (maximum) and the file holds 12, so the list of <H> is not the same as that of <L> at its upper end (8 = 3200 EI, 12 = 10000 EI seen); the other entries of <M> and <H> are assumed to be the same as in <L>.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "500 EI",
+        "1": "640 EI",
+        "2": "800 EI",
+        "3": "1000 EI",
+        "4": "1250 EI",
+        "5": "1600 EI",
+        "6": "2000 EI",
+        "7": "2500 EI",
+        "8": "3200 EI",
+        "9": "4000 EI",
+        "10": "5000 EI",
+        "11": "6400 EI",
+        "12": "8000 EI"
+      },
+      "note": "Only in Cine EI mode. The numbers are the positions in the list of the camera (steps of a third of a stop from 500 EI; <L> up to 8000 EI, <H> up to 10000 EI); entries marked as assumption were not seen."
+    }
+  },
+  "00403": {
+    "name": "Exposure Index <M>",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 21,
+    "evidence": "FS7M2 round 130 (2026-10-18, ALL only, Cine EI): Camera > ISO/Gain/EI > Exposure Index M: 1600 EI -> 500 EI (minimum) changed 00403 from 5 to 0. The old values 2, 5 and 8 are 800, 1600 and 3200 EI (the defaults <L>, <M>, <H>: 800EI/4.7E, 1600EI/5.7E, 3200EI/6.7E), so the stored value is the position in the list of the camera with a step of a third of a stop (500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, ..., 10000); 0 and 12 are the minimum and maximum. Round 131: the user listed the camera's Exposure Index <L> list: 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000 EI (13 entries; position = stored value, 2 and 10 seen). For <H> the user had set 10000 EI (maximum) and the file holds 12, so the list of <H> is not the same as that of <L> at its upper end (8 = 3200 EI, 12 = 10000 EI seen); the other entries of <M> and <H> are assumed to be the same as in <L>.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "500 EI",
+        "1": "640 EI – assumption",
+        "2": "800 EI",
+        "3": "1000 EI – assumption",
+        "4": "1250 EI – assumption",
+        "5": "1600 EI",
+        "6": "2000 EI – assumption",
+        "7": "2500 EI – assumption",
+        "8": "3200 EI",
+        "9": "4000 EI – assumption",
+        "10": "5000 EI – assumption",
+        "11": "6400 EI – assumption",
+        "12": "8000 EI – assumption"
+      },
+      "note": "Only in Cine EI mode. The numbers are the positions in the list of the camera (steps of a third of a stop from 500 EI; <L> up to 8000 EI, <H> up to 10000 EI); entries marked as assumption were not seen."
+    }
+  },
+  "00404": {
+    "name": "Exposure Index <H>",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 22,
+    "evidence": "FS7M2 round 130 (2026-10-18, ALL only, Cine EI): Camera > ISO/Gain/EI > Exposure Index H: 3200 EI -> 10000 EI (maximum) changed 00404 from 8 to 12. The old values 2, 5 and 8 are 800, 1600 and 3200 EI (the defaults <L>, <M>, <H>: 800EI/4.7E, 1600EI/5.7E, 3200EI/6.7E), so the stored value is the position in the list of the camera with a step of a third of a stop (500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, ..., 10000); 0 and 12 are the minimum and maximum. Round 131: the user listed the camera's Exposure Index <L> list: 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000 EI (13 entries; position = stored value, 2 and 10 seen). For <H> the user had set 10000 EI (maximum) and the file holds 12, so the list of <H> is not the same as that of <L> at its upper end (8 = 3200 EI, 12 = 10000 EI seen); the other entries of <M> and <H> are assumed to be the same as in <L>.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "500 EI – assumption",
+        "1": "640 EI – assumption",
+        "2": "800 EI",
+        "3": "1000 EI – assumption",
+        "4": "1250 EI – assumption",
+        "5": "1600 EI",
+        "6": "2000 EI – assumption",
+        "7": "2500 EI – assumption",
+        "8": "3200 EI",
+        "9": "4000 EI – assumption",
+        "10": "5000 EI – assumption",
+        "11": "6400 EI – assumption",
+        "12": "10000 EI"
+      },
+      "note": "Only in Cine EI mode. The numbers are the positions in the list of the camera (steps of a third of a stop from 500 EI; <L> up to 8000 EI, <H> up to 10000 EI); entries marked as assumption were not seen."
+    }
+  },
+  "00281": {
+    "name": "Shockless Gain",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Camera › ISO/Gain/EI",
+    "order": 23,
+    "evidence": "FS7M2 round 130 (2026-10-18, ALL only, Cine EI): Camera > ISO/Gain/EI > Shockless Gain Off -> On changed ALL 00281 from 1 to 0 (1 = Off, 0 = On, stored inverted). In the Mk1 files 00281 is 1 in 27 of 29 files.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "1": "Off",
+        "0": "On"
+      }
+    }
+  },
+  "00415": {
+    "name": "User 3D LUT Select",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Video › Monitor LUT",
+    "order": 5,
+    "evidence": "FS7M2 round 130 (2026-10-18, ALL only, Cine EI): User 3D LUT Select User 3D-1 -> User 3D-3 changed ALL 00415 from 0 to 2 (the number of the entry minus one; User 3D-1 to User 3D-4 in the camera list).",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "User 3D-1",
+        "1": "User 3D-2 – assumption",
+        "2": "User 3D-3",
+        "3": "User 3D-4 – assumption"
+      }
+    }
+  },
+  "00172": {
+    "name": "Output Display SDI2",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Video › Output Display",
+    "evidence": "Round 121: the second value flipped 1 -> 0 together with 00173 (and 00170 field 4). In the Mk1 files 00172 is `1,1` in 27 of 29 files and `1,0` in two. FS7M2 round 131 (2026-10-18, ALL only, Cine EI): with round 121 (Output Display SDI2 on + HDMI on -> SDI2 off + HDMI off) the second value of 00172 went 1 -> 0 and that of 00173 1 -> 0, in round 123 the 4K/2K conversion was separated (00170 field 4), in round 131 HDMI Target Device Recorder switched only the 00173 value (and 00407): second value of 00172 = Output Display SDI2, second value of 00173 = Output Display HDMI (1 On, 0 Off).",
+    "order": 1,
+    "widget": {
+      "type": "fields",
+      "fields": [
+        {
+          "index": 1,
+          "label": "Output Display SDI2",
+          "choices": {
+            "1": "On",
+            "0": "Off"
+          }
+        }
+      ],
+      "note": "Whether menus and status information are shown in the SDI2 output signal. The first value of the row is not decoded."
     }
   }
 }

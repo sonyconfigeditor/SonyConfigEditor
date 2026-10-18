@@ -32,7 +32,7 @@ from tkinter import filedialog, messagebox
 import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
-_version = "0.2.0"
+_version = "0.3.0"
 _date = "2026-10-18"
 
 APP_NAME = "Sony Config Editor"
@@ -45,18 +45,18 @@ WARNING_COLOR = "#e57373"
 # main menus of the camera = the tabs of the parameter table (in the order of the camera's menu); a parameter belongs to the tab of the first part of its
 # "subgroup" in the databases ("Paint › Gamma" -> Paint); parameters without a database entry and the sub-group "Other" are in Unknown.
 # Icons are Unicode symbols (no image files). Video, TC/UB and Media follow as soon as parameters of those menus are decoded.
-MENUS = [("system", "System", "⚙"), ("camera", "Camera", "📹"), ("paint", "Paint", "🎨"), ("audio", "Audio", "🔊"), ("vf", "VF", "👁"), ("tcub", "TC/UB", "⏱"),
-         ("recording", "Recording", "⏺"), ("file", "File", "📁"), ("unknown", "Unknown", "❓")]
+MENUS = [("system", "System", "⚙"), ("camera", "Camera", "📹"), ("paint", "Paint", "🎨"), ("audio", "Audio", "🔊"), ("video", "Video", "🖥"), ("vf", "VF", "👁"), ("tcub", "TC/UB", "⏱"),
+         ("recording", "Recording", "⏺"), ("media", "Media", "💾"), ("file", "File", "📁"), ("unknown", "Unknown", "❓")]
 GROUPS = [(key, title) for key, title, _icon in MENUS]
 GROUP_ICONS = {key: icon for key, _title, icon in MENUS}
 MENU_OF_PREFIX = {title: key for key, title, _icon in MENUS if key != "unknown"}
 DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a menu (parameters get "subgroup" in the databases; others: "Other"); Paint as in the camera: White first
 SUBGROUP_ORDER = [
-    "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)", "System › Assignable Button", "System › Assignable Dial", "System › Rec Lamp", "System › Fan Control", "System › ND Dial", "System › HOLD Switch Setting", "System › Lens", "System › Language", "System › Clock Set", "System › GPS", "System › IR Remote", "System › Camera Battery Alarm", "System › Camera DC IN Alarm",
+    "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)", "System › Assignable Button", "System › Assignable Dial", "System › Rec Lamp", "System › Fan Control", "System › ND Dial", "System › HOLD Switch Setting", "System › Lens", "System › Language", "System › Clock Set", "System › GPS", "System › IR Remote", "System › Camera Battery Alarm", "System › Camera DC IN Alarm", "System › Ext. Unit Battery Alarm", "System › Ext. Unit DC IN Alarm",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
     "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
-    "Recording › S&Q Motion", "Audio › Input", "Audio › Output", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
+    "Recording › S&Q Motion", "Recording › Interval Rec", "Recording › Simul Rec", "Media › Clip", "Audio › Input", "Audio › Output", "Video › Output", "Video › Output Setting", "Video › Output Display", "Video › Monitor LUT", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
 ]
 REORDER_BY_LOCK = {"Camera › ISO/Gain/EI"}      # sub-groups whose usable rows move to the top, the greyed-out ones follow below a divider line
 CATEGORIES = ()      # the menus are tabs now; a heading per menu inside a tab would only repeat the tab name (the mechanism for headings is kept)
@@ -429,6 +429,10 @@ def with_recent(recent: list[str], path) -> list[str]:
 def saved_tab(value) -> str:
     """The tab (main menu) from the settings file: only a known key counts (the file is user-editable), otherwise the first tab."""
     return value if isinstance(value, str) and value in GROUP_ICONS else GROUPS[0][0]
+
+
+TABLE_WIDGET_BUDGET = 7600      # widgets of all cached tables plus the one that is built (Windows allows about 10000 window objects per process)
+TABLE_ESTIMATE = {"all": 5200, "scene": 2300}
 
 
 GEOMETRY_PATTERN = re.compile(r"(\d+)x(\d+)\+(-?\d+)\+(-?\d+)")
@@ -1597,6 +1601,71 @@ class OnOffBox(ctk.CTkCheckBox):
         self._block_tip.text = reason
 
 
+class TabBar(ctk.CTkFrame):
+    """Row of tabs with a thin vertical line between them (a CTkSegmentedButton without the lines). It offers what the program uses of the segmented
+    button: ``configure(values=...)``, ``set(label)``, ``get()`` and ``_buttons_dict`` (label -> button); ``command(label)`` is called when a tab is clicked."""
+
+    def __init__(self, master, values, command, height: int = 32):
+        super().__init__(master, fg_color="transparent", height=height)
+        theme = ctk.ThemeManager.theme["CTkSegmentedButton"]
+        self._colors = {"selected": theme["selected_color"], "selected_hover": theme["selected_hover_color"], "unselected": theme["unselected_color"],
+                        "unselected_hover": theme["unselected_hover_color"], "text": theme["text_color"], "text_disabled": theme["text_color_disabled"]}
+        self._line = ("#4a4f55", "#1b1b1b")      # the lines between the tabs: dark against the grey tabs
+        self._command, self._height = command, height
+        self._buttons_dict: dict[str, ctk.CTkButton] = {}
+        self._value = None
+        self._parts: list = []
+        self.configure(values=values)
+
+    def configure(self, require_redraw=False, **kw):
+        values = kw.pop("values", None)
+        if "command" in kw:
+            self._command = kw.pop("command")
+        if kw:
+            super().configure(require_redraw=require_redraw, **kw)
+        if values is not None:
+            self._build(list(values))
+
+    def _build(self, values: list):
+        for part in self._parts:
+            part.destroy()
+        self._parts, self._buttons_dict = [], {}
+        for column in range(2 * len(values)):
+            self.grid_columnconfigure(column, weight=0 if column % 2 else max(1, len(values[column // 2])))
+        for i, label in enumerate(values):
+            button = ctk.CTkButton(self, text=label, width=10, height=self._height, corner_radius=0, border_width=0, fg_color=self._colors["unselected"],
+                                   hover_color=self._colors["unselected_hover"], text_color=self._colors["text"], text_color_disabled=self._colors["text_disabled"],
+                                   command=lambda lab=label: self._click(lab))
+            button.grid(row=0, column=2 * i, sticky="nsew")
+            try:      # the column is at least as wide as the text (the button itself would be cut)
+                self.grid_columnconfigure(2 * i, minsize=button.cget("font").measure(label) + round(24 * self._get_widget_scaling()))
+            except (tk.TclError, AttributeError):
+                pass
+            self._buttons_dict[label] = button
+            self._parts.append(button)
+            if i < len(values) - 1:
+                line = ctk.CTkFrame(self, width=3, height=self._height, corner_radius=0, fg_color=self._line)
+                line.grid(row=0, column=2 * i + 1, sticky="ns")
+                self._parts.append(line)
+        if self._value in self._buttons_dict:
+            self.set(self._value)
+
+    def _click(self, label: str):
+        self.set(label)
+        if self._command:
+            self._command(label)
+
+    def set(self, label: str):
+        self._value = label
+        for lab, button in self._buttons_dict.items():
+            chosen = lab == label
+            button.configure(fg_color=self._colors["selected"] if chosen else self._colors["unselected"],
+                             hover_color=self._colors["selected_hover"] if chosen else self._colors["unselected_hover"])
+
+    def get(self):
+        return self._value
+
+
 class Tooltip:
     """Small text window shown while the mouse is over a widget."""
 
@@ -2097,7 +2166,7 @@ class App(ctk.CTk):
         # tabs for the main blocks (Video, Audio, ...): only the selected block is in the table, so the table stays short
         tabs = ctk.CTkFrame(self, fg_color="transparent")
         tabs.pack(fill="x", padx=8, pady=(0, 2))
-        self.seg_tabs = ctk.CTkSegmentedButton(tabs, values=list(self._tab_labels().values()), command=self._on_tab, height=32)
+        self.seg_tabs = TabBar(tabs, values=list(self._tab_labels().values()), command=self._on_tab, height=32)
         self.seg_tabs.pack(fill="x", expand=True)
         self.jump_buttons = {}
         self._refresh_tabs()
@@ -2268,6 +2337,8 @@ class App(ctk.CTk):
         """Show the table that was built earlier for the profile `key`; the table shown so far is kept for the way back."""
         if self._active_key is not None:
             self._tables[self._active_key] = {a: getattr(self, a) for a in self.TABLE_STATE}
+            if getattr(self, "_table_sizes", None) is not None:
+                self._table_sizes[self._active_key] = self._widget_count(self.table)
         self.table.pack_forget()
         for attr, value in state.items():
             setattr(self, attr, value)
@@ -2279,6 +2350,32 @@ class App(ctk.CTk):
         for state in self._tables.values():
             state["table"].destroy()
         self._tables = {}
+        self._table_sizes = {}
+
+    @staticmethod
+    def _widget_count(widget) -> int:
+        count, stack = 0, [widget]
+        while stack:
+            w = stack.pop()
+            count += 1
+            stack.extend(w.winfo_children())
+        return count
+
+    def _keep_left_table(self):
+        """The table that is left stays cached for the way back, but only as long as all cached tables plus the one that is going to be built stay below
+        TABLE_WIDGET_BUDGET widgets: every Tk widget is a Windows object and a process may own about 10000 of them ("No more menus can be allocated").
+        The oldest tables are dropped first."""
+        sizes = getattr(self, "_table_sizes", None)
+        if sizes is None:
+            sizes = self._table_sizes = {}
+        self._tables[self._active_key] = {a: getattr(self, a) for a in self.TABLE_STATE}
+        sizes[self._active_key] = self._widget_count(self.table)
+        estimate = TABLE_ESTIMATE.get(self.kind, 2500)       # size of the table that is going to be built
+        for key in list(self._tables):
+            if sum(sizes.get(k, 0) for k in self._tables) + estimate <= TABLE_WIDGET_BUDGET:
+                break
+            self._tables.pop(key)["table"].destroy()      # may be the table that is left (then the caller must not touch it any more)
+            sizes.pop(key, None)
 
     def _populate(self, reset_original: bool = True):
         """Show the parameter table of the current profile (type, model): a table built before is reused (only its values are
@@ -2300,8 +2397,9 @@ class App(ctk.CTk):
             self._reflow_all()
             return
         if key != self._active_key and self._active_key is not None and self.vars:
-            self._tables[self._active_key] = {a: getattr(self, a) for a in self.TABLE_STATE}      # keep the table we leave
-            self.table.pack_forget()
+            self._keep_left_table()      # keep the table we leave (within the budget of widgets)
+            with contextlib.suppress(tk.TclError):      # (destroyed by the budget when it did not fit)
+                self.table.pack_forget()
             self.table = self._new_table()
             self.entries, self.vars = {}, {}
         else:
