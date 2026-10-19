@@ -1700,8 +1700,17 @@ class FileOpenDialog(ctk.CTkToplevel):
         self.title(title)
         self.transient(app)
         sc = app._sc
-        self.geometry(f"{sc(900)}x{sc(560)}")
-        self.minsize(sc(640), sc(380))
+        scale = ctk.ScalingTracker.get_window_scaling(self)
+        self._closed = False
+        self.minsize(640, 380)      # (customtkinter scales the size of its own windows itself: unscaled units)
+        saved = restore_window(load_settings().get("open_dialog"), (app.winfo_vrootx(), app.winfo_vrooty(), app.winfo_vrootwidth(), app.winfo_vrootheight()), scale)
+        width, height = (saved["width"], saved["height"]) if saved else (900, 560)
+        if saved and saved["x"] is not None:
+            self.geometry(f"{width}x{height}+{saved['x']}+{saved['y']}")
+        else:      # centred over the program window
+            x = app.winfo_rootx() + (app.winfo_width() - round(width * scale)) // 2
+            y = app.winfo_rooty() + (app.winfo_height() - round(height * scale)) // 2
+            self.geometry(f"{width}x{height}+{max(0, x)}+{max(0, y)}")
         colors = app._c
         self._types = [(label, patterns.split()) for label, patterns in filetypes]
         self._folder = Path.home()
@@ -2002,13 +2011,80 @@ class FileOpenDialog(ctk.CTkToplevel):
         else:
             self.bell()
 
+    def _remember_geometry(self):
+        """Size and position for the next time (settings file, like the main window)."""
+        try:
+            if self.state() == "normal":
+                state = window_settings(tk.Toplevel.wm_geometry(self), False, ctk.ScalingTracker.get_window_scaling(self))
+                if state:
+                    save_settings(open_dialog=state)
+        except tk.TclError:
+            pass
+
     def destroy(self):
+        if not self._closed:
+            self._closed = True
+            self._remember_geometry()
         if self._poll_id is not None:
             with contextlib.suppress(tk.TclError, ValueError):
                 self.after_cancel(self._poll_id)
             self._poll_id = None
         self.peeker.stop()
         super().destroy()
+
+
+def flow_layout(items: list, available: int, container, gap: int = 6, right: tuple = (), fit_width: bool = True, pad: int = 0) -> None:
+    """Lay the controls of a row out like text: as many per line as fit into `available` pixels (physical), the rest goes to the next line.
+    The controls are placed by coordinates (grid columns would be shared between the lines); the container gets the size of the result.
+    `right` are controls that sit at the right end of the last line (or in a line of their own when they do not fit there)."""
+    scale = container._get_widget_scaling()      # customtkinter scales the coordinates of place() itself
+    x = y = line_height = widest = 0
+    for widget in items:
+        width, height = widget.winfo_reqwidth(), widget.winfo_reqheight()
+        if x and x + width > available:
+            y, x, line_height = y + line_height + 2, 0, 0
+        widget.pack_forget()
+        widget.grid_forget()
+        widget.place(x=(pad + x) / scale, y=(pad + y) / scale)
+        x += width + gap
+        line_height = max(line_height, height)
+        widest = max(widest, x - gap)
+    if right:
+        need = sum(w.winfo_reqwidth() for w in right) + gap * (len(right) - 1)
+        if x and x + need > available:
+            y, x, line_height = y + line_height + 2, 0, 0
+        edge = max(x, available - need)
+        for widget in right:
+            widget.pack_forget()
+            widget.grid_forget()
+            widget.place(x=(pad + edge) / scale, y=(pad + y) / scale)
+            edge += widget.winfo_reqwidth() + gap
+            line_height = max(line_height, widget.winfo_reqheight())
+        widest = max(widest, edge - gap)
+    height = (y + line_height + 2 * pad) / scale
+    if fit_width:
+        container.configure(width=(widest + 2 * pad) / scale, height=height)
+    else:
+        container.configure(height=height)
+
+
+class FlowRow:
+    """Keeps the controls of a bar (type / name / model, search) in lines that fit the width of the window: whatever does not fit moves to the next line."""
+
+    def __init__(self, container, items: list, right: tuple = ()):
+        self.container, self.items, self.right = container, items, right
+        self._width = None
+        self.pad = round(4 * container._get_widget_scaling())
+        container.bind("<Configure>", self.layout, add="+")
+        self.layout(force=True)
+
+    def layout(self, _event=None, force: bool = False):
+        width = self.container.winfo_width()
+        if not force and (width <= 1 or width == self._width):
+            return
+        self._width = width
+        flow_layout(self.items, (width if width > 1 else 10 ** 6) - 2 * self.pad, self.container, gap=round(10 * self.container._get_widget_scaling()),
+                    right=self.right, fit_width=False, pad=self.pad)
 
 
 def onoff_labels(choices: dict) -> tuple[str, str] | None:
@@ -2072,6 +2148,9 @@ class TabBar(ctk.CTkFrame):
         self._buttons_dict: dict[str, ctk.CTkButton] = {}
         self._value = None
         self._parts: list = []
+        self._lines: list = []
+        self._laid_out_for = None
+        self.bind("<Configure>", self._layout, add="+")
         self.configure(values=values)
 
     def configure(self, require_redraw=False, **kw):
@@ -2086,26 +2165,68 @@ class TabBar(ctk.CTkFrame):
     def _build(self, values: list):
         for part in self._parts:
             part.destroy()
-        self._parts, self._buttons_dict = [], {}
-        for column in range(2 * len(values)):
-            self.grid_columnconfigure(column, weight=0 if column % 2 else max(1, len(values[column // 2])))
+        self._parts, self._buttons_dict, self._lines = [], {}, []
         for i, label in enumerate(values):
             button = ctk.CTkButton(self, text=label, width=10, height=self._height, corner_radius=0, border_width=0, fg_color=self._colors["unselected"],
                                    hover_color=self._colors["unselected_hover"], text_color=self._colors["text"], text_color_disabled=self._colors["text_disabled"],
                                    command=lambda lab=label: self._click(lab))
-            button.grid(row=0, column=2 * i, sticky="nsew")
-            try:      # the column is at least as wide as the text (the button itself would be cut)
-                self.grid_columnconfigure(2 * i, minsize=button.cget("font").measure(label) + round(24 * self._get_widget_scaling()))
-            except (tk.TclError, AttributeError):
-                pass
             self._buttons_dict[label] = button
             self._parts.append(button)
             if i < len(values) - 1:
                 line = ctk.CTkFrame(self, width=3, height=self._height, corner_radius=0, fg_color=self._line)
-                line.grid(row=0, column=2 * i + 1, sticky="ns")
+                self._lines.append(line)
                 self._parts.append(line)
         if self._value in self._buttons_dict:
             self.set(self._value)
+        self._laid_out_for = None
+        self.after_idle(self._layout)
+
+    def _layout(self, _event=None):
+        """Tabs in lines like text: as many per line as fit into the width of the bar, each line filled to the full width (a narrow window gets a second line)."""
+        buttons = list(self._buttons_dict.items())
+        width = self.winfo_width()
+        if not buttons or width <= 1 or self._laid_out_for == (width, len(buttons)):
+            return
+        self._laid_out_for = (width, len(buttons))
+        scale = self._get_widget_scaling()
+        line = round(3 * scale)
+        minimum = [button.cget("font").measure(label) + round(40 * scale) for label, button in buttons]
+        lines: list[list[int]] = [[]]
+        used = 0
+        for i, need in enumerate(minimum):
+            if lines[-1] and used + line + need > width:
+                lines.append([])
+                used = 0
+            used += need + (line if lines[-1] else 0)
+            lines[-1].append(i)
+        if len(lines) > 1:      # the same number of lines, but of similar length (not one tab alone in the last line)
+            share, done = sum(minimum) / len(lines), 0
+            even: list[list[int]] = [[] for _ in lines]
+            for i, need in enumerate(minimum):
+                even[min(len(lines) - 1, int((done + need / 2) / share))].append(i)
+                done += need
+            if all(sum(minimum[i] for i in row) + line * (len(row) - 1) <= width for row in even) and all(even):
+                lines = even
+        height = round(self._height * scale)
+        gap = round(3 * scale)
+        for part in self._lines:
+            part.place_forget()      # the line behind a tab at the end of a line is not used
+        for row, members in enumerate(lines):
+            free = width - sum(minimum[i] for i in members) - line * (len(members) - 1)
+            total = sum(len(buttons[i][0]) for i in members)
+            x, y = 0, row * (height + gap)
+            for n, i in enumerate(members):
+                w = minimum[i] + round(free * len(buttons[i][0]) / total)
+                if n == len(members) - 1:
+                    w = width - x          # the last tab takes what is left (no rounding gaps)
+                buttons[i][1].configure(width=w / scale, height=height / scale)      # (customtkinter takes the size at configure, not at place)
+                buttons[i][1].place(x=x / scale, y=y / scale)
+                x += w
+                if n < len(members) - 1:
+                    self._lines[i].configure(width=line / scale, height=height / scale)
+                    self._lines[i].place(x=x / scale, y=y / scale)
+                    x += line
+        super().configure(height=(len(lines) * height + (len(lines) - 1) * gap) / scale)
 
     def _click(self, label: str):
         self.set(label)
@@ -2556,37 +2677,31 @@ class App(ctk.CTk):
         head.pack(fill="x", padx=8, pady=2)
         self._head = head
         self.lbl_kind = ctk.CTkLabel(head, text=tr("Type"))
-        self.lbl_kind.grid(row=0, column=0, padx=(8, 4), pady=3, sticky="w")
         self.var_kind = tk.StringVar(value="SCENE")
         self.seg_kind = ctk.CTkSegmentedButton(
             head, values=["SCENE", "ALL"], variable=self.var_kind, command=self._switch_kind, state="disabled", height=26
         )
-        self.seg_kind.grid(row=0, column=1, padx=4, sticky="w")
-        ctk.CTkLabel(head, text=tr("File ID")).grid(row=0, column=2, padx=(14, 4), sticky="w")
+        lbl_id = ctk.CTkLabel(head, text=tr("File ID"))
         self.var_name = tk.StringVar()
-        ctk.CTkEntry(head, textvariable=self.var_name, width=170, height=26).grid(row=0, column=3, padx=4)
+        entry_name = ctk.CTkEntry(head, textvariable=self.var_name, width=170, height=26)
         self.var_name.trace_add("write", lambda *_a: self._record("__name__"))
-        ctk.CTkLabel(head, text=tr("File no.")).grid(row=0, column=4, padx=(14, 4), sticky="w")
+        lbl_no = ctk.CTkLabel(head, text=tr("File no."))
         self.var_number = tk.StringVar()
         self.entry_number = ctk.CTkEntry(head, textvariable=self.var_number, width=54, height=26, justify="center")
-        self.entry_number.grid(row=0, column=5, padx=4)
         self.entry_number.bind("<FocusOut>", lambda _e: self._pad_number())
         self.var_number.trace_add("write", self._on_number)
         self.var_clip_name.trace_add("write", self._on_clip_name)
         self.lbl_model = ctk.CTkLabel(head, text=tr("Model"))
-        self.lbl_model.grid(row=0, column=6, padx=(14, 4), sticky="w")
         self.var_model = tk.StringVar()
         self.menu_model = ctk.CTkOptionMenu(
             head, values=list(MODELS), variable=self.var_model, width=118, height=26, command=self._switch_model, state="disabled"
         )
-        self.menu_model.grid(row=0, column=7, padx=(4, 8), sticky="w")
-        head.grid_columnconfigure(8, weight=1)
-        info = ctk.CTkFrame(head, fg_color="transparent")   # checksum and file, right-aligned in the control row
-        info.grid(row=0, column=8, sticky="e", padx=(8, 8))
+        info = ctk.CTkFrame(head, fg_color="transparent")   # checksum and file, right-aligned in the control row (a line of its own in a narrow window)
         self.lbl_status = ctk.CTkLabel(info, text=tr("No file loaded"), anchor="e")
         self.lbl_status.pack(side="right", padx=(6, 0))
         self.lbl_sum = ctk.CTkLabel(info, text="")
         self.lbl_sum.pack(side="right", padx=(6, 10))
+        self._head_flow = FlowRow(head, [self.lbl_kind, self.seg_kind, lbl_id, entry_name, lbl_no, self.entry_number, self.lbl_model, self.menu_model], right=(info,))
 
 
         self.messages = messages = ctk.CTkFrame(self, fg_color="transparent", height=0)
@@ -2605,21 +2720,20 @@ class App(ctk.CTk):
         filt = ctk.CTkFrame(self)
         self._filt = filt
         filt.pack(fill="x", padx=8, pady=(2, 2))
-        ctk.CTkLabel(filt, text=tr("Search")).pack(side="left", padx=(10, 6), pady=3)
+        lbl_search = ctk.CTkLabel(filt, text=tr("Search"))
         self.var_search = tk.StringVar()
         self.entry_search = ctk.CTkEntry(filt, textvariable=self.var_search, width=240, height=26)
-        self.entry_search.pack(side="left", padx=4)
         self.entry_search.bind("<Escape>", lambda _e: self._clear_filter())
         self.var_search.trace_add("write", lambda *_a: self._schedule_filter())
         self.var_changed = tk.BooleanVar(value=False)
         self.var_known = tk.BooleanVar(value=False)
-        ctk.CTkCheckBox(filt, text=tr("changed only"), variable=self.var_changed, command=self._schedule_filter, width=20, checkbox_width=20, checkbox_height=20).pack(side="left", padx=(12, 4))
-        ctk.CTkCheckBox(filt, text=tr("known only"), variable=self.var_known, command=self._schedule_filter, width=20, checkbox_width=20, checkbox_height=20).pack(side="left", padx=(8, 4))
-        ctk.CTkButton(filt, text="✕", width=30, height=26, command=self._clear_filter).pack(side="left", padx=(8, 4))
-        ctk.CTkButton(filt, text=tr("Expand all"), width=self._tr_width("Expand all", 100), height=26, command=self.expand_all).pack(side="left", padx=(20, 2))
-        ctk.CTkButton(filt, text=tr("Collapse all"), width=self._tr_width("Collapse all", 100), height=26, command=self.collapse_all).pack(side="left", padx=2)
+        box_changed = ctk.CTkCheckBox(filt, text=tr("changed only"), variable=self.var_changed, command=self._schedule_filter, width=20, checkbox_width=20, checkbox_height=20)
+        box_known = ctk.CTkCheckBox(filt, text=tr("known only"), variable=self.var_known, command=self._schedule_filter, width=20, checkbox_width=20, checkbox_height=20)
+        button_clear = ctk.CTkButton(filt, text="✕", width=30, height=26, command=self._clear_filter)
+        button_expand = ctk.CTkButton(filt, text=tr("Expand all"), width=self._tr_width("Expand all", 100), height=26, command=self.expand_all)
+        button_collapse = ctk.CTkButton(filt, text=tr("Collapse all"), width=self._tr_width("Collapse all", 100), height=26, command=self.collapse_all)
         self.lbl_filter = ctk.CTkLabel(filt, text="", text_color="gray")
-        self.lbl_filter.pack(side="right", padx=12)
+        self._filt_flow = FlowRow(filt, [lbl_search, self.entry_search, box_changed, box_known, button_clear, button_expand, button_collapse], right=(self.lbl_filter,))
         # tabs for the main blocks (Video, Audio, ...): only the selected block is in the table, so the table stays short
         tabs = ctk.CTkFrame(self, fg_color="transparent")
         tabs.pack(fill="x", padx=8, pady=(0, 2))
@@ -2884,14 +2998,22 @@ class App(ctk.CTk):
     def _reflow_all(self):
         """Lay out the wrapped fields of step widgets for the current width of the table."""
         self._reflow_job = None
-        available = self.table._parent_canvas.winfo_width() - self._sc(330)    # minus label column, margins and scroll bar
-        if available <= 0:
-            return
+        canvas = self.table._parent_canvas
+        general = canvas.winfo_width() - self._sc(330)    # minus label column, margins and scroll bar (for rows that are not shown right now)
+        right = canvas.winfo_rootx() + canvas.winfo_width() - self._sc(24)
         for widget in self._reflow:
             try:
-                widget._relayout(available)
+                available = right - widget.winfo_rootx() if widget.winfo_ismapped() else general      # the room between the row and the right edge
+                if available > 0:
+                    widget._relayout(available)
             except tk.TclError:
                 pass
+
+    def _add_reflow(self, widget):
+        """Register a widget that wraps to the width of the window. It is laid out again when it appears: until then it has no position
+        and was laid out with a guess (the first line of a tab that is built hidden)."""
+        self._reflow.append(widget)
+        tk.Misc.bind(widget, "<Map>", self._schedule_reflow, add="+")
 
     def _schedule_reflow(self, _event=None):
         if self._reflow_job is not None:
@@ -3211,6 +3333,24 @@ class App(ctk.CTk):
         panel.monitor, panel.monitor_vars, panel.monitor_boxes = monitor, variables, boxes_by_key      # for the tests
         self._update_monitor_locks(panel)
         self._vf_panel = panel
+
+        def relayout(available: int):
+            """A narrow window gets a smaller picture and fewer check boxes per line."""
+            width = max(self._sc(300), min(self._sc(760), available - self._sc(12)))
+            if width != int(monitor.cget("width")):
+                monitor.configure(width=width, height=round(width / MONITOR_ASPECT))
+                monitor.redraw()
+            widths = [box.winfo_reqwidth() + self._sc(16) for box in boxes_by_key.values()]
+            per = 1
+            for count in range(columns, 1, -1):      # the most columns whose widest boxes (every column as wide as its widest box) fit
+                if sum(max(widths[c::count]) for c in range(count)) <= available:
+                    per = count
+                    break
+            for i, box in enumerate(boxes_by_key.values()):
+                box.grid(row=i // per, column=i % per, sticky="w", padx=self._sc(8), pady=self._sc(2))
+
+        panel._relayout = relayout
+        self._add_reflow(panel)
         return panel
 
     def _table_header(self):
@@ -3547,6 +3687,12 @@ class App(ctk.CTk):
         frame = ctk.CTkFrame(self._row_parent, fg_color="transparent", border_width=0, border_color=CHANGED_COLOR)
         menu_row = self._marked_row(frame)   # the "changed" frame goes around the controls only, not around the notes below
         menus: list = []
+        flow: list = []      # the controls of the row in order: they wrap into the next line when the window is narrow (see flow_layout)
+
+        def put(widget):
+            """A control of the row: side by side first, `flow_layout` puts it into place when the width of the window is known."""
+            flow.append(widget)
+            widget.pack(side="left", padx=(0, 6))
 
         def current(idx):
             raw = var.get()
@@ -3557,7 +3703,7 @@ class App(ctk.CTk):
             if not spec.get("show_labels"):
                 return menu_row
             cell = ctk.CTkFrame(menu_row, fg_color="transparent")
-            cell.pack(side="left", padx=(0, 6))
+            put(cell)
             ctk.CTkLabel(cell, text=f["label"], text_color="gray").pack()
             return cell
 
@@ -3621,7 +3767,7 @@ class App(ctk.CTk):
 
             menu.configure(command=on_box if pair else pick)
             if cell is menu_row:
-                menu.pack(side="left", padx=(0, 6))
+                put(menu)
             else:
                 menu.pack()
             menu._enabled_when = f.get("enabled_when")   # e.g. the preset is only selectable while the preset matrix is On
@@ -3636,7 +3782,7 @@ class App(ctk.CTk):
             cell = field_cell(f)
             entry = ctk.CTkEntry(cell, width=f.get("width", 100), justify="center")
             if cell is menu_row:
-                entry.pack(side="left", padx=(0, 6))
+                put(entry)
             else:
                 entry.pack()
             entry._enabled_when = f.get("enabled_when")
@@ -3740,8 +3886,10 @@ class App(ctk.CTk):
         frame._availability = availability
         frame._warning = warning
         raw = ctk.CTkLabel(menu_row, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray")
-        raw.pack(side="left", padx=4)
+        put(raw)
         var.trace_add("write", lambda *_a: raw.configure(text=tr("Raw value: {value}").format(value=var.get())))
+        frame._relayout = lambda available: flow_layout(flow, available, menu_row)
+        self._add_reflow(frame)
         if spec.get("note"):
             note = InfoLabel(frame)
             note.set_info(spec["note"])
@@ -4248,7 +4396,7 @@ class App(ctk.CTk):
             raw.grid(row=(len(cells) - 1) // per + 1, column=0, columnspan=per, sticky="w", padx=4)
 
         frame._relayout = relayout
-        self._reflow.append(frame)
+        self._add_reflow(frame)
         return frame
 
     # -- undo / redo ------------------------------------------------------- #
@@ -5086,6 +5234,18 @@ class App(ctk.CTk):
         frame._refresh = refresh
         frame._availability = availability
         frame._warning = warning
+        natural = [menu.cget("width") for _sel, menu in menus]
+
+        def relayout(available: int):
+            """A narrow window shortens the dropdowns and the texts to the room that is left (they cannot wrap)."""
+            room = max(120, available / frame._get_widget_scaling() - 12)
+            for (_sel, menu), width in zip(menus, natural):
+                menu.configure(width=min(width, room))
+            for label in (hint, raw):
+                label.configure(wraplength=min(430, room))
+
+        frame._relayout = relayout
+        self._add_reflow(frame)
         refresh()
         return frame
 

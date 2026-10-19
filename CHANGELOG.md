@@ -7,6 +7,10 @@ Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen 
 
 ### Added
 - **Own file dialog for Open, Import and Compare** with a preview of the marked file where the Windows dialog shows the Quick Access: File ID, file name, type, model, NTSC / PAL area, shooting mode, codec, format, checksum and date. The facts are read in the background while you browse and kept while the dialog is open, so folders you return to show them at once. A folder tree above the preview works like the one of the Explorer: the folders down to the current one are opened, every level lists its folders, one click goes there.
+- **The open dialog remembers its size and position.**
+
+### Fixed
+- In a narrow window the controls now wrap into the next line instead of leaving the window (there is no scroll bar to reach them): the rows with several controls (for example the ten Assignable Buttons), the display preview of the VF tab (the picture shrinks, the check boxes use as many columns as fit, each as wide as its widest check box); rows that were built before the window was visible are laid out again when they appear, the tabs, the header and the search bar. Dropdowns that cannot wrap are shortened to the room that is left.
 
 ## [0.3.0] - 2026-10-18
 The parameter database grew from 142 to 236 decoded entries (the FS7M2 ALL file has 321 values); 18 earlier entries are better confirmed now.
