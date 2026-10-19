@@ -3958,11 +3958,16 @@ class App(ctk.CTk):
         frame._availability = availability
         frame._warning = warning
         raw = ctk.CTkLabel(menu_row, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray")
-        put(raw)
         var.trace_add("write", lambda *_a: raw.configure(text=tr("Raw value: {value}").format(value=var.get())))
+        single = len(menus) + len(ecs_entries) == 1      # one control: the info symbol sits in its row (before the raw value); several: below the row
+        if spec.get("note") and single:
+            note = self._info_beside(menu_row, raw, spec["note"], pack=False)
+            flow.append(note)
+            note.pack(side="left", padx=(0, 6))
+        put(raw)      # (order in the row: control, info symbol, raw value)
         frame._relayout = lambda available: flow_layout(flow, available, menu_row)
         self._add_reflow(frame)
-        if spec.get("note"):
+        if spec.get("note") and not single:
             note = InfoLabel(frame)
             note.set_info(spec["note"])
             note.pack(anchor="w", padx=4)
@@ -4060,11 +4065,8 @@ class App(ctk.CTk):
         frame._derived_deps = ({pid for o in options for pid in o["match"]} | {x["id"] for x in selects.values()}) - {key}
         raw = ctk.CTkLabel(row, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray")
         raw.pack(side="left", padx=8)
+        self._info_beside(row, raw, spec.get("note"))
         var.trace_add("write", lambda *_a: raw.configure(text=tr("Raw value: {value}").format(value=var.get())))
-        if spec.get("note"):
-            note = InfoLabel(frame)
-            note.set_info(spec["note"])
-            note.pack(anchor="w", padx=4)
         return frame
 
     def _build_axis_widget(self, var: tk.StringVar, spec: dict):
@@ -4189,12 +4191,19 @@ class App(ctk.CTk):
         frame._refresh = refresh
         raw = ctk.CTkLabel(row, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray")
         raw.pack(side="left", padx=12)
+        self._info_beside(row, raw, spec.get("note"))
         var.trace_add("write", lambda *_a: (raw.configure(text=tr("Raw value: {value}").format(value=var.get())), refresh()))
-        if spec.get("note"):
-            note = InfoLabel(frame)
-            note.set_info(spec["note"])
-            note.pack(anchor="w", padx=4)
         return frame
+
+    def _info_beside(self, row, before, text, pack: bool = True):
+        """Info symbol with its text as a tooltip inside the control row (in front of `before`); None when there is no text."""
+        if not text:
+            return None
+        note = InfoLabel(row)
+        note.set_info(text)
+        if pack:
+            note.pack(side="left", padx=(8, 0), before=before)
+        return note
 
     def _marked_row(self, frame) -> ctk.CTkFrame:
         """Row for the controls of a parameter inside `frame`; its surrounding border turns yellow when the value is changed.
@@ -4239,13 +4248,10 @@ class App(ctk.CTk):
         entry.commit = commit
         show()
         frame._refresh = show
-        raw = ctk.CTkLabel(frame, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray", wraplength=430, justify="left")
-        raw.pack(anchor="w", padx=4)
+        raw = ctk.CTkLabel(row, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray")
+        raw.pack(side="left", padx=(12, 0))
+        self._info_beside(row, raw, spec.get("note"))
         var.trace_add("write", lambda *_a: raw.configure(text=tr("Raw value: {value}").format(value=var.get())))
-        if spec.get("note"):
-            note = InfoLabel(frame)
-            note.set_info(spec["note"])
-            note.pack(anchor="w", padx=4)
         return frame
 
     def _build_counter_widget(self, var: tk.StringVar, spec: dict):
@@ -4312,13 +4318,10 @@ class App(ctk.CTk):
         entry.commit = commit       # the tests commit directly (a synthetic focus event is not reliably delivered)
         show()
         frame._refresh = show
-        raw = ctk.CTkLabel(frame, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray", wraplength=430, justify="left")
-        raw.pack(anchor="w", padx=4)
+        raw = ctk.CTkLabel(row, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray")
+        raw.pack(side="left", padx=(12, 0))
+        self._info_beside(row, raw, spec.get("note"))
         var.trace_add("write", lambda *_a: raw.configure(text=tr("Raw value: {value}").format(value=var.get())))
-        if spec.get("note"):
-            note = InfoLabel(frame)
-            note.set_info(spec["note"])
-            note.pack(anchor="w", padx=4)
         return frame
 
     def _build_step_widget(self, var: tk.StringVar, spec: dict):
