@@ -963,7 +963,7 @@ class ImportDialog(ctk.CTkToplevel):
         self.app, self.items, self.result, self.source_text = app, items, None, source_text
         self.title(tr("Import from {source}").format(source=source_text))
         self.geometry(f"{int(app.winfo_width() * 0.85)}x{int(app.winfo_height() * 0.9)}")
-        self.transient(app)
+        make_transient(self, app)
         c = app._c
         self.vars = [tk.BooleanVar(value=i["known"] and i["differs"]) for i in items]
         top = ctk.CTkFrame(self)
@@ -1063,7 +1063,7 @@ class DiffDialog(ctk.CTkToplevel):
         self._lines: list[int] = []                      # row index of every line that is shown
         self.title(tr("Compare with {source}").format(source=other_name))
         self.geometry(f"{int(app.winfo_width() * 0.9)}x{int(app.winfo_height() * 0.9)}")
-        self.transient(app)
+        make_transient(self, app)
         dark = ctk.get_appearance_mode() == "Dark"
         self._colors = {"diff": "#4a4220" if dark else "#fff3c4", "cell": "#7a6414" if dark else "#ffe08a", "sel": "#2d4a6d" if dark else "#cfe4ff",
                         "only": "#5a2f2f" if dark else "#ffd6d6"}
@@ -1244,7 +1244,7 @@ class LicenseDialog(ctk.CTkToplevel):
         if invisible:
             self.attributes("-alpha", 0)
         self.title(tr(title))
-        self.transient(parent)
+        make_transient(self, parent)
         self.geometry("580x420")      # customtkinter scales the size of its own windows itself (no _sc here)
         box = ctk.CTkTextbox(self, wrap="word")
         box.pack(fill="both", expand=True, padx=12, pady=(12, 6))
@@ -1280,6 +1280,24 @@ def open_mail_client() -> bool:
 
 LOGO_FILE = BASE_DIR / "assets" / "sonyconfigeditor.png"
 ICON_FILE = BASE_DIR / "assets" / "sonyconfigeditor.ico"       # made by tools/make_icon.py; also embedded in the EXE (build_exe.bat)
+
+
+def make_transient(window, master) -> None:
+    """Dialog on top of its program window. Tk's transient() takes the dark title bar away again on Windows (it changes the window style after
+    customtkinter has set the title bar colour), so the colour is set once more right after it; the window is still hidden then (customtkinter
+    shows it a moment later), so the new title bar is there from the first moment."""
+    window.transient(master)
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+        hwnd = ctypes.windll.user32.GetParent(window.winfo_id())
+        value = ctypes.c_int(1 if ctk.get_appearance_mode() == "Dark" else 0)
+        for attribute in (20, 19):      # DWMWA_USE_IMMERSIVE_DARK_MODE (Windows 10 20H1 and later / before)
+            if ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, attribute, ctypes.byref(value), ctypes.sizeof(value)) == 0:
+                break
+    except (tk.TclError, RuntimeError, OSError, AttributeError):
+        pass
 
 
 def apply_window_icon(window) -> None:
@@ -1324,7 +1342,7 @@ class AboutDialog(ctk.CTkToplevel):
             self.attributes("-alpha", 0)
         self.app, self.invisible = app, invisible
         self.title(tr("About {app}").format(app=APP_NAME))
-        self.transient(app)
+        make_transient(self, app)
         frame = ctk.CTkFrame(self, fg_color="transparent")
         frame.pack(padx=24, pady=(18, 8))
         head = ctk.CTkFrame(frame, fg_color="transparent")
@@ -1543,7 +1561,7 @@ class ModelDialog(ctk.CTkToplevel):
             self.attributes("-alpha", 0)
         self.result = None
         self.title(tr("New"))
-        self.transient(app)
+        make_transient(self, app)
         ctk.CTkLabel(self, text=tr("Which camera is the new file for?")).pack(padx=24, pady=(18, 10))
         row = ctk.CTkFrame(self, fg_color="transparent")
         row.pack(padx=24, pady=(0, 6))
@@ -1698,7 +1716,7 @@ class FileOpenDialog(ctk.CTkToplevel):
             self.attributes("-alpha", 0)
         self.app, self.result = app, ""
         self.title(title)
-        self.transient(app)
+        make_transient(self, app)
         sc = app._sc
         scale = ctk.ScalingTracker.get_window_scaling(self)
         self._closed = False

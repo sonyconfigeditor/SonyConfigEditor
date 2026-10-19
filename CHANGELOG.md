@@ -10,6 +10,7 @@ Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen 
 - **The open dialog remembers its size and position.**
 
 ### Fixed
+- The title bar of the open dialog (and of the other program dialogs) follows the dark / light mode; it stayed white in night mode.
 - In a narrow window the controls now wrap into the next line instead of leaving the window (there is no scroll bar to reach them): the rows with several controls (for example the ten Assignable Buttons), the display preview of the VF tab (the picture shrinks, the check boxes use as many columns as fit, each as wide as its widest check box); rows that were built before the window was visible are laid out again when they appear, the tabs, the header and the search bar. Dropdowns that cannot wrap are shortened to the room that is left.
 
 ## [0.3.0] - 2026-10-18
