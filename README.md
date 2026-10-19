@@ -31,7 +31,7 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 - **New** (Ctrl+N): neutral starting point for either model (not a factory reset).
 - Undo/redo, changed values are marked, title bar shows unsaved changes.
 - **About** (Help > About) shows the licenses of the components used ("Third-party licenses…"), also in the Windows build.
-- Languages switchable at run time (View > Language): English (default), German, Spanish, French, Italian and Portuguese (Portugal and Brazil); High-DPI aware; day, night or system theme.
+- Languages switchable at run time (View > Language): English (default), German, Spanish, French, Italian, Portuguese (Portugal and Brazil), Russian, Indonesian and Chinese (simplified and traditional; the languages of the camera menu are all there); High-DPI aware; day, night or system theme.
 - Files are loaded defensively: size, line, ID and value limits reject malformed or hostile files.
 
 ## Download (Windows)

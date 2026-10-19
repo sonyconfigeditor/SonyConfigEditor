@@ -8131,7 +8131,7 @@
     "group": "video",
     "subgroup": "System › Language",
     "order": 1,
-    "evidence": "FS7M2 round 108 (2026-10-18, ALL only): Language English -> Deutsch changed ALL 00248 from 0 to 2; FS7M2 round 109 (2026-10-18, ALL only): Deutsch -> English changed it back (2 -> 0). The other languages of the camera are not seen. Round 118: the user's list of the camera (in the camera's order, each in its own language and script): English, Français, Deutsch, Español, Русский, two entries in Asian scripts, Português, Bahasa Indonesia (9 entries); English = 0 and Deutsch = 2 fit that order, so the numbers of the others are assumed to be the positions in the list.",
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only): Language English -> Deutsch changed ALL 00248 from 0 to 2; FS7M2 round 109 (2026-10-18, ALL only): Deutsch -> English changed it back (2 -> 0). The other languages of the camera are not seen. Round 118: the user's list of the camera (in the camera's order, each in its own language and script): English, Français, Deutsch, Español, Русский, two entries in Asian scripts, Português, Bahasa Indonesia (9 entries); English = 0 and Deutsch = 2 fit that order, so the numbers of the others are assumed to be the positions in the list. Photo of the camera menu (2026-10-19): the list is Français, Deutsch, Español, русский, 中文(简) (Simplified Chinese), 中文(繁) (Traditional Chinese), Português, Indonesia, with English above; so entries 5 and 6 are the two Chinese variants, and there is no Italian on the camera.",
     "widget": {
       "type": "choice",
       "choices": {
@@ -8139,13 +8139,13 @@
         "1": "Français – assumption",
         "2": "Deutsch",
         "3": "Español – assumption",
-        "4": "Русский – assumption",
-        "5": "Asian script 1 – assumption",
-        "6": "Asian script 2 – assumption",
+        "4": "русский – assumption",
+        "5": "中文(简) – assumption",
+        "6": "中文(繁) – assumption",
         "7": "Português – assumption",
-        "8": "Bahasa Indonesia – assumption"
+        "8": "Indonesia – assumption"
       },
-      "note": "The numbers are the positions in the camera's list of nine languages; only English (0) and Deutsch (2) were seen in a file, the others follow the order of the list."
+      "note": "The numbers are the positions in the camera's list of nine languages (English, Français, Deutsch, Español, русский, 中文(简), 中文(繁), Português, Indonesia; the list was read from the camera menu); only English (0) and Deutsch (2) were seen in a file, the others follow the order of the list."
     }
   },
   "00495": {

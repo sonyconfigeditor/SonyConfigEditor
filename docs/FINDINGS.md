@@ -294,7 +294,7 @@ System > Clock Set > Time Zone west of UTC: negative hours (`-5,0` = UTC -5:00).
 
 System menu (ALL file), more: GPS = `00257`, IR Remote > Setting = `00264` (1 = On, 0 = Off); Lens > Distortion Comp. = `00426` (0 Auto, 1 Off; the format choice sets it to Off in DCI 4096 and RAW formats); Date Mode MMDDYY = 1 (`00161`: 0 YYMMDD, 1 MMDDYY, 2 DDMMYY); Time Zone west of UTC: both values negative (`-3,-30` = UTC -3:30).
 
-System > ND Dial > ND Dial Direction = ALL `00477` (0 Normal, 1 Opposite), an ID that only the Mk2 files have. System > Language: the camera lists nine languages (English, Francais, Deutsch, Espanol, Russian, two in Asian scripts, Portuguese, Indonesian); English = 0 and Deutsch = 2 in `00248` match the positions in that list.
+System > ND Dial > ND Dial Direction = ALL `00477` (0 Normal, 1 Opposite), an ID that only the Mk2 files have. System > Language: the camera lists nine languages (English, Francais, Deutsch, Espanol, Russian, Chinese simplified, Chinese traditional, Portuguese, Indonesian; read from a photo of the camera menu); English = 0 and Deutsch = 2 in `00248` match the positions in that list.
 
 System > Ext. Unit Battery Alarm = ALL `00361` to `00366` in the order of the menu (Near End: Info, Sony, Other; End: Info, Sony, Other; percent for Info, millivolts for Sony and Other), Ext. Unit DC IN Alarm > DC Low Voltage1 / 2 = `00367` / `00368` (millivolts). Near End: Info Battery (`00361`) is assigned by its place; its value did not follow the change in the test.
 

@@ -284,7 +284,7 @@ def translate_db(node):
     return node
 
 
-WINDOWS_LANGUAGE_NAMES = {"german": "de", "english": "en", "spanish": "es", "italian": "it", "french": "fr", "portuguese": "pt"}
+WINDOWS_LANGUAGE_NAMES = {"german": "de", "english": "en", "spanish": "es", "italian": "it", "french": "fr", "portuguese": "pt", "russian": "ru", "indonesian": "id"}
 
 
 def match_language(name: str, available) -> str | None:
@@ -299,6 +299,12 @@ def match_language(name: str, available) -> str | None:
     region = region.split(".")[0].upper()
     if region in ("BRAZIL", "BRASIL"):
         region = "BR"
+    if base == "zh" or base.startswith("chinese"):
+        # Chinese: traditional characters (Taiwan, Hong Kong, Macau, script Hant) or simplified (everything else, also the bare "zh")
+        tokens = set(region.replace("-", "_").replace(" ", "_").split("_")) | set(base.replace("(", " ").replace(")", " ").split())
+        traditional = bool(tokens & {"HANT", "TW", "HK", "MO", "TAIWAN", "HONG", "MACAU", "TRADITIONAL"} or "traditional" in base)
+        order = ("zh_TW", "zh_CN") if traditional else ("zh_CN", "zh_TW")
+        return next((code for code in order if code in available), None)
     if base == "pt":
         if region == "BR" or not region:
             return "pt_BR" if "pt_BR" in available else ("pt" if "pt" in available else None)
@@ -2051,7 +2057,7 @@ class FileOpenDialog(ctk.CTkToplevel):
         super().destroy()
 
 
-def flow_layout(items: list, available: int, container, gap: int = 6, right: tuple = (), fit_width: bool = True, pad: int = 0) -> None:
+def flow_layout(items: list, available: int, container, gap: int = 6, right: tuple = (), fit_width: bool = True, pad: int = 0) -> bool:
     """Lay the controls of a row out like text: as many per line as fit into `available` pixels (physical), the rest goes to the next line.
     The controls are placed by coordinates (grid columns would be shared between the lines); the container gets the size of the result.
     `right` are controls that sit at the right end of the last line (or in a line of their own when they do not fit there).
@@ -2080,7 +2086,7 @@ def flow_layout(items: list, available: int, container, gap: int = 6, right: tup
     size = ((widest + 2 * pad) / scale if fit_width else None, (y + line_height + 2 * pad) / scale)
     signature = (tuple((id(w), px, py) for w, px, py in spots), size)
     if getattr(container, "_flow_signature", None) == signature:
-        return
+        return False
     container._flow_signature = signature
     for widget, px, py in spots:
         widget.pack_forget()
@@ -2090,6 +2096,7 @@ def flow_layout(items: list, available: int, container, gap: int = 6, right: tup
         container.configure(width=size[0], height=size[1])
     else:
         container.configure(height=size[1])
+    return True
 
 
 class FlowRow:
@@ -2097,18 +2104,26 @@ class FlowRow:
 
     def __init__(self, container, items: list, right: tuple = ()):
         self.container, self.items, self.right = container, items, right
-        self._width = None
+        self._width, self._again = None, None
         self.pad = round(4 * container._get_widget_scaling())
         container.bind("<Configure>", self.layout, add="+")
         self.layout(force=True)
 
     def layout(self, _event=None, force: bool = False):
+        """(Also when only the height changed: the sizes of the controls may not have been final at the first layout. `flow_layout` does nothing when the
+        result is the same.)"""
         width = self.container.winfo_width()
-        if not force and (width <= 1 or width == self._width):
+        if not force and width <= 1:
             return
         self._width = width
-        flow_layout(self.items, (width if width > 1 else 10 ** 6) - 2 * self.pad, self.container, gap=round(10 * self.container._get_widget_scaling()),
-                    right=self.right, fit_width=False, pad=self.pad)
+        changed = flow_layout(self.items, (width if width > 1 else 10 ** 6) - 2 * self.pad, self.container, gap=round(10 * self.container._get_widget_scaling()),
+                              right=self.right, fit_width=False, pad=self.pad)
+        if changed:      # the sizes of the controls settle a moment later (text, fonts): look again once; it stops as soon as nothing changes
+            if self._again is not None:
+                with contextlib.suppress(tk.TclError, ValueError):
+                    self.container.after_cancel(self._again)
+            with contextlib.suppress(tk.TclError, RuntimeError):
+                self._again = self.container.after(150, lambda: self.layout(force=True))
 
 
 def onoff_labels(choices: dict) -> tuple[str, str] | None:
@@ -2205,6 +2220,16 @@ class TabBar(ctk.CTkFrame):
         self._laid_out_for = None
         self.after_idle(self._layout)
 
+    @staticmethod
+    def _text_width(button, label: str, scale: float) -> int:
+        """Width the text of a tab really needs (physical pixels): what the label of the button asks for, which includes the fallback fonts of the icons and Chinese."""
+        try:
+            inner = button._text_label
+            inner.update_idletasks()
+            return inner.winfo_reqwidth()
+        except (AttributeError, tk.TclError):
+            return round(button.cget("font").measure(label) * 1.1 * scale)
+
     def _layout(self, _event=None):
         """Tabs in lines like text: as many per line as fit into the width of the bar, each line filled to the full width (a narrow window gets a second line)."""
         buttons = list(self._buttons_dict.items())
@@ -2214,7 +2239,7 @@ class TabBar(ctk.CTkFrame):
         self._laid_out_for = (width, len(buttons))
         scale = self._get_widget_scaling()
         line = round(3 * scale)
-        minimum = [button.cget("font").measure(label) + round(40 * scale) for label, button in buttons]
+        minimum = [self._text_width(button, label, scale) + round(7 * scale) for label, button in buttons]
         lines: list[list[int]] = [[]]
         used = 0
         for i, need in enumerate(minimum):
@@ -2680,6 +2705,17 @@ class App(ctk.CTk):
             self.title(f"{APP_NAME} v{_version}")
         self.lbl_switch.configure(text="")
 
+    def _bars_changed(self):
+        """The right-hand texts of the header and the search bar changed (file name, checksum, count): lay the bars out again when the sizes are known."""
+        def relayout():
+            for bar in (getattr(self, "_head_flow", None), getattr(self, "_filt_flow", None)):
+                try:
+                    if bar is not None and bar.container.winfo_exists():
+                        bar.layout(force=True)
+                except tk.TclError:
+                    pass
+        self.after_idle(relayout)
+
     def _tr_width(self, source: str, minimum: int) -> int:
         """Width (unscaled pixels) of a button or dropdown for the longest translation of a text."""
         return max(minimum, max(round(self._font.measure(t) / self._scale) for t in tr_all(source)) + 40)
@@ -2853,6 +2889,7 @@ class App(ctk.CTk):
             self.session.baseline[key] = dict(factory_all)
         factory = factory_all is not None and factory_params(model, "scene") is not None
         self.lbl_status.configure(text=tr("New (factory state of the camera)") if factory else tr("New (neutral values, not a factory state)"))
+        self._bars_changed()
         return True
 
     def open_path(self, path: Path) -> bool:
@@ -3409,6 +3446,7 @@ class App(ctk.CTk):
             text_color="#4caf50" if s.checksum_ok else "#e57373",
         )
         self.lbl_status.configure(text=f"…\\{s.path.parent.name}\\{self._file_label()}" if s.path else "")
+        self._bars_changed()
         self._busy = False
         self._update_history_buttons()
 
@@ -3576,6 +3614,7 @@ class App(ctk.CTk):
             self._set_cat_text(cat)
         total = sum(1 for row in self._rows.values() if not (row["info"] and row["info"].get("covered_by")))   # rows of combined dropdowns are not listed
         self.lbl_filter.configure(text=tr("{n} of {total}").format(n=len(shown_keys) if active else total, total=total))
+        self._bars_changed()
         for sub in self._subheads:
             self._set_sub_text(sub)      # with a filter the headings carry the menu name
             if sub.get("divider") is not None:
@@ -5368,6 +5407,7 @@ class App(ctk.CTk):
         self._remember_recent(path)
         self._populate()
         self.lbl_status.configure(text=tr("Saved: {path}").format(path=path))
+        self._bars_changed()
         self._saved = self._state_key()
         self._update_title()
 

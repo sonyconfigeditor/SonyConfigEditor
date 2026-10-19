@@ -26,7 +26,7 @@ Open an [issue](../../issues/new/choose) for a bug. Please include the version (
 
 ## 3. Translations
 
-The translations were made with AI assistance and are not reviewed by native speakers; corrections are very welcome. Texts are translated through catalogs in `translations/` (`de.json`, `es.json`, `fr.json`, `it.json`, `pt.json` = European, `pt_BR.json` = Brazilian Portuguese). The English texts in the code are the keys. To add a language, copy a catalog to `translations/<code>.json`, set `_name` and translate the values; keep placeholders such as `{n}` or `{model}` unchanged. `python -X utf8 -I tools/i18n_keys.py --missing` lists texts that have no translation yet.
+The translations were made with AI assistance and are not reviewed by native speakers; corrections are very welcome. Texts are translated through catalogs in `translations/` (`de.json`, `es.json`, `fr.json`, `it.json`, `pt.json` = European, `pt_BR.json` = Brazilian Portuguese, `ru.json`, `id.json`, `zh_CN.json` = simplified and `zh_TW.json` = traditional Chinese). The English texts in the code are the keys. To add a language, copy a catalog to `translations/<code>.json`, set `_name` and translate the values; keep placeholders such as `{n}` or `{model}` unchanged. `python -X utf8 -I tools/i18n_keys.py --missing` lists texts that have no translation yet.
 
 ## 4. Code and documents
 
