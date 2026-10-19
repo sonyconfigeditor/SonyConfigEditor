@@ -958,6 +958,15 @@ def build_diff_rows(items: list[dict], cur_params: dict, db: dict) -> list[dict]
 # --------------------------------------------------------------------------- #
 # GUI
 # --------------------------------------------------------------------------- #
+def fit_dialog(window, app, width_factor: float, height_factor: float) -> None:
+    """Size of a dialog as a share of the program window, never larger than the screen. customtkinter scales the size of its own windows by itself,
+    so the sizes are in unscaled units (the physical size of the program window divided by the scaling)."""
+    scale = ctk.ScalingTracker.get_window_scaling(window)
+    width = min(int(app.winfo_width() / scale * width_factor), int(window.winfo_screenwidth() / scale * 0.95))
+    height = min(int(app.winfo_height() / scale * height_factor), int(window.winfo_screenheight() / scale * 0.85))
+    window.geometry(f"{width}x{height}")
+
+
 class ImportDialog(ctk.CTkToplevel):
     """List of importable values with check boxes (select all / none / invert). `result` = chosen items or None."""
 
@@ -968,7 +977,7 @@ class ImportDialog(ctk.CTkToplevel):
             self.attributes("-alpha", 0)   # tests: never show a window to the user (set before anything is built)
         self.app, self.items, self.result, self.source_text = app, items, None, source_text
         self.title(tr("Import from {source}").format(source=source_text))
-        self.geometry(f"{int(app.winfo_width() * 0.85)}x{int(app.winfo_height() * 0.9)}")
+        fit_dialog(self, app, 0.85, 0.9)
         make_transient(self, app)
         c = app._c
         self.vars = [tk.BooleanVar(value=i["known"] and i["differs"]) for i in items]
@@ -1041,7 +1050,7 @@ class ImportDialog(ctk.CTkToplevel):
         self.lbl_count.configure(text=tr("{chosen} selected, {shown} of {total} shown").format(chosen=chosen, shown=shown, total=len(self.items)))
 
     def _show_diff(self):
-        self.app.show_diff(self.items, self.source_text)
+        self.app.show_diff(self.items, self.source_text, parent=self)
         self.after(50, self.grab_set)         # the difference window had the input grab
 
     def _ok(self):
@@ -1057,8 +1066,8 @@ class DiffDialog(ctk.CTkToplevel):
     """Side-by-side difference of the current file and another file (like a file compare tool): menu paths instead of IDs,
     changed rows coloured, next/previous difference, all rows or only the differences."""
 
-    def __init__(self, app, rows: list[dict], other_name: str, invisible: bool = False):
-        super().__init__(app)
+    def __init__(self, app, rows: list[dict], other_name: str, invisible: bool = False, parent=None):
+        super().__init__(parent or app)      # `parent`: the window it is opened from (the import window), so that it stays on top of that one
         apply_window_icon(self)
         if invisible:
             self.attributes("-alpha", 0)
@@ -1068,8 +1077,8 @@ class DiffDialog(ctk.CTkToplevel):
         self.only_diffs = True
         self._lines: list[int] = []                      # row index of every line that is shown
         self.title(tr("Compare with {source}").format(source=other_name))
-        self.geometry(f"{int(app.winfo_width() * 0.9)}x{int(app.winfo_height() * 0.9)}")
-        make_transient(self, app)
+        fit_dialog(self, app, 0.9, 0.9)
+        make_transient(self, parent or app)
         dark = ctk.get_appearance_mode() == "Dark"
         self._colors = {"diff": "#4a4220" if dark else "#fff3c4", "cell": "#7a6414" if dark else "#ffe08a", "sel": "#2d4a6d" if dark else "#cfe4ff",
                         "only": "#5a2f2f" if dark else "#ffd6d6"}
@@ -2865,15 +2874,23 @@ class App(ctk.CTk):
         if path and self._confirm_discard(tr("Open")):
             self.open_path(Path(path))
 
-    def new_file(self):
-        """Ask for the camera (FS7 / FS7M2) and start a new file from its templates (SCENE and ALL profile, switchable)."""
-        if not self._confirm_discard(tr("New")):
-            return
+    def _ask_model(self) -> str | None:
+        """The camera (FS7 / FS7M2) a new file is for, None when the dialog is cancelled."""
         dialog = ModelDialog(self)
         dialog.after(50, dialog.grab_set)
         self.wait_window(dialog)
-        if dialog.result:
-            self.new_for_model(dialog.result)
+        return dialog.result
+
+    def new_file(self):
+        """Ask for the camera (FS7 / FS7M2) and start a new file: in the ALL type, with all values of the factory state (the FS7: of the template);
+        the SCENE side is there, too, and can be switched to."""
+        if not self._confirm_discard(tr("New")):
+            return
+        model = self._ask_model()
+        if model and self.new_for_model(model) and self.session and self.session.can_switch_kind():
+            self._switch_kind("ALL")
+            self._history_reset()        # the new file itself is the starting point, not an edit: nothing to undo, no asterisk
+            self.lbl_switch.configure(text="")
 
     def new_for_model(self, model: str) -> bool:
         params = new_scene_params(model)
@@ -5077,13 +5094,14 @@ class App(ctk.CTk):
         )
         return items, reason, f"{Path(path).name} ({'ALL' if ext == '.all' else 'SCENE'}, {src.model})"
 
-    def show_diff(self, items: list[dict], source_text: str, invisible: bool = False):
-        """Difference view of the current file against another file (the items come from import_plan)."""
+    def show_diff(self, items: list[dict], source_text: str, invisible: bool = False, parent=None):
+        """Difference view of the current file against another file (the items come from import_plan); `parent` = the window it is opened from."""
         self._collect()
         rows = build_diff_rows(items, self.scene.params, self.param_db)
-        dialog = DiffDialog(self, rows, source_text, invisible=invisible)
+        dialog = DiffDialog(self, rows, source_text, invisible=invisible, parent=parent)
         if not invisible:
             dialog.after(50, dialog.grab_set)
+            dialog.after(80, dialog.lift)
             self.wait_window(dialog)
         return dialog
 

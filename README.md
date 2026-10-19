@@ -28,7 +28,7 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 - **Own file dialog** (Open, Import, Compare): shows the facts of the marked file (File ID, area, shooting mode, codec, format) next to the folder list, plus a clickable folder tree (opened down to the current folder).
 - **Recent files** (File menu): the last ten files, newest first; the last used tab and the window position are remembered, too.
 - **Compare** (File > Compare…, Ctrl+D, or "Show differences" in the import dialog): side-by-side view of the current file and another file with readable menu paths such as `Paint/White Clip/White Clip Level` instead of IDs. Changed rows are coloured; Alt+Down / Alt+Up (or F8 / Shift+F8) jump to the next / previous difference, Ctrl+1 shows the full files, Ctrl+2 only the differences.
-- **New** (Ctrl+N): neutral starting point for either model (not a factory reset).
+- **New** (Ctrl+N): starts in the ALL type with the camera's factory state (FS7M2; the FS7 uses a neutral template); the SCENE side can be switched to.
 - Undo/redo, changed values are marked, title bar shows unsaved changes.
 - **About** (Help > About) shows the licenses of the components used ("Third-party licenses…"), also in the Windows build.
 - Languages switchable at run time (View > Language): English (default), German, Spanish, French, Italian, Portuguese (Portugal and Brazil), Russian, Indonesian and Chinese (simplified and traditional; the languages of the camera menu are all there); High-DPI aware; day, night or system theme.

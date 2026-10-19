@@ -6,12 +6,15 @@ Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen 
 ## [Unreleased] - 2026-10-19
 
 ### Added
+- **File > New starts in the ALL type** with all values of the camera's factory state (FS7M2; the FS7 from its template). The SCENE side of the new file is still there and can be switched to; a new file counts as unchanged (nothing to undo, no asterisk in the title).
 - **More compact rows:** for parameters with a single control (drop-down, check box, number or hex entry) the info symbol and the raw value now sit in the same line as the control (control, info symbol, raw value) instead of in three lines. Rows with several controls (groups) stay as they were.
 - **Four new languages: Russian, Indonesian, Chinese (simplified) and Chinese (traditional)** (View > Language); with them the program speaks all languages of the camera menu (the camera also offers English, Français, Deutsch, Español and Português). The Language list of the System menu now shows the real names of the camera list (the two Asian entries are 中文(简) and 中文(繁)). The tab names Camera, Audio and Recording are translated, too. The system language is recognised (Russian, Indonesian, Chinese: traditional for Taiwan, Hong Kong and Macau, otherwise simplified). All translations are AI-made and not reviewed by native speakers.
 - **Own file dialog for Open, Import and Compare** with a preview of the marked file where the Windows dialog shows the Quick Access: File ID, file name, type, model, NTSC / PAL area, shooting mode, codec, format, checksum and date. The facts are read in the background while you browse and kept while the dialog is open, so folders you return to show them at once. A folder tree above the preview works like the one of the Explorer: the folders down to the current one are opened, every level lists its folders, one click goes there.
 - **The open dialog remembers its size and position.**
 
 ### Fixed
+- "Show differences" in the Import window opens the difference view on top of the Import window (it used to appear behind it).
+- The Import and Compare windows were opened larger than the screen on a scaled display (the buttons at the bottom could not be reached); their size is now a share of the program window and never larger than the screen.
 - Dragging the edge of the window re-wraps the rows while you drag (it used to happen only after the mouse button was released).
 - The title bar of the open dialog (and of the other program dialogs) follows the dark / light mode; it stayed white in night mode.
 - In a narrow window the controls now wrap into the next line instead of leaving the window (there is no scroll bar to reach them): the rows with several controls (for example the ten Assignable Buttons), the display preview of the VF tab (the picture shrinks, the check boxes use as many columns as fit, each as wide as its widest check box); rows that were built before the window was visible are laid out again when they appear, the tabs, the header and the search bar. Dropdowns that cannot wrap are shortened to the room that is left.
