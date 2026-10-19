@@ -2054,16 +2054,16 @@ class FileOpenDialog(ctk.CTkToplevel):
 def flow_layout(items: list, available: int, container, gap: int = 6, right: tuple = (), fit_width: bool = True, pad: int = 0) -> None:
     """Lay the controls of a row out like text: as many per line as fit into `available` pixels (physical), the rest goes to the next line.
     The controls are placed by coordinates (grid columns would be shared between the lines); the container gets the size of the result.
-    `right` are controls that sit at the right end of the last line (or in a line of their own when they do not fit there)."""
+    `right` are controls that sit at the right end of the last line (or in a line of their own when they do not fit there).
+    Nothing is touched when the result is the same as the last time (the layout runs for every step of a window drag)."""
     scale = container._get_widget_scaling()      # customtkinter scales the coordinates of place() itself
     x = y = line_height = widest = 0
+    spots = []
     for widget in items:
         width, height = widget.winfo_reqwidth(), widget.winfo_reqheight()
         if x and x + width > available:
             y, x, line_height = y + line_height + 2, 0, 0
-        widget.pack_forget()
-        widget.grid_forget()
-        widget.place(x=(pad + x) / scale, y=(pad + y) / scale)
+        spots.append((widget, pad + x, pad + y))
         x += width + gap
         line_height = max(line_height, height)
         widest = max(widest, x - gap)
@@ -2073,17 +2073,23 @@ def flow_layout(items: list, available: int, container, gap: int = 6, right: tup
             y, x, line_height = y + line_height + 2, 0, 0
         edge = max(x, available - need)
         for widget in right:
-            widget.pack_forget()
-            widget.grid_forget()
-            widget.place(x=(pad + edge) / scale, y=(pad + y) / scale)
+            spots.append((widget, pad + edge, pad + y))
             edge += widget.winfo_reqwidth() + gap
             line_height = max(line_height, widget.winfo_reqheight())
         widest = max(widest, edge - gap)
-    height = (y + line_height + 2 * pad) / scale
+    size = ((widest + 2 * pad) / scale if fit_width else None, (y + line_height + 2 * pad) / scale)
+    signature = (tuple((id(w), px, py) for w, px, py in spots), size)
+    if getattr(container, "_flow_signature", None) == signature:
+        return
+    container._flow_signature = signature
+    for widget, px, py in spots:
+        widget.pack_forget()
+        widget.grid_forget()
+        widget.place(x=px / scale, y=py / scale)
     if fit_width:
-        container.configure(width=(widest + 2 * pad) / scale, height=height)
+        container.configure(width=size[0], height=size[1])
     else:
-        container.configure(height=height)
+        container.configure(height=size[1])
 
 
 class FlowRow:
@@ -3017,11 +3023,12 @@ class App(ctk.CTk):
         """Lay out the wrapped fields of step widgets for the current width of the table."""
         self._reflow_job = None
         canvas = self.table._parent_canvas
-        general = canvas.winfo_width() - self._sc(330)    # minus label column, margins and scroll bar (for rows that are not shown right now)
         right = canvas.winfo_rootx() + canvas.winfo_width() - self._sc(24)
         for widget in self._reflow:
             try:
-                available = right - widget.winfo_rootx() if widget.winfo_ismapped() else general      # the room between the row and the right edge
+                if not widget.winfo_ismapped():
+                    continue      # rows of folded blocks: laid out when they appear (<Map>, see _add_reflow)
+                available = right - widget.winfo_rootx()      # the room between the row and the right edge
                 if available > 0:
                     widget._relayout(available)
             except tk.TclError:
@@ -3034,6 +3041,14 @@ class App(ctk.CTk):
         tk.Misc.bind(widget, "<Map>", self._schedule_reflow, add="+")
 
     def _schedule_reflow(self, _event=None):
+        """Wrap the rows to the new width. While the window edge is dragged Windows runs its own loop and the timers of Tk wait until the mouse
+        button is released: so the layout is done right away (at most every 50 ms) and a delayed one follows for the last size."""
+        now = time.monotonic()
+        if now - getattr(self, "_reflow_last", 0.0) >= 0.05:
+            self._reflow_last = now
+            self._reflow_all()
+            self.update_idletasks()
+            self._reflow_last = time.monotonic()      # (the time the layout took does not count)
         if self._reflow_job is not None:
             self.after_cancel(self._reflow_job)
         self._reflow_job = self.after(120, self._reflow_all)
