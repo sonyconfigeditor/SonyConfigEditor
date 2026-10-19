@@ -523,5 +523,21 @@
   "1600 EI – assumption": "1600 EI – Annahme",
   "Auto Naming is Title": "Auto Naming ist Title",
   "Auto Naming is Cam ID + Reel#": "Auto Naming ist Cam ID + Reel#",
-  "Simul Rec is On (the naming is Title)": "Simul Rec ist eingeschaltet (die Benennung ist Title)"
+  "Simul Rec is On (the naming is Title)": "Simul Rec ist eingeschaltet (die Benennung ist Title)",
+  "Mark a file to see its details.": "Datei markieren, um Details zu sehen.",
+  "Reading…": "Lese…",
+  "Not a readable SCENE / ALL file.": "Keine lesbare SCENE-/ALL-Datei.",
+  "Custom": "Custom",
+  "Cine EI": "Cine EI",
+  "OK": "OK",
+  "Does not match": "Stimmt nicht überein",
+  "SCENE files do not contain area, codec and format.": "SCENE-Dateien enthalten weder Bereich, Codec noch Format.",
+  "Preview": "Vorschau",
+  "File name:": "Dateiname:",
+  "Codec": "Codec",
+  "Area": "Bereich",
+  "Shooting Mode": "Aufnahmemodus",
+  "Format": "Format",
+  "Checksum": "Prüfsumme",
+  "Modified": "Geändert"
 }

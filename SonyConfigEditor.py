@@ -13,15 +13,18 @@ Only to build an executable (see build_exe.bat for Windows, build_app.sh for Lin
 """
 
 import argparse
+import collections
 import colorsys
 import contextlib
 import functools
 import hashlib
 import locale
 import os
+import queue
 import re
 import json
 import sys
+import threading
 import time
 import tkinter as tk
 import tkinter.font as tkfont
@@ -33,7 +36,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.3.0"
-_date = "2026-10-18"
+_date = "2026-10-19"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -1554,6 +1557,460 @@ class ModelDialog(ctk.CTkToplevel):
         self.destroy()
 
 
+def frame_rate_text(num: int, den: int) -> str:
+    """59.94, 29.97, 25 ... from numerator and denominator of the frame rate (60000/1001, 25/1)."""
+    if den <= 0:
+        return ""
+    return f"{num / den:.2f}".rstrip("0").rstrip(".")
+
+
+def peek_file(path, stat=None) -> dict:
+    """The few facts the file dialog shows about a SCENE / ALL file, read without parsing the whole file (about a tenth of the time of ``SceneFile.load``).
+    Language independent: codes stay codes (the dialog turns them into words). Never raises; ``ok`` is False with ``error`` for a file that is no SCENE / ALL file."""
+    info = {"ok": False, "error": "", "kind": Path(path).suffix.lstrip(".").upper(), "name": "", "model": "", "checksum_ok": None,
+            "area": None, "mode": None, "codec": None, "format": "", "size": 0, "mtime": 0.0}
+    try:
+        stat = stat or os.stat(path)
+        info["size"], info["mtime"] = stat.st_size, stat.st_mtime
+        with open(path, "rb") as handle:
+            data = handle.read(MAX_FILE_BYTES + 1)
+    except OSError as exc:
+        info["error"] = exc.strerror or str(exc)
+        return info
+    if len(data) > MAX_FILE_BYTES:
+        info["error"] = "too large"
+        return info
+    text = data.decode("latin-1").replace("\r\n", "\n")
+    lines = text.split("\n")
+    if len(lines) < 5 or not MAGIC_PATTERN.fullmatch(lines[1]) or len(lines[2]) > MAX_NAME_CHARS or not MODEL_PATTERN.fullmatch(lines[3].strip()):
+        info["error"] = "not a SCENE file"
+        return info
+    info["name"], info["model"] = lines[2].rstrip("^"), lines[3].strip()
+    info["checksum_ok"] = lines[0].strip().lower() == SceneFile._checksum(text.split("\n", 1)[1])
+    wanted = {"00150": None, "00159": None, "00418": None}
+    for line in lines[4:] if info["kind"] == "ALL" else ():      # the IDs of a SCENE file mean something else
+        key = line[:5]
+        if key in wanted and line[5:6] == "=":
+            wanted[key] = line[6:].split(",")
+    pick = lambda fields, i: fields[i].strip() if fields and len(fields) > i else None
+    info["area"], info["mode"], info["codec"] = pick(wanted["00159"], 0), pick(wanted["00418"], 0), pick(wanted["00150"], 16)
+    f = wanted["00150"]
+    if f and len(f) > 4:
+        try:
+            width, height, den, num, scan = (int(f[i]) for i in range(5))
+            info["format"] = f"{width}\u00d7{height} {frame_rate_text(num, den)}{'i' if scan == 0 else 'p'}"
+        except ValueError:
+            pass
+    info["ok"] = True
+    return info
+
+
+class PeekCache:
+    """path -> (stamp, info). A changed file (time or size) is read again. Lives as long as the file dialog."""
+
+    def __init__(self):
+        self.data: dict = {}
+
+    @staticmethod
+    def stamp(path):
+        try:
+            st = os.stat(path)
+        except OSError:
+            return None
+        return (st.st_mtime_ns, st.st_size)
+
+    def get(self, path):
+        entry = self.data.get(path)
+        if entry and entry[0] is not None and entry[0] == self.stamp(path):
+            return entry[1]
+        return None
+
+
+class FolderPeeker(threading.Thread):
+    """Reads the facts of the files of a folder in the background. Tk is not thread safe: the thread only fills the cache and puts the path into
+    ``results``; the dialog polls the queue. ``submit(..., urgent=True)`` puts files in front (the selected one)."""
+
+    def __init__(self, cache: PeekCache):
+        super().__init__(daemon=True)
+        self.cache, self.results = cache, queue.Queue()
+        self._jobs: collections.deque = collections.deque()
+        self._cond = threading.Condition()
+        self._quit = False
+
+    def submit(self, paths, urgent: bool = False):
+        with self._cond:
+            if urgent:
+                self._jobs.extendleft(reversed(list(paths)))
+            else:
+                self._jobs.extend(paths)
+            self._cond.notify()
+
+    def clear(self):
+        with self._cond:
+            self._jobs.clear()
+
+    def stop(self):
+        with self._cond:
+            self._quit = True
+            self._jobs.clear()
+            self._cond.notify()
+
+    def run(self):
+        while True:
+            with self._cond:
+                while not self._jobs and not self._quit:
+                    self._cond.wait()
+                if self._quit:
+                    return
+                path = self._jobs.popleft()
+            if self.cache.get(path) is None:
+                stamp = PeekCache.stamp(path)
+                self.cache.data[path] = (stamp, peek_file(path))
+            self.results.put(path)
+
+
+def is_hidden_name(name: str) -> bool:
+    return name.startswith((".", "$")) or name.lower() == "system volume information"
+
+
+def natural_key(name: str) -> list:
+    return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", name.lower())]
+
+
+def drive_roots() -> list[str]:
+    """Drives of the computer (Windows: from the drive bitmask, which never waits for a card reader); elsewhere the root and the home folder."""
+    if os.name == "nt":
+        import ctypes
+        mask = ctypes.windll.kernel32.GetLogicalDrives()
+        return [f"{chr(65 + i)}:\\" for i in range(26) if mask & (1 << i)]
+    return ["/", str(Path.home())]
+
+
+class FileOpenDialog(ctk.CTkToplevel):
+    """Own "open file" dialog: folder list on the right, and where the Windows dialog has the Quick Access, a card with the facts of the marked
+    file (File ID, area, shooting mode, codec, format). The facts are read by a background thread (`FolderPeeker`) and kept in a `PeekCache`
+    while the dialog is open. `result` = chosen path or ""."""
+
+    def __init__(self, app, title: str, initialdir, filetypes, invisible: bool = False):
+        super().__init__(app)
+        apply_window_icon(self)
+        if invisible:
+            self.attributes("-alpha", 0)
+        self.app, self.result = app, ""
+        self.title(title)
+        self.transient(app)
+        sc = app._sc
+        self.geometry(f"{sc(900)}x{sc(560)}")
+        self.minsize(sc(640), sc(380))
+        colors = app._c
+        self._types = [(label, patterns.split()) for label, patterns in filetypes]
+        self._folder = Path.home()
+        self._entries: list[tuple[str, bool]] = []
+        self._dir_cache: dict[Path, list[Path]] = {}
+        self._codec_names = self._load_codec_names()
+        self.cache = PeekCache()
+        self.peeker = FolderPeeker(self.cache)
+        self.peeker.start()
+        self._poll_id = None
+        self._selected: str = ""
+
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        # left: facts of the marked file
+        left = ctk.CTkFrame(self, fg_color="transparent")
+        left.grid(row=0, column=0, sticky="ns", padx=(sc(10), 0), pady=sc(10))
+        left.grid_rowconfigure(0, weight=1)
+        left.grid_columnconfigure(0, weight=1)
+        card = ctk.CTkFrame(left, corner_radius=10, fg_color=colors["card"], border_width=1, border_color=colors["card_border"])
+        card.grid(row=1, column=0, sticky="ew")
+        font = colors["font"]
+        # folder tree: the chain of folders down to the current one and the folders inside it; one click goes there
+        tree = ctk.CTkFrame(left, fg_color="transparent")
+        tree.grid(row=0, column=0, sticky="nsew", pady=(0, sc(8)))
+        tree.grid_rowconfigure(0, weight=1)
+        tree.grid_columnconfigure(0, weight=1)
+        self.tree = tk.Listbox(tree, width=1, activestyle="none", exportselection=False, bg=colors["entry"], fg=colors["text"], font=font, relief="flat",
+                               highlightthickness=sc(1), highlightbackground=colors["border"], highlightcolor=colors["focus"],
+                               selectbackground=colors["focus"], selectforeground="#ffffff")
+        self.tree.grid(row=0, column=0, sticky="nsew")
+        tree_scroll = ctk.CTkScrollbar(tree, command=self.tree.yview)
+        tree_scroll.grid(row=0, column=1, sticky="ns")
+        self.tree.configure(yscrollcommand=tree_scroll.set)
+        self._tree_paths: list[Path] = []
+        self.tree.bind("<<ListboxSelect>>", lambda _e: self._on_tree_select())
+        ctk.CTkLabel(card, text=tr("Preview"), font=ctk.CTkFont(weight="bold"), text_color=colors["accent"], anchor="w").grid(row=0, column=0, columnspan=2, sticky="w", padx=sc(12), pady=(sc(10), sc(6)))
+        rows = (("name", "File ID"), ("file", "File"), ("kind", "Type"), ("model", "Model"), ("area", "Area"), ("mode", "Shooting Mode"),
+                ("codec", "Codec"), ("format", "Format"), ("checksum", "Checksum"), ("modified", "Modified"))
+        # the value column is as wide as the longest content that can occur, so the values keep a fixed distance to the captions
+        widest = ["n" * 16, "0000-00-00 00:00", "3840×2160 119.88p", "PXW-FS7M2", tr("NTSC Area"), tr("PAL Area"), tr("Custom"), tr("Cine EI"), tr("Does not match"), "SCENE"]
+        widest += list(self._codec_names.values())
+        value_width = max(font.measure(text) for text in widest)
+        card.grid_columnconfigure(0, minsize=max(font.measure(tr(label)) for _key, label in rows) + sc(26))
+        card.grid_columnconfigure(1, minsize=value_width + sc(12))
+        self._fields: dict[str, tk.Label] = {}
+        for row, (key, label) in enumerate(rows, 1):
+            tk.Label(card, text=tr(label), anchor="w", bg=colors["card"], fg="#8a8a8a", font=font).grid(row=row, column=0, sticky="w", padx=(sc(12), 0), pady=sc(2))
+            value = tk.Label(card, text="", anchor="w", justify="left", bg=colors["card"], fg=colors["text"], font=font)
+            value.grid(row=row, column=1, sticky="w", padx=(0, sc(12)), pady=sc(2))
+            self._fields[key] = value
+        self._status = tk.Label(card, text="", anchor="nw", justify="left", bg=colors["card"], fg="#8a8a8a", font=font,
+                                wraplength=value_width + max(font.measure(tr(label)) for _key, label in rows) + sc(14))
+        self._status.grid(row=20, column=0, columnspan=2, sticky="nw", padx=sc(12), pady=(sc(10), sc(10)))
+
+        # right: path bar, list, file name
+        right = ctk.CTkFrame(self, fg_color="transparent")
+        right.grid(row=0, column=1, sticky="nsew", padx=sc(10), pady=sc(10))
+        right.grid_columnconfigure(0, weight=1)
+        right.grid_rowconfigure(1, weight=1)
+        bar = ctk.CTkFrame(right, fg_color="transparent")
+        bar.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, sc(6)))
+        bar.grid_columnconfigure(2, weight=1)
+        self.up_button = ctk.CTkButton(bar, text="\u2191", width=sc(34), command=self.go_up)
+        self.up_button.grid(row=0, column=0, padx=(0, sc(6)))
+        self.drive_var = tk.StringVar()
+        drives = drive_roots()
+        self.drive_menu = ctk.CTkOptionMenu(bar, values=drives, variable=self.drive_var, width=sc(80), command=lambda d: self.navigate(Path(d)))
+        self.drive_menu.grid(row=0, column=1, padx=(0, sc(6)))
+        self.path_var = tk.StringVar()
+        self.path_entry = ctk.CTkEntry(bar, textvariable=self.path_var)
+        self.path_entry.grid(row=0, column=2, sticky="ew")
+        self.path_entry.bind("<Return>", lambda _e: self.navigate(Path(self.path_var.get().strip().strip('"')), fallback=True))
+        self.listbox = tk.Listbox(right, activestyle="none", exportselection=False, bg=colors["entry"], fg=colors["text"], font=colors["font"], relief="flat",
+                                  highlightthickness=sc(1), highlightbackground=colors["border"], highlightcolor=colors["focus"],
+                                  selectbackground=colors["focus"], selectforeground="#ffffff")
+        self.listbox.grid(row=1, column=0, sticky="nsew")
+        scroll = ctk.CTkScrollbar(right, command=self.listbox.yview)
+        scroll.grid(row=1, column=1, sticky="ns")
+        self.listbox.configure(yscrollcommand=scroll.set)
+        self.listbox.bind("<<ListboxSelect>>", lambda _e: self._on_select())
+        self.listbox.bind("<Double-Button-1>", lambda _e: self.accept())
+        self.listbox.bind("<Return>", lambda _e: self.accept())
+        self.listbox.bind("<BackSpace>", lambda _e: self.go_up())
+        low = ctk.CTkFrame(right, fg_color="transparent")
+        low.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(sc(8), 0))
+        low.grid_columnconfigure(1, weight=1)
+        ctk.CTkLabel(low, text=tr("File name:")).grid(row=0, column=0, sticky="w", padx=(0, sc(8)))
+        self.name_var = tk.StringVar()
+        self.name_entry = ctk.CTkEntry(low, textvariable=self.name_var)
+        self.name_entry.grid(row=0, column=1, sticky="ew")
+        self.name_entry.bind("<Return>", lambda _e: self.accept(typed=True))
+        labels = [label for label, _p in self._types]
+        self.type_var = tk.StringVar(value=labels[0])
+        self.type_menu = ctk.CTkOptionMenu(low, values=labels, variable=self.type_var, command=lambda _v: self.navigate(self._folder), dynamic_resizing=False, width=sc(230))
+        self.type_menu.grid(row=0, column=2, padx=(sc(8), 0))
+        buttons = ctk.CTkFrame(low, fg_color="transparent")
+        buttons.grid(row=1, column=0, columnspan=3, sticky="e", pady=(sc(10), 0))
+        ctk.CTkButton(buttons, text=tr("Open"), width=app._tr_width("Open", 100), command=self.accept).pack(side="left", padx=(0, sc(8)))
+        ctk.CTkButton(buttons, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy).pack(side="left")
+        self.bind("<Escape>", lambda _e: self.destroy())
+
+        start = Path(initialdir) if initialdir else Path.home()
+        self.navigate(start if start.is_dir() else Path.home(), fallback=True)
+        self._poll_id = self.after(40, self._poll)
+        self.after(120, self.listbox.focus_set)
+
+    # -- data ---------------------------------------------------------------- #
+    @staticmethod
+    def _load_codec_names() -> dict[str, str]:
+        names: dict[str, str] = {}
+        try:
+            for selector in load_param_db("all").get("00150", {}).get("widget", {}).get("selectors", []):
+                if selector.get("label") == tr("Codec") or selector.get("on_pick"):
+                    for option in selector.get("options", []):
+                        names[option["values"]["16"]] = option["label"]
+        except (KeyError, TypeError, AttributeError):
+            pass
+        return names
+
+    def _patterns(self) -> list[str]:
+        label = self.type_var.get()
+        for lab, patterns in self._types:
+            if lab == label:
+                return patterns
+        return ["*.*"]
+
+    def navigate(self, folder: Path, fallback: bool = False):
+        """Show a folder. A name that is no folder: with ``fallback`` (typed path) the file is selected if it exists, otherwise nothing changes."""
+        folder = Path(folder)
+        if not folder.is_dir():
+            if fallback and folder.is_file():
+                self.navigate(folder.parent)
+                self.select_name(folder.name)
+            return
+        try:
+            with os.scandir(folder) as scan:
+                found = [(e.name, e.is_dir()) for e in scan if not is_hidden_name(e.name)]
+        except OSError as exc:
+            self._status.configure(text=exc.strerror or str(exc))
+            return
+        self._folder = folder
+        self._dir_cache.pop(folder, None)      # the folder we enter is read afresh
+        self.path_var.set(str(folder))
+        drive = folder.drive + "\\" if folder.drive else ""
+        if drive in self.drive_menu.cget("values"):
+            self.drive_var.set(drive)
+        patterns = [pat.lower() for pat in self._patterns()]
+        import fnmatch
+        shown = [(n, d) for n, d in found if d or any(fnmatch.fnmatch(n.lower(), pat) for pat in patterns)]
+        shown.sort(key=lambda e: (not e[1], natural_key(e[0])))
+        self._entries = shown
+        self.listbox.delete(0, "end")
+        for name, is_dir in shown:
+            self.listbox.insert("end", ("\u25b8 " + name) if is_dir else name)
+        self.peeker.clear()
+        self.peeker.submit(str(folder / n) for n, d in shown if not d and n.lower().endswith((".scene", ".all")))
+        self._selected = ""
+        self._show_card(None)
+        self._status.configure(text="")
+        self._fill_tree()
+
+    def _subdirs(self, folder: Path) -> list[Path]:
+        """Visible sub folders of a folder (natural order); empty when it cannot be read. Remembered while the dialog is open."""
+        if folder not in self._dir_cache:
+            try:
+                with os.scandir(folder) as scan:
+                    names = [e.name for e in scan if not is_hidden_name(e.name) and e.is_dir()]
+            except OSError:
+                names = []
+            self._dir_cache[folder] = [folder / n for n in sorted(names, key=natural_key)]
+        return self._dir_cache[folder]
+
+    def _fill_tree(self):
+        """Folder tree like the explorer: the chain from the drive down to the current folder is opened, each level lists its folders."""
+        chain = [self._folder]
+        while chain[-1].parent != chain[-1]:
+            chain.append(chain[-1].parent)
+        chain.reverse()
+        self.tree.delete(0, "end")
+        self._tree_paths = []
+
+        def add(path: Path, depth: int, opened: bool):
+            self.tree.insert("end", "  " * depth + ("▾ " if opened else "▸ ") + (path.name or str(path)))
+            self._tree_paths.append(path)
+
+        def walk(depth: int):
+            subs = list(self._subdirs(chain[depth]))
+            nxt = chain[depth + 1] if depth + 1 < len(chain) else None
+            if nxt is not None and nxt not in subs:
+                subs.append(nxt)         # a hidden folder we are in stays visible
+            for sub in subs:
+                add(sub, depth + 1, sub == nxt)
+                if sub == nxt:
+                    walk(depth + 1)
+
+        add(chain[0], 0, True)
+        walk(0)
+        current = self._tree_paths.index(self._folder)
+        self.tree.selection_clear(0, "end")
+        self.tree.selection_set(current)
+        self.tree.see(current)
+
+    def _on_tree_select(self):
+        chosen = self.tree.curselection()
+        if chosen and self._tree_paths[chosen[0]] != self._folder:
+            self.navigate(self._tree_paths[chosen[0]])
+
+    def go_up(self):
+        parent = self._folder.parent
+        if parent != self._folder:
+            came_from = self._folder.name
+            self.navigate(parent)
+            self.select_name(came_from)
+
+    def select_name(self, name: str):
+        for index, (n, _d) in enumerate(self._entries):
+            if n.lower() == name.lower():
+                self.listbox.selection_clear(0, "end")
+                self.listbox.selection_set(index)
+                self.listbox.see(index)
+                self._on_select()
+                return
+
+    def _on_select(self):
+        chosen = self.listbox.curselection()
+        if not chosen:
+            return
+        name, is_dir = self._entries[chosen[0]]
+        if is_dir:
+            self._selected = ""
+            self._show_card(None)
+            return
+        self.name_var.set(name)
+        self._selected = str(self._folder / name)
+        self.peeker.submit([self._selected], urgent=True)
+        self._show_card(self._selected)
+
+    def _poll(self):
+        """Takes the paths the thread has finished; the card is refreshed when it is the marked file."""
+        refresh = False
+        try:
+            while True:
+                path = self.peeker.results.get_nowait()
+                refresh = refresh or path == self._selected
+        except queue.Empty:
+            pass
+        if refresh:
+            self._show_card(self._selected)
+        self._poll_id = self.after(40, self._poll)
+
+    # -- card ---------------------------------------------------------------- #
+    def _show_card(self, path):
+        for label in self._fields.values():
+            label.configure(text="")
+        if not path:
+            self._status.configure(text=tr("Mark a file to see its details."))
+            return
+        info = self.cache.get(path)
+        if info is None:
+            self._fields["file"].configure(text=Path(path).name)
+            self._status.configure(text=tr("Reading…"))
+            return
+        self._fields["file"].configure(text=Path(path).name)
+        if not info["ok"]:
+            self._status.configure(text=tr("Not a readable SCENE / ALL file."))
+            return
+        dash = "\u2013"
+        area = {"0": tr("NTSC Area"), "1": tr("PAL Area")}.get(info["area"] or "", dash)
+        mode = {"0": tr("Custom"), "1": tr("Cine EI")}.get(info["mode"] or "", dash)
+        codec = self._codec_names.get(info["codec"] or "", dash)
+        checksum = {True: tr("OK"), False: tr("Does not match")}.get(info["checksum_ok"], dash)
+        values = {"name": info["name"] or dash, "kind": info["kind"], "model": info["model"], "area": area, "mode": mode, "codec": codec,
+                  "format": info["format"] or dash, "checksum": checksum, "modified": time.strftime("%Y-%m-%d %H:%M", time.localtime(info["mtime"]))}
+        for key, text in values.items():
+            self._fields[key].configure(text=text)
+        self._status.configure(text="" if info["kind"] == "ALL" else tr("SCENE files do not contain area, codec and format."))
+
+    # -- result -------------------------------------------------------------- #
+    def accept(self, typed: bool = False):
+        """Open the marked entry (folder: go in); with ``typed`` (Enter in the name field) the text decides."""
+        chosen = self.listbox.curselection()
+        if chosen and not typed and self._entries[chosen[0]][1]:
+            self.navigate(self._folder / self._entries[chosen[0]][0])
+            self.name_var.set("")
+            return
+        text = self.name_var.get().strip().strip('"')
+        if not text:
+            self.bell()
+            return
+        path = Path(text) if Path(text).is_absolute() else self._folder / text
+        if path.is_dir():
+            self.navigate(path)
+            self.name_var.set("")
+        elif path.is_file():
+            self.result = str(path)
+            self.destroy()
+        else:
+            self.bell()
+
+    def destroy(self):
+        if self._poll_id is not None:
+            with contextlib.suppress(tk.TclError, ValueError):
+                self.after_cancel(self._poll_id)
+            self._poll_id = None
+        self.peeker.stop()
+        super().destroy()
+
+
 def onoff_labels(choices: dict) -> tuple[str, str] | None:
     """(key of On, key of Off) when the choices are exactly On and Off (any order, in the language of the catalog), otherwise None."""
     if len(choices) != 2 or set(choices.values()) != {tr("On"), tr("Off")}:
@@ -2217,17 +2674,20 @@ class App(ctk.CTk):
         if self._confirm_discard(tr("Open")):
             self.open_path(Path(item))
 
+    def _ask_open_file(self, title: str, filetypes: list) -> str:
+        """Own open dialog with the preview of the marked file; returns the chosen path or an empty string."""
+        dialog = FileOpenDialog(self, title, self._last_dir, filetypes)
+        dialog.after(50, dialog.grab_set)
+        self.wait_window(dialog)
+        return dialog.result
+
     def open_file(self):
-        path = filedialog.askopenfilename(
-            title=tr("Open file"),
-            initialdir=str(self._last_dir) if self._last_dir else None,
-            filetypes=[
-                ("Sony SCENE/ALL File", "*.SCENE *.ALL"),
-                ("Sony SCENE File", "*.SCENE"),
-                ("Sony ALL File", "*.ALL"),
-                (tr("All files"), "*.*"),
-            ],
-        )
+        path = self._ask_open_file(tr("Open file"), [
+            ("Sony SCENE/ALL File", "*.SCENE *.ALL"),
+            ("Sony SCENE File", "*.SCENE"),
+            ("Sony ALL File", "*.ALL"),
+            (tr("All files"), "*.*"),
+        ])
         if path and self._confirm_discard(tr("Open")):
             self.open_path(Path(path))
 
@@ -4407,10 +4867,7 @@ class App(ctk.CTk):
     def compare_file(self):
         if not self.scene:
             return
-        path = filedialog.askopenfilename(
-            title=tr("Compare with…"), initialdir=self._last_dir,
-            filetypes=[("Sony SCENE/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")],
-        )
+        path = self._ask_open_file(tr("Compare with…"), [("Sony SCENE/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")])
         if not path:
             return
         items, reason, source = self.import_plan(Path(path))
@@ -4422,10 +4879,7 @@ class App(ctk.CTk):
     def import_file(self):
         if not self.scene:
             return
-        path = filedialog.askopenfilename(
-            title=tr("Import from…"), initialdir=self._last_dir,
-            filetypes=[("Sony SCENE/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")],
-        )
+        path = self._ask_open_file(tr("Import from…"), [("Sony SCENE/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")])
         if not path:
             return
         items, reason, source = self.import_plan(Path(path))

@@ -25,6 +25,7 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 - **NTSC / PAL area** (System > Country, first item of the first tab): switching it also moves the recording format to the closest frame rate of the new system (50p to 59.94p, 25p to 29.97p and back) with the values that go with it, as the camera does; the changed rows are marked.
 - **Search and filter** (Ctrl+F): by name, ID or value; "changed only" shows everything that differs from the loaded file, "known only" hides undecoded IDs.
 - **Import** (File > Import, Ctrl+I): take over all known differing values from any SCENE/ALL file of either model, or pick single parameters from a list. One undo step.
+- **Own file dialog** (Open, Import, Compare): shows the facts of the marked file (File ID, area, shooting mode, codec, format) next to the folder list, plus a clickable folder tree (opened down to the current folder).
 - **Recent files** (File menu): the last ten files, newest first; the last used tab and the window position are remembered, too.
 - **Compare** (File > Compare…, Ctrl+D, or "Show differences" in the import dialog): side-by-side view of the current file and another file with readable menu paths such as `Paint/White Clip/White Clip Level` instead of IDs. Changed rows are coloured; Alt+Down / Alt+Up (or F8 / Shift+F8) jump to the next / previous difference, Ctrl+1 shows the full files, Ctrl+2 only the differences.
 - **New** (Ctrl+N): neutral starting point for either model (not a factory reset).

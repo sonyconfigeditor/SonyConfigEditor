@@ -3,6 +3,11 @@
 Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
 Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen in einen neuen obersten Eintrag (`## [Unreleased] - <Datum>`), die Version wird nur auf Anweisung erhöht.
 
+## [Unreleased] - 2026-10-19
+
+### Added
+- **Own file dialog for Open, Import and Compare** with a preview of the marked file where the Windows dialog shows the Quick Access: File ID, file name, type, model, NTSC / PAL area, shooting mode, codec, format, checksum and date. The facts are read in the background while you browse and kept while the dialog is open, so folders you return to show them at once. A folder tree above the preview works like the one of the Explorer: the folders down to the current one are opened, every level lists its folders, one click goes there.
+
 ## [0.3.0] - 2026-10-18
 The parameter database grew from 142 to 236 decoded entries (the FS7M2 ALL file has 321 values); 18 earlier entries are better confirmed now.
 
