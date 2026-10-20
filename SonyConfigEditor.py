@@ -36,7 +36,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.3.0"
-_date = "2026-10-19"
+_date = "2026-10-20"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -56,9 +56,9 @@ MENU_OF_PREFIX = {title: key for key, title, _icon in MENUS if key != "unknown"}
 DEFAULT_COLLAPSED = {"unknown"}
 # order of the camera-menu sub-groups inside a menu (parameters get "subgroup" in the databases; others: "Other"); Paint as in the camera: White first
 SUBGROUP_ORDER = [
-    "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)", "System › Assignable Button", "System › Assignable Dial", "System › Rec Lamp", "System › Fan Control", "System › ND Dial", "System › HOLD Switch Setting", "System › Lens", "System › Language", "System › Clock Set", "System › GPS", "System › IR Remote", "System › Camera Battery Alarm", "System › Camera DC IN Alarm", "System › Ext. Unit Battery Alarm", "System › Ext. Unit DC IN Alarm",
+    "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)", "System › Assignable Button", "System › Assignable Dial", "System › Rec Lamp", "System › Fan Control", "System › ND Dial", "System › HOLD Switch Setting", "System › Lens", "System › Language", "System › Clock Set", "System › GPS", "System › IR Remote", "System › Camera Battery Alarm", "System › Camera DC IN Alarm", "System › Ext. Unit Battery Alarm", "System › Ext. Unit DC IN Alarm", "System › Camera Config",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
-    "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix",
+    "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Maintenance",
     "Recording › S&Q Motion", "Recording › Interval Rec", "Recording › Simul Rec", "Media › Clip", "Audio › Input", "Audio › Output", "Video › Output", "Video › Output Setting", "Video › Output Display", "Video › Monitor LUT", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
 ]
 REORDER_BY_LOCK = {"Camera › ISO/Gain/EI"}      # sub-groups whose usable rows move to the top, the greyed-out ones follow below a divider line
@@ -4415,16 +4415,19 @@ class App(ctk.CTk):
             own_range = "range" in f      # fields can have their own unit, range and sign (e.g. hue 0..359 degrees)
             flo, fhi = f["range"] if own_range else (lo, hi)
             funit, fsign = f.get("unit", unit), f.get("sign", 1)
+            small, snap = f.get("small", 1), f.get("snap")      # the small buttons (default 1 step) and a grid the value snaps to (Preset White: 100 K)
             shown = lambda: str(max(flo, min(fhi, raw_to_step(int(var.get().split(",")[idx]), funit, fsign, f.get("trunc", False)))))
             row = ctk.CTkFrame(cell, fg_color="transparent")
             row.pack()
-            entry = ctk.CTkEntry(row, width=52, justify="center")
+            entry = ctk.CTkEntry(row, width=f.get("entry_width", 52), justify="center")
             entry.insert(0, shown())
             swatch = None
             if f.get("swatch") == "hue":
                 swatch = ctk.CTkFrame(row, width=26, height=26, corner_radius=4, fg_color=hue_hex(int(shown())))
 
             def apply(new: int):
+                if snap:
+                    new = round(new / snap) * snap
                 new = max(flo, min(fhi, new))
                 if new != int(shown()):
                     raw = round(fsign * new * funit)
@@ -4458,9 +4461,9 @@ class App(ctk.CTk):
 
             big = f.get("big", 10)      # the large buttons: Master Black moves a whole menu step (8 wheel clicks)
             button(f"−{big}", -big).pack(side="left", padx=(0, 2))
-            button("−1", -1).pack(side="left", padx=(0, 2))
+            button(f"−{small}", -small).pack(side="left", padx=(0, 2))
             entry.pack(side="left", padx=2)
-            button("+1", 1).pack(side="left", padx=(2, 0))
+            button(f"+{small}", small).pack(side="left", padx=(2, 0))
             button(f"+{big}", big).pack(side="left", padx=(2, 0))
             hint = f.get("hint")      # what the camera menu shows for this fine value (Master Black: 8 wheel clicks = one menu step, cut towards zero)
             hint_label = None

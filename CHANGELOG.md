@@ -3,9 +3,15 @@
 Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
 Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen in einen neuen obersten Eintrag (`## [Unreleased] - <Datum>`), die Version wird nur auf Anweisung erhöht.
 
-## [Unreleased] - 2026-10-19
+## [Unreleased] - 2026-10-20
 
 ### Added
+- **Paint > White: Filter White Memory** (On / Off); the hint says that the ND switch of the camera has to be on Preset to set the memories for ND 1 to 3.
+- **Paint > White: the white memories per ND position** (memory A at ND 1, ND 2, ND 3 and CLEAR; memory B at CLEAR), edited as R Gain and B Gain like the common memories; **ATW Speed** and **Shockless White** (the item formerly shown as "Cine EI related" is Shockless White).
+- **Paint > Maintenance > Test Saw** and **System > Camera Config > HD/2K Modulation** (ALL files).
+- **Video > Output Setting > Output Color Space** (Mk2); and Paint > Matrix > Preset Select **BT.2020** is stored under the right value now (12): files with BT.2020 opened with the wrong choice before.
+- **Paint > White > Preset White** per ND slot as six input fields (2100 K to 10000 K) with -1000 / -100 / +100 / +1000 K buttons; typed values snap to 100 K.
+- **Paint > White: White Memory <A> and <B>** (R Gain and B Gain in menu steps, the camera's colour temperature is kept; the program edits the gains the way the camera shows them).
 - **The headings of the parameter groups use the names of the camera menu:** in German all of them (for example Land, Grundeinstellung, Uhreinstellung, Zuweisbare Taste, Weiß, Offset-Weiß, Rauschunterdrückung, Sucher-Einstellung, Intervallaufnahme), in French, Spanish, Russian and Indonesian the Video menu (Output Setting, Monitor LUT, Output Display), in Portuguese the VF menu. Names that are not known yet stay English. (Read from photos of the camera menus.)
 - **File > New starts in the ALL type** with all values of the camera's factory state (FS7M2; the FS7 from its template). The SCENE side of the new file is still there and can be switched to; a new file counts as unchanged (nothing to undo, no asterisk in the title).
 - **More compact rows:** for parameters with a single control (drop-down, check box, number or hex entry) the info symbol and the raw value now sit in the same line as the control (control, info symbol, raw value) instead of in three lines. Rows with several controls (groups) stay as they were.

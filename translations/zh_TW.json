@@ -544,5 +544,13 @@
   "Audio": "音訊",
   "Recording": "錄製",
   "Paint": "Paint",
-  "VF": "VF"
+  "VF": "VF",
+  "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B).": "R Gain 和 B Gain 的儲存精度比選單步進更細；攝影機顯示向零截斷的步進（5117 = +15，-8584 = -26）。攝影機顯示的 Color Temp Balance 是兩個增益的平均值。該行的第三個值，即以 K 為單位的色溫，由攝影機根據增益計算得出，此處不更改。將 WHT BAL 開關設為 A（記憶 A）或 B（記憶 B）即可編輯該記憶的各項。",
+  "Turns the white memory per ND filter on or off. On: the white memory of A and B is stored separately for each ND filter position. With the ND switch of the camera on Preset there are four positions (CLEAR, 1, 2, 3), with the switch on Variable only two (CLEAR and On): to set the memories for ND 1 to 3 the ND switch must be on Preset.": "開啟或關閉每個 ND 濾鏡的白平衡記憶。On：A 和 B 的白平衡記憶按每個 ND 濾鏡位置分別儲存。攝影機的 ND 開關在 Preset 時有四個位置（CLEAR、1、2、3），在 Variable 時只有兩個（CLEAR 和 On）：要設定 ND 1 到 3 的記憶，ND 開關必須設為 Preset。",
+  "Response speed of the white balance when the white balance mode is switched: Off switches instantaneously, 1 to 3 are slower (3 the slowest). In Cine EI mode the camera sets Off.": "切換白平衡模式時白平衡的回應速度：Off 立即切換，1 到 3 較慢（3 最慢）。在 Cine EI 模式下攝影機設為 Off。",
+  "Response speed in ATW mode: 1 is the fastest, 5 the slowest (stored as 0 to 4).": "ATW 模式下的回應速度：1 最快，5 最慢（儲存為 0 到 4）。",
+  "Which colour space the video output uses (Video > Output Setting > Output Color Space): the list of the camera offers SDI2 BT.709, SDI2 BT.2020 and ALL BT.709. Only available when Paint > Matrix > Preset Select is BT.2020 and the recording format is 4K / QFHD.": "視訊輸出使用的色彩空間（Video > Output Setting > Output Color Space）：攝影機的清單提供 SDI2 BT.709、SDI2 BT.2020 和 ALL BT.709。僅當 Paint > Matrix > Preset Select 為 BT.2020 且記錄格式為 4K / QFHD 時可選。",
+  "Preset white balance of the camera (2100 K to 10000 K in steps of 100 K), one value per ND position: CLEAR, ND 1, ND 2, ND 3 and Variable ND On (CLEAR of the Preset and the Variable setting share one value). The first value is not assigned yet.": "攝影機的預設白平衡（2100 K 到 10000 K，步進 100 K），每個 ND 位置一個值：CLEAR、ND 1、ND 2、ND 3 和可變 ND On（Preset 與 Variable 設定的 CLEAR 共用一個值）。第一個值尚未分配。",
+  "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "開啟或關閉攝影機的測試訊號（鋸齒波）。測試後請再次關閉。",
+  "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "降頻轉換器轉換為 HD 和 2K 時的輸出頻寬：High 或 Low。"
 }

@@ -3,7 +3,7 @@
   "00024": {
     "name": "Preset Matrix",
     "status": "confirmed",
-    "evidence": "Values 1,3 / 1,4 equal the SCENE file values (Universal/sample look = Cinema, sample look = F55 709 Like); same coding as scene 00006 FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. Manual (FS7M2): BT.2020 can only be selected when the recording format is 4K or QFHD (greyed out with the HD formats of the test files).",
+    "evidence": "Values 1,3 / 1,4 equal the SCENE file values (Universal/sample look = Cinema, sample look = F55 709 Like); same coding as scene 00006 FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. Manual (FS7M2): BT.2020 can only be selected when the recording format is 4K or QFHD (greyed out with the HD formats of the test files). FS7M2 round 138 (2026-10-20, ALL + SCENE): Paint > Matrix > Preset Select BT.2020 (with the recording format changed to 3840x2160 59.94p) changed the second value from 0 to 12: BT.2020 (chosen by the user, confirmed) is stored as 12 (the earlier assumption 5 = order of the manual list was wrong; 0 to 4 are verified).",
     "scene_equivalent": "00006",
     "widget": {
       "type": "fields",
@@ -23,10 +23,10 @@
             "2": "FL Light",
             "3": "Cinema",
             "4": "F55 709 Like",
-            "5": "BT.2020"
+            "12": "BT.2020"
           },
           "only_models": {
-            "5": [
+            "12": [
               "PXW-FS7M2"
             ]
           },
@@ -39,7 +39,7 @@
         }
       ],
       "requires": {
-        "5": [
+        "12": [
           {
             "id": "00150",
             "field": 0,
@@ -2925,17 +2925,34 @@
     "evidence": "Text values (user clip names) and the default (derived from the serial number, manual: Clip > Title Prefix). Clip name = title prefix + clip number when Auto Naming is 'Title'."
   },
   "00192": {
-    "name": "White memory (R gain, B gain, colour temp K) (?)",
-    "status": "likely",
+    "name": "White Memory <A> (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
     "scene_equivalent": "00164",
-    "fields": [
-      "R gain",
-      "B gain",
-      "colour temp K"
-    ],
-    "evidence": "591,2394,3112 / 593,2595,3100 (3100-3200 K) / 6198,-20281,4985 (4985 K): same structure as scene 00164 (R, B, colour temperature)",
+    "evidence": "FS7M2 round 133 (2026-10-20, ALL + SCENE, WHT BAL switch on A): R Gain <A> 0 -> +15, B Gain <A> 0 -> -26, Color Temp Balance <A> 0 -> -5 and Color Temp <A> 3200 -> 4042 K (the menu values depend on each other) changed 00192 from 0,0,3200 to 5117,-8584,4042; scene 00164 and the pair 00144 the same. The gains are stored in steps of 330.16: 5117 = +15.5 (shown +15), -8584 = -26.0. Color Temp Balance is the mean of both gains (-5.26 -> -5). The colour temperature (third value) is worked out by the camera from the gains (fits the older files within a few percent: 591,2394,3112 / 6198,-20281,4985), it is not edited here.",
     "group": "video",
-    "subgroup": "Paint › White"
+    "subgroup": "Paint › White",
+    "order": 20,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <A>",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <A>",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
   },
   "00020": {
     "name": "Multi Matrix Setting (On/Off)",
@@ -3335,12 +3352,23 @@
     }
   },
   "00499": {
-    "name": "Cine EI related (2 -> 0) (?)",
-    "status": "hypothesis",
-    "evidence": "Mode switch Custom -> Cine EI on the same camera state (004.ALL -> 010.ALL, 14 differing IDs); same direction in all Cine EI files (002, 005, 006, 010): 2 -> 0, meaning unknown",
+    "name": "Shockless White",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 136 (2026-10-20): Shockless White -> 3 changed 00499 from 1 to 3 (scene 00147 the same); factory state 1; in Cine EI mode the camera sets 0 (the old 'Cine EI related 2 -> 0' observation of the Mk1 files, where 2 was the then current Shockless White); the options are Off / 1 / 2 / 3 (0 to 3).",
     "group": "video",
-    "subgroup": "System › Base Setting",
-    "order": 6
+    "subgroup": "Paint › White",
+    "order": 32,
+    "scene_equivalent": "00147",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "1",
+        "2": "2",
+        "3": "3"
+      },
+      "note": "Response speed of the white balance when the white balance mode is switched: Off switches instantaneously, 1 to 3 are slower (3 the slowest). In Cine EI mode the camera sets Off."
+    }
   },
   "00044": {
     "name": "S-Log2 gamma category flag (?)",
@@ -3400,7 +3428,7 @@
   "00340": {
     "name": "Format related flag (not resolution) (?)",
     "status": "hypothesis",
-    "evidence": "1 in 002.ALL (HD 25p) and 013.ALL/014.ALL (HD 59.94p, then UHD 59.94p XAVC-L), 2 in the other files. Not the resolution: 014.ALL is UHD but keeps 1; possibly depends on the codec/format family (XAVC-I HD vs. others). 2 for XAVC-I UHD/DCI formats, 1 for HD formats and XAVC-L (014)",
+    "evidence": "1 in 002.ALL (HD 25p) and 013.ALL/014.ALL (HD 59.94p, then UHD 59.94p XAVC-L), 2 in the other files. Not the resolution: 014.ALL is UHD but keeps 1; possibly depends on the codec/format family (XAVC-I HD vs. others). 2 for XAVC-I UHD/DCI formats, 1 for HD formats and XAVC-L (014) FS7M2 round 138b (2026-10-20): with the recording format 3840x2160 and Preset Select BT.2020 the flag followed Output Color Space (SDI2 BT.2020 = 2, SDI2 BT.709 = 1); in all other files without that combination it is 2 (HD and UHD) or 1 (HD formats of the Cine EI files and 002/013/014), so it is probably the output colour space flag that the camera derives.",
     "group": "video",
     "subgroup": "System › Rec Format (companion values)"
   },
@@ -3606,7 +3634,7 @@
     "name": "Imager Scan Mode (0 Normal, 1 2K Full, 2 2K Center)",
     "status": "confirmed",
     "group": "video",
-    "evidence": "024.ALL: 0 -> 2 (2K Center, user); 028.ALL: 0 -> 1 (2K Full). Changes by itself nothing else except the S&Q default frame rate and 00175 position 43/00150 field 17 (RAW output). | Editable with availability rules: 2K modes only for formats up to 2K width (manual: recording resolution limited to 2K; 028.ALL), RAW 4096 only with Normal, RAW 2048 only with 2K Full/Center (manual); companions from 013 (Normal), 028 (2K Full), 024 (2K Center). Round 127 (2026-10-18): Recording > S&Q Motion > Setting On with High Frame Rate Mode Off -> Center Scan changed 00152 (Setting) and 00338 from 0 to 2 (and the S&Q frame rate 00151 from 60 to 72 by itself), but not 00446: the High Frame Rate Mode of the Recording menu is the same value as Imager Scan Mode (Off = 0, Full Scan = 1 assumed, Center Scan = 2); only the Imager Scan Mode choice in the System menu also sets 00446.",
+    "evidence": "024.ALL: 0 -> 2 (2K Center, user); 028.ALL: 0 -> 1 (2K Full). Changes by itself nothing else except the S&Q default frame rate and 00175 position 43/00150 field 17 (RAW output). | Editable with availability rules: 2K modes only for formats up to 2K width (manual: recording resolution limited to 2K; 028.ALL), RAW 4096 only with Normal, RAW 2048 only with 2K Full/Center (manual); companions from 013 (Normal), 028 (2K Full), 024 (2K Center). Round 127 (2026-10-18): Recording > S&Q Motion > Setting On with High Frame Rate Mode Off -> Center Scan changed 00152 (Setting) and 00338 from 0 to 2 (and the S&Q frame rate 00151 from 60 to 72 by itself), but not 00446: the High Frame Rate Mode of the Recording menu is the same value as Imager Scan Mode (Off = 0, Full Scan = 1 assumed, Center Scan = 2); only the Imager Scan Mode choice in the System menu also sets 00446. FS7M2 round 137 (2026-10-20): Recording > S&Q Motion > High Frame Rate Mode Center Scan -> Full Scan changed 00338 from 2 to 1 (nothing else but the area flag 00159 changed in that file): High Frame Rate Mode is this value.",
     "widget": {
       "type": "choice",
       "note": "Impossible entries are greyed out (depending on recording format and RAW output). On the switch the camera sets default values (e.g. the S&Q frame rate). The Recording menu shows the same value as S&Q Motion > High Frame Rate Mode (Off, Full Scan, Center Scan).",
@@ -5497,20 +5525,101 @@
     }
   },
   "00422": {
-    "name": "Preset White (K) per ND slot (?)",
-    "status": "likely",
+    "name": "Preset White (K) per ND slot",
+    "status": "confirmed",
+    "evidence": "Equals scene 00158 (id_map). FS7M2 round 136b (2026-10-20, interim round): Paint > White > Preset White 3200 K -> 10000 K (menu: 100 K steps up to 10000 K; the program offers an input field with -1000 / -100 / +100 / +1000 K buttons, typed values snap to 100 K) changed the fifth of the six values: 3200,3200,3200,3200,3200,3200 -> 3200,3200,3200,3200,10000,3200. The ND filter of the camera was on 3: the fifth value is the preset of ND 3. FS7M2 round 139 (2026-10-20, WHT BAL on Preset): Preset White typed at CLEAR 4000, ND 1 5000, ND 2 6000 (ND switch on Preset), then Variable-CLEAR 7000 and Variable-ND On 8000 changed 3200,3200,3200,3200,10000,3200 to 3200,7000,5000,6000,10000,8000: value 2 = CLEAR (the 4000 of the Preset CLEAR was overwritten by the 7000 of the Variable CLEAR: they share the slot), 3 = ND 1, 4 = ND 2, 5 = ND 3 (round 136b), 6 = Variable ND On; value 1 did not move and is not assigned. The scene pair 00144 / 00145 follows the active ND position (3632,0 / 3962,0 = the CLEAR memories A / B).",
     "group": "video",
     "subgroup": "Paint › White",
     "order": 20,
-    "evidence": "Equals scene 00158 (id_map; unique value match in two FS7M2 pairs). The camera writes its own preset white values when a SCENE file is loaded."
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        2100,
+        10000
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "Slot 1 (not assigned)",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 1,
+          "label": "ND CLEAR",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 2,
+          "label": "ND 1",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 3,
+          "label": "ND 2",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 4,
+          "label": "ND 3",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 5,
+          "label": "Variable ND On",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        }
+      ],
+      "note": "Preset white balance of the camera (2100 K to 10000 K in steps of 100 K), one value per ND position: CLEAR, ND 1, ND 2, ND 3 and Variable ND On (CLEAR of the Preset and the Variable setting share one value). The first value is not assigned yet."
+    }
   },
   "00193": {
-    "name": "White memory B: R gain, B gain, colour temp K (?)",
-    "status": "likely",
+    "name": "White Memory <B> (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00165",
+    "evidence": "FS7M2 round 133 (2026-10-20, ALL + SCENE, WHT BAL switch on B): R Gain <B> 0 -> -6, B Gain <B> 0 -> +16, Color Temp Balance <B> 0 -> +5 and Color Temp <B> 3200 -> 2840 K changed 00193 from 0,0,3200 to -2146,5447,2840; scene 00165 and the pair 00145 the same (-2146 = -6.5 shown -6, 5447 = +16.5; Balance (-6.5+16.5)/2 = +5). Same scale and dependencies as memory A (00192).",
     "group": "video",
     "subgroup": "Paint › White",
     "order": 21,
-    "evidence": "Equals scene 00165 (id_map; unique value match in two FS7M2 pairs); overwritten by the camera when a SCENE file is loaded (scene white data)."
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <B>",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <B>",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
   },
   "00104": {
     "name": "Auto Knee",
@@ -9307,6 +9416,331 @@
         }
       ],
       "note": "Whether menus and status information are shown in the SDI2 output signal. The first value of the row is not decoded."
+    }
+  },
+  "00509": {
+    "name": "Filter White Memory",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 134 (2026-10-20, ALL + SCENE): Paint > White > Filter White Memory Off -> On (with the white memories per ND filter edited afterwards): ALL 00509 0 -> 1; the scene file has no counterpart. With On the white memories are stored per ND filter position: the changed values appear in the triples 00195, 00198, 00201, 00204, 00474 and 00475 (scene 00167, 00170, 00173, 00176, 00179, 00180).",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 22,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      },
+      "note": "Turns the white memory per ND filter on or off. On: the white memory of A and B is stored separately for each ND filter position. With the ND switch of the camera on Preset there are four positions (CLEAR, 1, 2, 3), with the switch on Variable only two (CLEAR and On): to set the memories for ND 1 to 3 the ND switch must be on Preset."
+    }
+  },
+  "00195": {
+    "name": "White Memory <A> at ND 1 (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00167",
+    "evidence": "FS7M2 rounds 134 and 135 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on A): R Gain <A> typed at ND 1: +20 -> 6603,0,3878 (round 134), +22 -> 7428,0,3962 (round 135; 7428 = +22.5 in steps of 330.16). The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third probably memory B; the first is unknown.",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 23,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <A> (ND 1)",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <A> (ND 1)",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
+  },
+  "00198": {
+    "name": "White Memory <A> at ND 2 (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00170",
+    "evidence": "FS7M2 rounds 134 and 135: R Gain <A> at ND 2: +30 -> 9905,0,4183, +33 -> 10895,0,4278. The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third probably memory B; the first is unknown.",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 24,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <A> (ND 2)",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <A> (ND 2)",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
+  },
+  "00201": {
+    "name": "White Memory <A> at ND 3 (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00173",
+    "evidence": "FS7M2 rounds 134 and 135: R Gain <A> at ND 3: +40 -> 13206,0,4468, +44 -> 14527,0,4587. The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third probably memory B; the first is unknown.",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 25,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <A> (ND 3)",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <A> (ND 3)",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
+  },
+  "00474": {
+    "name": "White Memory <A> at CLEAR (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00179",
+    "evidence": "FS7M2 rounds 134 and 135: R Gain <A> at ND CLEAR: +10 -> 3467,0,3572, +11 -> 3632,0,3595 (an ID that only the Mk2 files have; the memory of the CLEAR position). The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third probably memory B; the first is unknown.",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 26,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <A> (CLEAR)",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <A> (CLEAR)",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
+  },
+  "00475": {
+    "name": "White Memory <B> at CLEAR (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00180",
+    "evidence": "FS7M2 round 136 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on B): R Gain <B> typed at CLEAR: +12 -> 3962,0,3619 (+12.0). (Memory B at CLEAR was first seen in round 134: -10 -> -3302.) The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third memory B; the first is unknown.",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 27,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <B> (CLEAR)",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <B> (CLEAR)",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
+  },
+  "00196": {
+    "name": "White Memory <B> at ND 1 (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00168",
+    "evidence": "FS7M2 round 136 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on B): R Gain <B> typed at ND 1: +23 -> 7593,0,3978 (+23.0). (Memory B at CLEAR was first seen in round 134: -10 -> -3302.) The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third memory B; the first is unknown.",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 28,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <B> (ND 1)",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <B> (ND 1)",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
+  },
+  "00199": {
+    "name": "White Memory <B> at ND 2 (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00171",
+    "evidence": "FS7M2 round 136 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on B): R Gain <B> typed at ND 2: +34 -> 11225,0,4307 (+34.0). (Memory B at CLEAR was first seen in round 134: -10 -> -3302.) The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third memory B; the first is unknown.",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 29,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <B> (ND 2)",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <B> (ND 2)",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
+  },
+  "00202": {
+    "name": "White Memory <B> at ND 3 (R Gain, B Gain; Color Temp)",
+    "status": "confirmed",
+    "scene_equivalent": "00174",
+    "evidence": "FS7M2 round 136 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on B): R Gain <B> typed at ND 3: +45 -> 15022,0,4626 (+45.5). (Memory B at CLEAR was first seen in round 134: -10 -> -3302.) The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third memory B; the first is unknown.",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 30,
+    "widget": {
+      "type": "stepfields",
+      "unit": 330.16,
+      "range": [
+        -99,
+        99
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "R Gain <B> (ND 3)",
+          "trunc": true
+        },
+        {
+          "index": 1,
+          "label": "B Gain <B> (ND 3)",
+          "trunc": true
+        }
+      ],
+      "note": "R Gain and B Gain are stored finer than the menu step; the camera shows the step cut towards zero (5117 = +15, -8584 = -26). Color Temp Balance, which the camera shows, is the mean of both gains. The third value of the row, the colour temperature in K, is worked out by the camera from the gains and is not changed here. The items of the memory can be edited with the WHT BAL switch on A (memory A) or B (memory B)."
+    }
+  },
+  "00498": {
+    "name": "ATW Speed",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 132 and 136 (2026-10-20): ATW Speed 3 -> 2 changed 00498 from 2 to 1 (scene 00146 the same); the value is the displayed speed minus one (1 = fastest).",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 31,
+    "scene_equivalent": "00146",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "1 (fastest)",
+        "1": "2",
+        "2": "3",
+        "3": "4",
+        "4": "5"
+      },
+      "note": "Response speed in ATW mode: 1 is the fastest, 5 the slowest (stored as 0 to 4)."
+    }
+  },
+  "00341": {
+    "name": "Output Color Space (SDI2 / AL)",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 138 (2026-10-20): Video > Output Setting > Output Color Space set to 'SDI2 BT.2020' (list: SDI2 BT.709, SDI2 BT.2020, ALL BT.709) changed ALL 00341 (an ID that only the Mk2 files have) from 0 to 1 (together with the format change to 4K and Preset Select BT.2020 in the same round, so the link is not isolated); 0 and 2 follow the order of the list. FS7M2 round 138b (2026-10-20, interim round, 4K + Preset Select BT.2020 unchanged): Output Color Space SDI2 BT.2020 -> SDI2 BT.709 changed 00341 from 1 to 0 and, as the only other value, 00340 from 2 to 1: both values 0 and 1 are confirmed; 2 (ALL BT.709) still follows the order of the list.",
+    "group": "video",
+    "subgroup": "Video › Output Setting",
+    "order": 3,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "SDI2 BT.709",
+        "1": "SDI2 BT.2020",
+        "2": "ALL BT.709 – assumption"
+      },
+      "note": "Which colour space the video output uses (Video > Output Setting > Output Color Space): the list of the camera offers SDI2 BT.709, SDI2 BT.2020 and ALL BT.709. Only available when Paint > Matrix > Preset Select is BT.2020 and the recording format is 4K / QFHD."
+    }
+  },
+  "00027": {
+    "name": "Test Saw",
+    "status": "confirmed",
+    "evidence": "FS7M2 rounds 140 and 141 (2026-10-20, ALL only; the manual lists the item as All File only): Paint > Maintenance > Test Saw Off -> On changed ALL 00027 from 0 to 1 (together with HD/2K Modulation in round 140); Test Saw back to Off in round 141 changed only 00027 from 1 to 0.",
+    "group": "video",
+    "subgroup": "Paint › Maintenance",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "On"
+      },
+      "note": "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test."
+    }
+  },
+  "00419": {
+    "name": "HD/2K Modulation",
+    "status": "confirmed",
+    "evidence": "FS7M2 round 140 (2026-10-20, ALL only; the manual lists the item as All File only): System > Camera Config > HD/2K Modulation High -> Low (together with Test Saw On) changed ALL 00419 from 0 to 1; in round 141 only Test Saw changed back (00027), 00419 stayed 1, so 00419 is HD/2K Modulation (0 = High, 1 = Low; the manual lists only High / Low).",
+    "group": "video",
+    "subgroup": "System › Camera Config",
+    "order": 1,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "High",
+        "1": "Low"
+      },
+      "note": "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low."
     }
   }
 }

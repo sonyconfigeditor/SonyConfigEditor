@@ -13,9 +13,9 @@
       "2": "FL Light",
       "3": "Cinema",
       "4": "F55 709 Like",
-      "5": "BT.2020"
+      "12": "BT.2020"
     },
-    "evidence": "Index = order of the manual's Preset Select list. Verified: sample look (FL Light) = 2, sample look (Cinema) = 3. BT.2020 only with 4K/QFHD rec format. FS7 Mk1 manual lists only 5 presets (Standard..F55 709 Like): BT.2020 exists only on FS7M2. sample set A Mk1: F55 709 Like = 4 confirmed on FS7 Mk1. sample set C FS7II sample look/sample look: first field 0 with preset 4 stored -> 0 = Preset Matrix Off (consistent with 1 = On) FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera.",
+    "evidence": "Index = order of the manual's Preset Select list. Verified: sample look (FL Light) = 2, sample look (Cinema) = 3. BT.2020 only with 4K/QFHD rec format. FS7 Mk1 manual lists only 5 presets (Standard..F55 709 Like): BT.2020 exists only on FS7M2. sample set A Mk1: F55 709 Like = 4 confirmed on FS7 Mk1. sample set C FS7II sample look/sample look: first field 0 with preset 4 stored -> 0 = Preset Matrix Off (consistent with 1 = On) FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. FS7M2 round 138 (2026-10-20, ALL + SCENE): Paint > Matrix > Preset Select BT.2020 (with the recording format changed to 3840x2160 59.94p) changed the second value from 0 to 12: BT.2020 (chosen by the user, confirmed) is stored as 12 (the earlier assumption 5 = order of the manual list was wrong; 0 to 4 are verified).",
     "widget": {
       "type": "fields",
       "fields": [
@@ -34,10 +34,10 @@
             "2": "FL Light",
             "3": "Cinema",
             "4": "F55 709 Like",
-            "5": "BT.2020"
+            "12": "BT.2020"
           },
           "only_models": {
-            "5": [
+            "12": [
               "PXW-FS7M2"
             ]
           },
@@ -51,7 +51,7 @@
       ]
     },
     "only_models": {
-      "5": [
+      "12": [
         "PXW-FS7M2"
       ]
     },
@@ -235,32 +235,88 @@
     "covered_by": "00017"
   },
   "00158": {
-    "name": "Preset White (K) per ND slot (?)",
-    "status": "likely",
-    "fields": [
-      "preset white (K)",
-      "color temp ... (K, 5 more)"
-    ],
-    "evidence": "First value = Preset White in K: sample look 4900 (page), sample set C FS7II files all 5600 (daylight preset), sample set B 6000/2800/4900/5700. Mk2 has 6 values = probably Preset White per ND-filter slot (CLEAR/1/2/3 + variable CLEAR/On), only the first is changed in all sample files. Older FS7 files only one value",
+    "name": "Preset White (K) per ND slot",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00422 (id_map). FS7M2 round 136b (2026-10-20, interim round): Paint > White > Preset White 3200 K -> 10000 K (menu: 100 K steps up to 10000 K; the program offers an input field with -1000 / -100 / +100 / +1000 K buttons, typed values snap to 100 K) changed the fifth of the six values: 3200,3200,3200,3200,3200,3200 -> 3200,3200,3200,3200,10000,3200. The ND filter of the camera was on 3: the fifth value is the preset of ND 3. FS7M2 round 139 (2026-10-20, WHT BAL on Preset): Preset White typed at CLEAR 4000, ND 1 5000, ND 2 6000 (ND switch on Preset), then Variable-CLEAR 7000 and Variable-ND On 8000 changed 3200,3200,3200,3200,10000,3200 to 3200,7000,5000,6000,10000,8000: value 2 = CLEAR (the 4000 of the Preset CLEAR was overwritten by the 7000 of the Variable CLEAR: they share the slot), 3 = ND 1, 4 = ND 2, 5 = ND 3 (round 136b), 6 = Variable ND On; value 1 did not move and is not assigned. The scene pair 00144 / 00145 follows the active ND position (3632,0 / 3962,0 = the CLEAR memories A / B).",
     "group": "video",
-    "subgroup": "Paint › White"
+    "subgroup": "Paint › White",
+    "order": 20,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        2100,
+        10000
+      ],
+      "fields": [
+        {
+          "index": 0,
+          "label": "Slot 1 (not assigned)",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 1,
+          "label": "ND CLEAR",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 2,
+          "label": "ND 1",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 3,
+          "label": "ND 2",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 4,
+          "label": "ND 3",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        },
+        {
+          "index": 5,
+          "label": "Variable ND On",
+          "small": 100,
+          "big": 1000,
+          "snap": 100,
+          "entry_width": 70
+        }
+      ],
+      "note": "Preset white balance of the camera (2100 K to 10000 K in steps of 100 K), one value per ND position: CLEAR, ND 1, ND 2, ND 3 and Variable ND On (CLEAR of the Preset and the Variable setting share one value). The first value is not assigned yet."
+    }
   },
   "00144": {
     "name": "White memory A: R gain, B gain (?)",
-    "status": "likely",
-    "evidence": "Same two values are the first two entries of 00164 in all files (FS7M2: sample set B -7604,750 / sample set C 9227,-21402; FS7: sample set A 8338,-19829). Memory A of Paint > White",
+    "status": "confirmed",
+    "evidence": "Same two values are the first two entries of 00164 in all files (FS7M2: sample set B -7604,750 / sample set C 9227,-21402; FS7: sample set A 8338,-19829). Memory A of Paint > White; FS7M2 round 133 (2026-10-20): R Gain <A>, B Gain <A> in steps of 330.16 (always equal to the first two values of 00164).; FS7M2 round 135 (2026-10-20): R Gain, B Gain of the memory A of the white balance that is active now (follows the ND position: 3467,0 at CLEAR, 14527,0 at ND 3). The common memories 00164 / 00165 (ALL 00192 / 00193) do not follow the ND position.",
     "group": "video",
     "subgroup": "Paint › White"
   },
   "00164": {
     "name": "White memory A: R gain, B gain, colour temp K (?)",
-    "status": "likely",
+    "status": "confirmed",
     "fields": [
       "R",
       "B",
       "colour temp"
     ],
-    "evidence": "Third value = colour temperature of the stored white (sample set C 5624, sample set B 2872); first two = 00144. 00165 = memory B (sample set B 5625; sample set C unused 0,0,3200). 00166..00181 (0,0,3200) are probably further white memories (per ND slot)",
+    "evidence": "Third value = colour temperature of the stored white (sample set C 5624, sample set B 2872); first two = 00144. 00165 = memory B (sample set B 5625; sample set C unused 0,0,3200). 00166..00181 (0,0,3200) are probably further white memories (per ND slot); FS7M2 round 133 (2026-10-20): White Memory <A> R Gain, B Gain (steps of 330.16) and the colour temperature in K confirmed (ALL 00192).",
     "group": "video",
     "subgroup": "Paint › White"
   },
@@ -711,15 +767,15 @@
   },
   "00145": {
     "name": "White memory B: R gain, B gain (?)",
-    "status": "likely",
-    "evidence": "Pair copied into 00165; sample set C files have 0,0 (memory B unused), sample set B FS7M2 14692,-14857",
+    "status": "confirmed",
+    "evidence": "Pair copied into 00165; sample set C files have 0,0 (memory B unused), sample set B FS7M2 14692,-14857; FS7M2 round 133 (2026-10-20): R Gain <B>, B Gain <B> in steps of 330.16 (always equal to the first two values of 00165).; FS7M2 round 135 (2026-10-20): R Gain, B Gain of memory B that is active now (follows the ND position; 0,0 at ND 3 in round 135). The common memories 00164 / 00165 (ALL 00192 / 00193) do not follow the ND position.; FS7M2 round 136: 15022,0 after the B memories were edited at ND 3 (follows the ND position)",
     "group": "video",
     "subgroup": "Other"
   },
   "00165": {
     "name": "White memory B: R gain, B gain, colour temp K (?)",
-    "status": "likely",
-    "evidence": "See 00164",
+    "status": "confirmed",
+    "evidence": "See 00164; FS7M2 round 133 (2026-10-20): White Memory <B> R Gain, B Gain (steps of 330.16) and the colour temperature in K confirmed (ALL 00193).",
     "group": "video",
     "subgroup": "Paint › White"
   },
@@ -2872,6 +2928,99 @@
         "1": "Mid",
         "2": "High"
       }
+    }
+  },
+  "00167": {
+    "name": "White memory <A> at ND 1: R gain, B gain, colour temp",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00195 (FS7M2 rounds 134 and 135): FS7M2 rounds 134 and 135 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on A): R Gain <A> typed at ND 1: +20 -> 6603,0,3878 (round 134), +22 -> 7428,0,3962 (round 135; 7428 = +22.5 in steps of 330.16).",
+    "group": "video",
+    "subgroup": "Paint › White"
+  },
+  "00170": {
+    "name": "White memory <A> at ND 2: R gain, B gain, colour temp",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00198 (FS7M2 rounds 134 and 135): FS7M2 rounds 134 and 135: R Gain <A> at ND 2: +30 -> 9905,0,4183, +33 -> 10895,0,4278.",
+    "group": "video",
+    "subgroup": "Paint › White"
+  },
+  "00173": {
+    "name": "White memory <A> at ND 3: R gain, B gain, colour temp",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00201 (FS7M2 rounds 134 and 135): FS7M2 rounds 134 and 135: R Gain <A> at ND 3: +40 -> 13206,0,4468, +44 -> 14527,0,4587.",
+    "group": "video",
+    "subgroup": "Paint › White"
+  },
+  "00179": {
+    "name": "White memory <A> at CLEAR: R gain, B gain, colour temp",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00474 (FS7M2 rounds 134 and 135): FS7M2 rounds 134 and 135: R Gain <A> at ND CLEAR: +10 -> 3467,0,3572, +11 -> 3632,0,3595 (an ID that only the Mk2 files have; the memory of the CLEAR position).",
+    "group": "video",
+    "subgroup": "Paint › White"
+  },
+  "00180": {
+    "name": "White memory <B> at CLEAR: R gain, B gain, colour temp",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00475 (FS7M2 round 136): +12 -> 3962,0,3619 (+12.0).",
+    "group": "video",
+    "subgroup": "Paint › White"
+  },
+  "00168": {
+    "name": "White memory <B> at ND 1: R gain, B gain, colour temp",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00196 (FS7M2 round 136): +23 -> 7593,0,3978 (+23.0).",
+    "group": "video",
+    "subgroup": "Paint › White"
+  },
+  "00171": {
+    "name": "White memory <B> at ND 2: R gain, B gain, colour temp",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00199 (FS7M2 round 136): +34 -> 11225,0,4307 (+34.0).",
+    "group": "video",
+    "subgroup": "Paint › White"
+  },
+  "00174": {
+    "name": "White memory <B> at ND 3: R gain, B gain, colour temp",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00202 (FS7M2 round 136): +45 -> 15022,0,4626 (+45.5).",
+    "group": "video",
+    "subgroup": "Paint › White"
+  },
+  "00146": {
+    "name": "ATW Speed",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00498 (FS7M2 round 136: ATW Speed 3 -> 2 = 2 -> 1).",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 31,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "1 (fastest)",
+        "1": "2",
+        "2": "3",
+        "3": "4",
+        "4": "5"
+      },
+      "note": "Response speed in ATW mode: 1 is the fastest, 5 the slowest (stored as 0 to 4)."
+    }
+  },
+  "00147": {
+    "name": "Shockless White",
+    "status": "confirmed",
+    "evidence": "Equals ALL 00499 (FS7M2 round 136: Shockless White -> 3 = 1 -> 3).",
+    "group": "video",
+    "subgroup": "Paint › White",
+    "order": 32,
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "1",
+        "2": "2",
+        "3": "3"
+      },
+      "note": "Response speed of the white balance when the white balance mode is switched: Off switches instantaneously, 1 to 3 are slower (3 the slowest). In Cine EI mode the camera sets Off."
     }
   }
 }
