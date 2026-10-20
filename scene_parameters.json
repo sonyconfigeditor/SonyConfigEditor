@@ -1858,7 +1858,8 @@
           "unit": 182.04444444444445,
           "sign": -1,
           "swatch": "hue",
-          "sat_index": 2
+          "sat_index": 2,
+          "width_index": 4
         },
         {
           "index": 4,

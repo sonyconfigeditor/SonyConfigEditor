@@ -557,5 +557,5 @@
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "Включает или выключает тестовый сигнал (пилообразный) камеры. После теста выключите его снова.",
   "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Полоса пропускания выхода даун-конвертера при преобразовании в HD и 2K: High или Low.",
   "Colour wheel": "Цветовой круг",
-  "Click a colour to set hue and saturation.": "Щёлкните цвет, чтобы задать оттенок и насыщенность."
+  "Click a colour to set hue and saturation. The lines show the colour range (width).": "Щёлкните цвет, чтобы задать оттенок и насыщенность. Линии показывают диапазон цветов (Width)."
 }

@@ -554,5 +554,5 @@
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "Attiva o disattiva il segnale di test (dente di sega) della camera. Disattivarlo di nuovo dopo il test.",
   "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Larghezza di banda in uscita del down converter per la conversione in HD e 2K: High o Low.",
   "Colour wheel": "Ruota dei colori",
-  "Click a colour to set hue and saturation.": "Fare clic su un colore per impostare tinta e saturazione."
+  "Click a colour to set hue and saturation. The lines show the colour range (width).": "Fare clic su un colore per impostare tinta e saturazione. Le linee mostrano la gamma di colori (Width)."
 }

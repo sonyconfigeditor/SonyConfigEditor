@@ -557,5 +557,5 @@
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "Active ou désactive le signal de test (dent de scie) de la caméra. Le désactiver de nouveau après le test.",
   "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Bande passante de sortie du convertisseur descendant pour la conversion en HD et 2K : High ou Low.",
   "Colour wheel": "Roue chromatique",
-  "Click a colour to set hue and saturation.": "Cliquez sur une couleur pour régler la teinte et la saturation."
+  "Click a colour to set hue and saturation. The lines show the colour range (width).": "Cliquez sur une couleur pour régler la teinte et la saturation. Les lignes montrent la plage de couleurs (Width)."
 }

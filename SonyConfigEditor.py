@@ -1248,7 +1248,7 @@ class ColorWheelDialog(ctk.CTkToplevel):
     SIZE = 240      # unscaled pixels
     _images: dict = {}
 
-    def __init__(self, app, hue: int, saturation: int, on_pick, invisible: bool = False):
+    def __init__(self, app, hue: int, saturation: int, on_pick, invisible: bool = False, width: int = None):
         super().__init__(app)
         apply_window_icon(self)
         if invisible:
@@ -1258,7 +1258,7 @@ class ColorWheelDialog(ctk.CTkToplevel):
         self.resizable(False, False)
         self._on_pick = on_pick
         self._size = max(120, app._sc(self.SIZE))
-        ctk.CTkLabel(self, text=tr("Click a colour to set hue and saturation."), text_color="gray").pack(padx=16, pady=(14, 6))
+        ctk.CTkLabel(self, text=tr("Click a colour to set hue and saturation. The lines show the colour range (width)."), text_color="gray").pack(padx=16, pady=(14, 6))
         self.canvas = tk.Canvas(self, width=self._size, height=self._size, highlightthickness=0, bd=0, bg="#2b2b2b", cursor="hand2")
         self.canvas.pack(padx=16, pady=(0, 14))
         self._image = self._wheel_image(self._size)
@@ -1269,8 +1269,20 @@ class ColorWheelDialog(ctk.CTkToplevel):
         mark = max(4, self._size // 40)
         self.canvas.create_oval(x - mark, y - mark, x + mark, y + mark, outline="black", width=2)
         self.canvas.create_oval(x - mark + 2, y - mark + 2, x + mark - 2, y + mark - 2, outline="white", width=1)
+        if width is not None:      # guide lines: the colour range around the hue (assumption: the width is split evenly to both sides)
+            self._guides(hue, width)
         self.canvas.bind("<Button-1>", self.click)
         self.bind("<Escape>", lambda _e: self.destroy())
+
+    def _guides(self, hue: int, width: int):
+        radius, half = self._size / 2, width / 2
+        for colour, line in (("black", 3), ("white", 1)):
+            for edge in {hue - half, hue + half}:
+                angle = math.radians(edge)
+                self.canvas.create_line(radius, radius, radius + math.cos(angle) * radius, radius - math.sin(angle) * radius, fill=colour, width=line)
+            if width > 0:
+                inset = radius * 0.04
+                self.canvas.create_arc(inset, inset, self._size - inset, self._size - inset, start=hue - half, extent=width, style="arc", outline=colour, width=line)
 
     @classmethod
     def _wheel_image(cls, size: int):
@@ -4538,7 +4550,9 @@ class App(ctk.CTk):
 
             def open_wheel(invisible: bool = False):
                 current = raw_to_step(int(var.get().split(",")[sat_idx]), unit, 1, False)
-                wheel = ColorWheelDialog(self, int(shown()), current, pick_colour, invisible=invisible)
+                w_idx = f.get("width_index")
+                width = raw_to_step(int(var.get().split(",")[w_idx]), fields[w_idx].get("unit", unit), 1, False) if w_idx is not None else None
+                wheel = ColorWheelDialog(self, int(shown()), current, pick_colour, invisible=invisible, width=width)
                 self._wheel = wheel
                 return wheel
 

@@ -557,5 +557,5 @@
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "Menyalakan atau mematikan sinyal uji (gigi gergaji) kamera. Matikan lagi setelah pengujian.",
   "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Lebar pita output down converter untuk konversi ke HD dan 2K: High atau Low.",
   "Colour wheel": "Roda warna",
-  "Click a colour to set hue and saturation.": "Klik sebuah warna untuk mengatur rona dan saturasi."
+  "Click a colour to set hue and saturation. The lines show the colour range (width).": "Klik sebuah warna untuk mengatur rona dan saturasi. Garis menunjukkan rentang warna (Width)."
 }

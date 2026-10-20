@@ -607,5 +607,5 @@
   "Paint › Maintenance": "Wartung",
   "System › Camera Config": "Kamerakonfiguration",
   "Colour wheel": "Farbrad",
-  "Click a colour to set hue and saturation.": "Klick auf eine Farbe setzt Farbton und Sättigung."
+  "Click a colour to set hue and saturation. The lines show the colour range (width).": "Klick auf eine Farbe setzt Farbton und Sättigung. Die Linien zeigen den Farbbereich (Width)."
 }

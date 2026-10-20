@@ -554,5 +554,5 @@
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "开启或关闭摄像机的测试信号（锯齿波）。测试后请再次关闭。",
   "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "下变频器转换为 HD 和 2K 时的输出带宽：High 或 Low。",
   "Colour wheel": "色轮",
-  "Click a colour to set hue and saturation.": "点击一种颜色即可设置色相和饱和度。"
+  "Click a colour to set hue and saturation. The lines show the colour range (width).": "点击一种颜色即可设置色相和饱和度。线条表示颜色范围（Width）。"
 }
