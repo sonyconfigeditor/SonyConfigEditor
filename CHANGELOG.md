@@ -6,6 +6,7 @@ Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen 
 ## [Unreleased] - 2026-10-19
 
 ### Added
+- **The headings of the parameter groups use the names of the camera menu:** in German all of them (for example Land, Grundeinstellung, Uhreinstellung, Zuweisbare Taste, Weiß, Offset-Weiß, Rauschunterdrückung, Sucher-Einstellung, Intervallaufnahme), in French, Spanish, Russian and Indonesian the Video menu (Output Setting, Monitor LUT, Output Display), in Portuguese the VF menu. Names that are not known yet stay English. (Read from photos of the camera menus.)
 - **File > New starts in the ALL type** with all values of the camera's factory state (FS7M2; the FS7 from its template). The SCENE side of the new file is still there and can be switched to; a new file counts as unchanged (nothing to undo, no asterisk in the title).
 - **More compact rows:** for parameters with a single control (drop-down, check box, number or hex entry) the info symbol and the raw value now sit in the same line as the control (control, info symbol, raw value) instead of in three lines. Rows with several controls (groups) stay as they were.
 - **Four new languages: Russian, Indonesian, Chinese (simplified) and Chinese (traditional)** (View > Language); with them the program speaks all languages of the camera menu (the camera also offers English, Français, Deutsch, Español and Português). The Language list of the System menu now shows the real names of the camera list (the two Asian entries are 中文(简) and 中文(繁)). The tab names Camera, Audio and Recording are translated, too. The system language is recognised (Russian, Indonesian, Chinese: traditional for Taiwan, Hong Kong and Macau, otherwise simplified). All translations are AI-made and not reviewed by native speakers.
@@ -13,6 +14,7 @@ Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen 
 - **The open dialog remembers its size and position.**
 
 ### Fixed
+- The tab names follow the camera menu in German (Kamera, Malen, Ton, Sucher, Aufnahme, Medium, Datei), French, Spanish, Russian, Portuguese and Indonesian (read from the camera's own menus).
 - "Show differences" in the Import window opens the difference view on top of the Import window (it used to appear behind it).
 - The Import and Compare windows were opened larger than the screen on a scaled display (the buttons at the bottom could not be reached); their size is now a share of the program window and never larger than the screen.
 - Dragging the edge of the window re-wraps the rows while you drag (it used to happen only after the mouse button was released).

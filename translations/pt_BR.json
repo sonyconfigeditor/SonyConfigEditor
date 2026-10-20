@@ -451,7 +451,7 @@
   "SDI Output Format": "Formato de saída SDI",
   "HDMI Output Format": "Formato de saída HDMI",
   "Output": "Saída",
-  "Video": "Video",
+  "Video": "Vídeo",
   "HDMI Output": "Saída HDMI",
   "Interval Rec: Interval Time / Number of Frames": "Interval Rec: tempo de intervalo / número de quadros",
   "Interval Rec: Pre-Lighting": "Interval Rec: Pre-Lighting",
@@ -473,7 +473,7 @@
   "Auto Naming": "Auto Naming",
   "Cam ID + Reel#": "Cam ID + Reel#",
   "Clip": "Clip",
-  "Media": "Media",
+  "Media": "Mídia",
   "4-6 sec – assumption": "4-6 sec – suposição",
   "8-10 sec – assumption": "8-10 sec – suposição",
   "10-12 sec – assumption": "10-12 sec – suposição",
@@ -543,6 +543,10 @@
   "Camera": "Câmera",
   "Audio": "Áudio",
   "Recording": "Gravação",
-  "Paint": "Paint",
-  "VF": "VF"
+  "Paint": "Pintar",
+  "VF": "VE",
+  "VF › VF Setting": "Configuração do VE",
+  "VF › Peaking": "Salientar",
+  "VF › Marker": "Marcador",
+  "VF › Zebra": "Zebra"
 }

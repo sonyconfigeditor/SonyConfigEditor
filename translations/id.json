@@ -14,7 +14,7 @@
   "Undo": "Urungkan",
   "Redo": "Ulangi",
   "Find": "Cari",
-  "File": "Berkas",
+  "File": "File",
   "Edit": "Edit",
   "Language": "Bahasa",
   "View": "Tampilan",
@@ -543,6 +543,9 @@
   "Camera": "Kamera",
   "Audio": "Audio",
   "Recording": "Perekaman",
-  "Paint": "Paint",
-  "VF": "VF"
+  "Paint": "Cat",
+  "VF": "Pencari Gambar",
+  "Video › Output Setting": "Pengaturan Output",
+  "Video › Monitor LUT": "LUT Monitor",
+  "Video › Output Display": "Tampilan Output"
 }

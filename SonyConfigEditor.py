@@ -967,6 +967,17 @@ def fit_dialog(window, app, width_factor: float, height_factor: float) -> None:
     window.geometry(f"{width}x{height}")
 
 
+def sub_heading(sub: str, with_menu: bool = False) -> str:
+    """Heading of a sub-group ("System › Country") in the language of the camera menu: the catalog translates the whole text (key "System › Country"), the
+    value is the name of the menu item as the camera shows it; without a translation the English name. `with_menu` adds the translated menu name."""
+    menu, sep, name = sub.partition(" › ")
+    if not sep or menu not in MENU_OF_PREFIX:
+        return tr(sub)
+    shown = tr(sub)
+    shown = name if shown == sub else shown
+    return f"{tr(menu)} › {shown}" if with_menu else shown
+
+
 class ImportDialog(ctk.CTkToplevel):
     """List of importable values with check boxes (select all / none / invert). `result` = chosen items or None."""
 
@@ -3210,7 +3221,7 @@ class App(ctk.CTk):
                     if sub in REORDER_BY_LOCK:
                         divider = tk.Label(card, text=tr("Not used with the current settings"), anchor="w", bg=self._c["card"], fg="#7a7a7a", font=self._font)
                     sub_info = {"label": heading, "outer": wrap, "keys": [], "title": sub, "suffix": "", "category": category, "group": group, "divider": divider,
-                                "display": sub.split(" › ", 1)[1] if " › " in sub and sub.split(" › ")[0] in MENU_OF_PREFIX else sub}
+                                "display": sub_heading(sub)}
                     if category:
                         next(c for c in self._cats if c["title"] == category)["subs"].append(sub_info)
                     heading.bind("<Button-1>", lambda _e, si=sub_info: self._toggle_sub(si))
@@ -3640,7 +3651,7 @@ class App(ctk.CTk):
 
     def _set_sub_text(self, sub: dict):
         arrow = "▶" if sub["title"] in self._sub_collapsed else "▼"
-        name = sub["title"] if self._filter_active() else sub.get("display", sub["title"])      # a filter lists several menus: then with the menu name
+        name = sub_heading(sub["title"], with_menu=True) if self._filter_active() else sub.get("display", sub["title"])      # a filter lists several menus: then with the menu name
         sub["label"].configure(text=f"{arrow}  {name}{sub['suffix']}")
 
     def _set_cat_text(self, cat: dict):

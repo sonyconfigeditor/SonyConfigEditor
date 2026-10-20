@@ -543,6 +543,9 @@
   "Camera": "Камера",
   "Audio": "Аудио",
   "Recording": "Запись",
-  "Paint": "Paint",
-  "VF": "VF"
+  "Paint": "Рисование",
+  "VF": "Видоискатель",
+  "Video › Output Setting": "Настройка выхода",
+  "Video › Monitor LUT": "Монитор LUT",
+  "Video › Output Display": "Отображение выхода"
 }
