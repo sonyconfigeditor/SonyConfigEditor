@@ -555,5 +555,7 @@
   "Which colour space the video output uses (Video > Output Setting > Output Color Space): the list of the camera offers SDI2 BT.709, SDI2 BT.2020 and ALL BT.709. Only available when Paint > Matrix > Preset Select is BT.2020 and the recording format is 4K / QFHD.": "Ruang warna yang dipakai output video (Video > Output Setting > Output Color Space): daftar kamera menawarkan SDI2 BT.709, SDI2 BT.2020 dan ALL BT.709. Hanya dapat dipilih jika Paint > Matrix > Preset Select adalah BT.2020 dan format rekaman 4K / QFHD.",
   "Preset white balance of the camera (2100 K to 10000 K in steps of 100 K), one value per ND position: CLEAR, ND 1, ND 2, ND 3 and Variable ND On (CLEAR of the Preset and the Variable setting share one value). The first value is not assigned yet.": "White balance preset kamera (2100 K sampai 10000 K dalam langkah 100 K), satu nilai per posisi ND: CLEAR, ND 1, ND 2, ND 3 dan ND variabel On (CLEAR pada pengaturan Preset dan Variable berbagi satu nilai). Nilai pertama belum ditetapkan.",
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "Menyalakan atau mematikan sinyal uji (gigi gergaji) kamera. Matikan lagi setelah pengujian.",
-  "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Lebar pita output down converter untuk konversi ke HD dan 2K: High atau Low."
+  "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Lebar pita output down converter untuk konversi ke HD dan 2K: High atau Low.",
+  "Colour wheel": "Roda warna",
+  "Click a colour to set hue and saturation.": "Klik sebuah warna untuk mengatur rona dan saturasi."
 }

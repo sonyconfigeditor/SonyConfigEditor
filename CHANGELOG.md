@@ -6,6 +6,7 @@ Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen 
 ## [Unreleased] - 2026-10-20
 
 ### Added
+- **Paint > Skin Detail:** hue and saturation now give one colour field (it follows both values) instead of showing the hue alone; a click on it opens a colour wheel whose click sets both values.
 - **Paint > White: Filter White Memory** (On / Off); the hint says that the ND switch of the camera has to be on Preset to set the memories for ND 1 to 3.
 - **Paint > White: the white memories per ND position** (memory A at ND 1, ND 2, ND 3 and CLEAR; memory B at CLEAR), edited as R Gain and B Gain like the common memories; **ATW Speed** and **Shockless White** (the item formerly shown as "Cine EI related" is Shockless White).
 - **Paint > Maintenance > Test Saw** and **System > Camera Config > HD/2K Modulation** (ALL files).

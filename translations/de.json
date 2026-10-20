@@ -605,5 +605,7 @@
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "Schaltet das Testsignal (Sägezahn) der Kamera ein oder aus. Nach dem Test wieder ausschalten.",
   "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Ausgangsbandbreite des Down-Converters für die Umwandlung nach HD und 2K: High oder Low.",
   "Paint › Maintenance": "Wartung",
-  "System › Camera Config": "Kamerakonfiguration"
+  "System › Camera Config": "Kamerakonfiguration",
+  "Colour wheel": "Farbrad",
+  "Click a colour to set hue and saturation.": "Klick auf eine Farbe setzt Farbton und Sättigung."
 }

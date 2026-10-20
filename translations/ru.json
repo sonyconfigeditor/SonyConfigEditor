@@ -555,5 +555,7 @@
   "Which colour space the video output uses (Video > Output Setting > Output Color Space): the list of the camera offers SDI2 BT.709, SDI2 BT.2020 and ALL BT.709. Only available when Paint > Matrix > Preset Select is BT.2020 and the recording format is 4K / QFHD.": "Какое цветовое пространство использует видеовыход (Video > Output Setting > Output Color Space): в списке камеры SDI2 BT.709, SDI2 BT.2020 и ALL BT.709. Доступно только при Paint > Matrix > Preset Select = BT.2020 и формате записи 4K / QFHD.",
   "Preset white balance of the camera (2100 K to 10000 K in steps of 100 K), one value per ND position: CLEAR, ND 1, ND 2, ND 3 and Variable ND On (CLEAR of the Preset and the Variable setting share one value). The first value is not assigned yet.": "Предустановленный баланс белого камеры (от 2100 K до 10000 K с шагом 100 K), одно значение на положение ND: CLEAR, ND 1, ND 2, ND 3 и переменный ND On (CLEAR режимов Preset и Variable использует общее значение). Первое значение пока не назначено.",
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "Включает или выключает тестовый сигнал (пилообразный) камеры. После теста выключите его снова.",
-  "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Полоса пропускания выхода даун-конвертера при преобразовании в HD и 2K: High или Low."
+  "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "Полоса пропускания выхода даун-конвертера при преобразовании в HD и 2K: High или Low.",
+  "Colour wheel": "Цветовой круг",
+  "Click a colour to set hue and saturation.": "Щёлкните цвет, чтобы задать оттенок и насыщенность."
 }

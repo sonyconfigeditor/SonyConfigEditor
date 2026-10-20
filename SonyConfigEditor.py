@@ -19,6 +19,7 @@ import contextlib
 import functools
 import hashlib
 import locale
+import math
 import os
 import queue
 import re
@@ -1232,6 +1233,79 @@ def hue_hex(degrees: int) -> str:
     """Fully saturated colour of a hue angle (0 to 359 degrees) for the small colour field next to hue values."""
     r, g, b = colorsys.hsv_to_rgb((degrees % 360) / 360, 1.0, 1.0)
     return f"#{round(r * 255):02x}{round(g * 255):02x}{round(b * 255):02x}"
+
+
+def hue_sat_hex(degrees: int, saturation: int) -> str:
+    """One colour for hue (0 to 359 degrees) and saturation (-99 to +99): grey at -99, fully saturated at +99."""
+    r, g, b = colorsys.hsv_to_rgb((degrees % 360) / 360, max(0, min(198, saturation + 99)) / 198, 1.0)
+    return f"#{round(r * 255):02x}{round(g * 255):02x}{round(b * 255):02x}"
+
+
+class ColorWheelDialog(ctk.CTkToplevel):
+    """Colour wheel for Skin Detail: the angle is the hue (0 to 359 degrees, red to the right, counter-clockwise), the distance from the centre the
+    saturation (centre -99, edge +99). One click calls ``on_pick(hue, saturation)`` and closes the window."""
+
+    SIZE = 240      # unscaled pixels
+    _images: dict = {}
+
+    def __init__(self, app, hue: int, saturation: int, on_pick, invisible: bool = False):
+        super().__init__(app)
+        apply_window_icon(self)
+        if invisible:
+            self.attributes("-alpha", 0)
+        self.title(tr("Colour wheel"))
+        make_transient(self, app)
+        self.resizable(False, False)
+        self._on_pick = on_pick
+        self._size = max(120, app._sc(self.SIZE))
+        ctk.CTkLabel(self, text=tr("Click a colour to set hue and saturation."), text_color="gray").pack(padx=16, pady=(14, 6))
+        self.canvas = tk.Canvas(self, width=self._size, height=self._size, highlightthickness=0, bd=0, bg="#2b2b2b", cursor="hand2")
+        self.canvas.pack(padx=16, pady=(0, 14))
+        self._image = self._wheel_image(self._size)
+        self.canvas.create_image(0, 0, image=self._image, anchor="nw")
+        radius = self._size / 2
+        angle, dist = math.radians(hue), (saturation + 99) / 198 * radius
+        x, y = radius + math.cos(angle) * dist, radius - math.sin(angle) * dist
+        mark = max(4, self._size // 40)
+        self.canvas.create_oval(x - mark, y - mark, x + mark, y + mark, outline="black", width=2)
+        self.canvas.create_oval(x - mark + 2, y - mark + 2, x + mark - 2, y + mark - 2, outline="white", width=1)
+        self.canvas.bind("<Button-1>", self.click)
+        self.bind("<Escape>", lambda _e: self.destroy())
+
+    @classmethod
+    def _wheel_image(cls, size: int):
+        key = size
+        image = cls._images.get(key)
+        if image is None:
+            image = tk.PhotoImage(width=size, height=size)
+            radius = size / 2
+            rows = []
+            for py in range(size):
+                cells = []
+                for px in range(size):
+                    dx, dy = px + 0.5 - radius, radius - (py + 0.5)
+                    dist = math.hypot(dx, dy)
+                    if dist > radius:
+                        cells.append("#2b2b2b")
+                        continue
+                    cells.append(hue_sat_hex(round(math.degrees(math.atan2(dy, dx))) % 360, round(dist / radius * 198) - 99))
+                rows.append("{" + " ".join(cells) + "}")
+            image.put(" ".join(rows))
+            cls._images[key] = image
+        return image
+
+    def pick_at(self, x: float, y: float) -> tuple:
+        """Hue and saturation at a point of the wheel (the point is limited to the circle)."""
+        radius = self._size / 2
+        dx, dy = x - radius, radius - y
+        dist = min(math.hypot(dx, dy), radius)
+        hue = round(math.degrees(math.atan2(dy, dx))) % 360
+        return hue, max(-99, min(99, round(dist / radius * 198) - 99))
+
+    def click(self, event):
+        hue, saturation = self.pick_at(event.x, event.y)
+        self.destroy()
+        self._on_pick(hue, saturation)
 
 
 class MenuItem:
@@ -4422,8 +4496,13 @@ class App(ctk.CTk):
             entry = ctk.CTkEntry(row, width=f.get("entry_width", 52), justify="center")
             entry.insert(0, shown())
             swatch = None
+            sat_idx = f.get("sat_index")      # hue and saturation together make one colour field
+            def swatch_color():
+                if sat_idx is None:
+                    return hue_hex(int(shown()))
+                return hue_sat_hex(int(shown()), raw_to_step(int(var.get().split(",")[sat_idx]), unit, 1, False))
             if f.get("swatch") == "hue":
-                swatch = ctk.CTkFrame(row, width=26, height=26, corner_radius=4, fg_color=hue_hex(int(shown())))
+                swatch = ctk.CTkFrame(row, width=26, height=26, corner_radius=4, fg_color=swatch_color())
 
             def apply(new: int):
                 if snap:
@@ -4440,12 +4519,31 @@ class App(ctk.CTk):
                 entry.delete(0, "end")
                 entry.insert(0, shown())
                 if swatch is not None:
-                    swatch.configure(fg_color=hue_hex(int(shown())))
+                    swatch.configure(fg_color=swatch_color())
                 if hint_label is not None:
                     clicks = int(shown())
                     menu_step = (abs(clicks) // hint["per"]) * (1 if clicks >= 0 else -1)
                     hint_label.configure(text=tr("Camera menu shows: {value}").format(value=f"{menu_step:+d}" if menu_step else "0"))
 
+            def pick_colour(hue: int, saturation: int):
+                """The colour wheel gave hue and saturation: both fields change as one undo step."""
+                self._last_key = None
+                for index, value, fsgn, fu in ((idx, hue, fsign, funit), (sat_idx, saturation, 1, unit)):
+                    raw_value = round(fsgn * value * fu)
+                    if index == sat_idx and max_raw and abs(value) == hi:
+                        raw_value = max_raw if value > 0 else min_raw
+                    set_item(index, str(raw_value))
+                for refresh in refreshers:
+                    refresh()
+
+            def open_wheel(invisible: bool = False):
+                current = raw_to_step(int(var.get().split(",")[sat_idx]), unit, 1, False)
+                wheel = ColorWheelDialog(self, int(shown()), current, pick_colour, invisible=invisible)
+                self._wheel = wheel
+                return wheel
+
+            if sat_idx is not None:
+                frame._open_wheel = open_wheel
             def commit(_event=None):
                 try:
                     apply(int(entry.get().strip()))
@@ -4475,6 +4573,10 @@ class App(ctk.CTk):
                 explain.pack(side="left", padx=(6, 0))
             if swatch is not None:
                 swatch.pack(side="left", padx=(8, 0))
+                if sat_idx is not None:
+                    swatch.configure(cursor="hand2")
+                    swatch.bind("<Button-1>", lambda _e: open_wheel())
+                    var.trace_add("write", lambda *_a: swatch.winfo_exists() and swatch.configure(fg_color=swatch_color()))
             entry.bind("<Return>", commit)
             entry.bind("<FocusOut>", commit)
             entry.commit = commit       # the tests commit directly (a synthetic focus event is not reliably delivered)

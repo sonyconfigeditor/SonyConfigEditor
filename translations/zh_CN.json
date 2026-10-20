@@ -552,5 +552,7 @@
   "Which colour space the video output uses (Video > Output Setting > Output Color Space): the list of the camera offers SDI2 BT.709, SDI2 BT.2020 and ALL BT.709. Only available when Paint > Matrix > Preset Select is BT.2020 and the recording format is 4K / QFHD.": "视频输出使用的色彩空间（Video > Output Setting > Output Color Space）：摄像机的列表提供 SDI2 BT.709、SDI2 BT.2020 和 ALL BT.709。仅当 Paint > Matrix > Preset Select 为 BT.2020 且记录格式为 4K / QFHD 时可选。",
   "Preset white balance of the camera (2100 K to 10000 K in steps of 100 K), one value per ND position: CLEAR, ND 1, ND 2, ND 3 and Variable ND On (CLEAR of the Preset and the Variable setting share one value). The first value is not assigned yet.": "摄像机的预设白平衡（2100 K 到 10000 K，步进 100 K），每个 ND 位置一个值：CLEAR、ND 1、ND 2、ND 3 和可变 ND On（Preset 与 Variable 设置的 CLEAR 共用一个值）。第一个值尚未分配。",
   "Turns the test signal (saw tooth) of the camera on or off. Switch it off again after the test.": "开启或关闭摄像机的测试信号（锯齿波）。测试后请再次关闭。",
-  "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "下变频器转换为 HD 和 2K 时的输出带宽：High 或 Low。"
+  "Output bandwidth of the down converter for the conversion to HD and 2K: High or Low.": "下变频器转换为 HD 和 2K 时的输出带宽：High 或 Low。",
+  "Colour wheel": "色轮",
+  "Click a colour to set hue and saturation.": "点击一种颜色即可设置色相和饱和度。"
 }

@@ -5494,7 +5494,8 @@
           ],
           "unit": 182.04444444444445,
           "sign": -1,
-          "swatch": "hue"
+          "swatch": "hue",
+          "sat_index": 2
         },
         {
           "index": 4,
