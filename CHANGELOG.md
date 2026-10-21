@@ -3,9 +3,10 @@
 Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
 Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen in einen neuen obersten Eintrag (`## [Unreleased] - <Datum>`), die Version wird nur auf Anweisung erhöht.
 
-## [Unreleased] - 2026-10-20
+## [Unreleased] - 2026-10-21
 
 ### Added
+- **User menu files (`.USER`) as a third file type** next to SCENE and ALL: open, edit and save the 20 slots of the camera's user menu; the **USER** segment in the header switches directly (the other types stay as they are). Each slot is a dropdown of the menu items that are known by name (e.g. Base Setting, Codec, ISO/Gain/EI; numbers without a name are listed as such), can be emptied, and moved up or down with the arrows; an item with known sub-elements (so far ISO/Gain/EI: Mode, ISO/Gain H/M/L, Exposure Index H/M/L, Shockless Gain) shows them as check boxes; the camera keeps these selections when an item is taken out of the menu, so does the program. A new **User** tab shows the slots; the user menu can be started from a SCENE or ALL file with the template. User menu files are compared and imported only with other user menu files.
 - **Paint > Skin Detail:** hue and saturation now give one colour field (it follows both values) instead of showing the hue alone; a click on it opens a colour wheel whose click sets both values; guide lines show the colour range (Width, assumed to be split evenly around the hue).
 - **Paint > White: Filter White Memory** (On / Off); the hint says that the ND switch of the camera has to be on Preset to set the memories for ND 1 to 3.
 - **Paint > White: the white memories per ND position** (memory A at ND 1, ND 2, ND 3 and CLEAR; memory B at CLEAR), edited as R Gain and B Gain like the common memories; **ATW Speed** and **Shockless White** (the item formerly shown as "Cine EI related" is Shockless White).

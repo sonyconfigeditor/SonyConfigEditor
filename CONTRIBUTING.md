@@ -20,6 +20,10 @@ Before you send files:
 - **Send only your own settings.** Do not send scene files from paid look packs or other people's files without their permission.
 - Files are published with the issue. Do not attach anything you do not want to be public.
 
+### User menu files
+
+The user menu (Edit User Menu, saved as a `.USER` file) is decoded the same way. Put exactly **one** menu item into the user menu (slot 1), tick all its sub-elements when the camera asks, save the `.USER` file, and write down the name of the item and the sub-elements in the order of the dialog. For the order of the flags, save one more file with some of the sub-elements switched off. The camera accepts a user menu file only for its own model.
+
 ## 2. Bug reports and ideas
 
 Open an [issue](../../issues/new/choose) for a bug. Please include the version (About dialog), your operating system, whether you use the EXE or run the Python file, and what you did. Screenshots help. For questions, ideas and showing what you use the tool for, the [Discussions](../../discussions) are the better place.

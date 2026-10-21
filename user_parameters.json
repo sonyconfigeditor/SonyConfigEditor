@@ -1,0 +1,767 @@
+{
+  "_models": [
+    "PXW-FS7",
+    "PXW-FS7M2"
+  ],
+  "_note": "User menu files (.USER): IDs 00001 to 00020 are the 20 slots of the user menu. The other IDs (00106 to about 01907, flags 0 or 1) are the sub-elements that were selected when an item was added (the camera asks which sub-elements to take along): ISO/Gain/EI has eight, flags 01203 to 01207 and 01271 to 01273. The camera keeps the flags of an item after the item is deleted from the user menu (about 150 flags stay 1 in a file whose slots hold only ISO/Gain/EI). Which flags belong to which item is known only for ISO/Gain/EI so far (user_menu_items.json); a user menu that was never used is assumed to have all flags 0.",
+  "00001": {
+    "name": "User Menu Slot 1",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 1,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": null,
+        "down": "00002"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00002": {
+    "name": "User Menu Slot 2",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 2,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00001",
+        "down": "00003"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00003": {
+    "name": "User Menu Slot 3",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 3,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00002",
+        "down": "00004"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00004": {
+    "name": "User Menu Slot 4",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 4,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00003",
+        "down": "00005"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00005": {
+    "name": "User Menu Slot 5",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 5,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00004",
+        "down": "00006"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00006": {
+    "name": "User Menu Slot 6",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 6,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00005",
+        "down": "00007"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00007": {
+    "name": "User Menu Slot 7",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 7,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00006",
+        "down": "00008"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00008": {
+    "name": "User Menu Slot 8",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 8,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00007",
+        "down": "00009"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00009": {
+    "name": "User Menu Slot 9",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 9,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00008",
+        "down": "00010"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00010": {
+    "name": "User Menu Slot 10",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 10,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00009",
+        "down": "00011"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00011": {
+    "name": "User Menu Slot 11",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 11,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00010",
+        "down": "00012"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00012": {
+    "name": "User Menu Slot 12",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 12,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00011",
+        "down": "00013"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00013": {
+    "name": "User Menu Slot 13",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 13,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00012",
+        "down": "00014"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00014": {
+    "name": "User Menu Slot 14",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 14,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00013",
+        "down": "00015"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00015": {
+    "name": "User Menu Slot 15",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 15,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00014",
+        "down": "00016"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00016": {
+    "name": "User Menu Slot 16",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 16,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00015",
+        "down": "00017"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00017": {
+    "name": "User Menu Slot 17",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 17,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00016",
+        "down": "00018"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00018": {
+    "name": "User Menu Slot 18",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 18,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00017",
+        "down": "00019"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00019": {
+    "name": "User Menu Slot 19",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 19,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00018",
+        "down": "00020"
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  },
+  "00020": {
+    "name": "User Menu Slot 20",
+    "status": "confirmed",
+    "evidence": "FS7M2 user menu file DEFG (2026-10-21, 13 items registered in this order): slot n holds 0x06000000 + the number of the menu item, e.g. slot 1 = Base Setting (364), slot 2 = Rec Format (559), slot 3 = Codec (700); slots 14 to 20 are empty (0,0). The FS7 sample file has the same layout (20 slots, 14 filled). The second value is 0 or -1 (Output Format and VF Setting have -1 in the FS7M2 file; in the FS7 file Codec has -1, here it has 0): its meaning is not known.",
+    "group": "misc",
+    "subgroup": "User › Menu",
+    "order": 20,
+    "widget": {
+      "type": "stepfields",
+      "unit": 1,
+      "range": [
+        0,
+        9999
+      ],
+      "note": "One slot of the user menu of the camera (Edit User Menu): the menu item the slot holds (the file stores 0x06000000 plus the number of the item). Only the items whose number is known are offered; the list grows with every user menu file that is read. The second value (0 or -1) is kept as it is; its meaning is not known. The arrows move the slot one place up or down.",
+      "swap": {
+        "up": "00019",
+        "down": null
+      },
+      "fields": [
+        {
+          "index": 0,
+          "label": "Menu item",
+          "choices_from": "user_menu"
+        },
+        {
+          "index": 1,
+          "label": "Sub",
+          "choices": {
+            "0": "0",
+            "-1": "-1"
+          }
+        }
+      ],
+      "compact": true,
+      "sub_elements": "user_menu"
+    }
+  }
+}

@@ -24,6 +24,8 @@ python -m PyInstaller --noconfirm --clean --onefile --windowed ^
     --collect-data customtkinter ^
     --add-data "scene_parameters.json;." ^
     --add-data "all_parameters.json;." ^
+    --add-data "user_parameters.json;." ^
+    --add-data "user_menu_items.json;." ^
     --add-data "id_map.json;." ^
     --add-data "defaults.json;." ^
     --add-data "LICENSE;." ^

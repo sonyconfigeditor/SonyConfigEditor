@@ -1,0 +1,108 @@
+{
+  "_note": "Names of the menu item numbers of the user menu (number -> {name, status, flags, sub_elements}). The file stores 0x06000000 plus the number. 'flags' = IDs of the flags of the file that are 1 for the sub-elements of the item that were switched on when it was added, in the order of 'sub_elements' (the dialog of the camera); only given where known.",
+  "items": {
+    "17": {
+      "name": "S&Q Motion",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "21": {
+      "name": "Timecode",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "39": {
+      "name": "Format Media",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "124": {
+      "name": "VF Setting",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "364": {
+      "name": "Base Setting",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "433": {
+      "name": "Output Format",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "463": {
+      "name": "Monitor LUT",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "559": {
+      "name": "Rec Format",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "700": {
+      "name": "Codec",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "704": {
+      "name": "Simul Rec",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "755": {
+      "name": "Auto Black Balance",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "763": {
+      "name": "Picture Cache Rec",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "892": {
+      "name": "APR",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+    },
+    "1101": {
+      "name": "ISO/Gain/EI",
+      "status": "confirmed",
+      "flags": [
+        "01207",
+        "01203",
+        "01204",
+        "01205",
+        "01271",
+        "01272",
+        "01273",
+        "01206"
+      ],
+      "evidence": "FS7M2 user menu file DEFG, second version (2026-10-21): ISO/Gain/EI added as the 14th item changed slot 00014 from 0,0 to 100664397,0 (= 0x06000000 + 1101) and eight flags from 0 to 1: 01203 to 01207 and 01271 to 01273. The camera asks which sub-elements to take along when an item is added (they can be switched on and off one by one): the flags are that selection. Third version (2026-10-21): deselecting the first sub-element in the camera dialog switched exactly one flag off, 01207: so 01207 is the first sub-element . Fourth version: first sub-element switched on again, second one off: only 01203 went 1 -> 0 (and 01207 back to 1): the second sub-element is 01203, so the dialog order does not follow the flag numbers (01207, 01203, ...). Order of the sub-elements in the camera dialog (user, 2026-10-21): Mode, ISO/Gain <H>, ISO/Gain <M>, ISO/Gain <L>, Exposure Index <H>, Exposure Index <M>, Exposure Index <L>, Shockless Gain. Confirmed: Mode = 01207, ISO/Gain <H> = 01203; the other six flags (01204, 01205, 01206, 01271, 01272, 01273) are only partly assigned: sub-elements 3, 5 and 7 (ISO/Gain <M>, Exposure Index <H>, Exposure Index <L>) switched off together turned 01204, 01271 and 01273 off (all others stayed on), so these three flags belong to 3, 5, 7 in an order not yet known (likely 01204 = 3, 01271 = 5, 01273 = 7). Sixth version (sub-elements 4, 5 and 8 off, and every other item deleted from the user menu): against the version with all eight on, 01205, 01206 and 01271 went to 0. Together with the 3-5-7 file (01204, 01271, 01273): sub-element 5 (Exposure Index <H>) = 01271 (in both sets); 01272 is the only flag in neither set = sub-element 6; 3 and 7 are 01204 / 01273 in unknown order, 4 and 8 are 01205 / 01206 in unknown order. Deleting the other thirteen items from the user menu changed no flag: the camera keeps the sub-element flags of an item after it is taken out. Seventh version (6, 7, 8 off, only ISO/Gain/EI in the menu): 01206, 01272 and 01273 went to 0. All three sets together decide every sub-element: Mode 01207, ISO/Gain <H> 01203, ISO/Gain <M> 01204, ISO/Gain <L> 01205, Exposure Index <H> 01271, Exposure Index <M> 01272, Exposure Index <L> 01273, Shockless Gain 01206 (the list 'flags' is in the order of the sub-elements).",
+      "sub_elements": [
+        "Mode",
+        "ISO/Gain <H>",
+        "ISO/Gain <M>",
+        "ISO/Gain <L>",
+        "Exposure Index <H>",
+        "Exposure Index <M>",
+        "Exposure Index <L>",
+        "Shockless Gain"
+      ]
+    },
+    "189": {
+      "name": "Noise Suppression",
+      "status": "confirmed",
+      "sub_elements": [
+        "Setting",
+        "Level"
+      ],
+      "flags": [
+        "00291",
+        "00292"
+      ],
+      "evidence": "FS7M2 user menu file DEFG, eighth version (2026-10-21): slot 1 changed from ISO/Gain/EI to Noise Suppression: 00001 = 100663485,0 (= 0x06000000 + 189) and flags 00291 and 00292 from 0 to 1 (Setting and Level both selected in the camera dialog).  The ISO/Gain/EI flags stayed as they were (the camera keeps them). Ninth version: Setting deselected: only 00291 went 1 -> 0, so 00291 = Setting and 00292 = Level (confirmed)."
+    }
+  }
+}

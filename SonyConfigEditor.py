@@ -1,6 +1,7 @@
 """Sony Config Editor - reads, converts and writes Sony Cinecam configuration files.
 
-Currently supported: PXW-FS7 / PXW-FS7M2 SCENE files (*.SCENE) and ALL files (*.ALL).
+Currently supported: PXW-FS7 / PXW-FS7M2 SCENE files (*.SCENE), ALL files (*.ALL) and user menu files (*.USER: the 20 slots of the camera's user menu can be edited,
+moved and saved; the camera accepts only the file of its own model).
 
 Requirements: Python 3.10 or newer with Tkinter (Windows/macOS: included in the python.org installer;
 Debian/Ubuntu: sudo apt install python3-tk; Fedora: sudo dnf install python3-tkinter) and one extra library:
@@ -37,7 +38,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.3.0"
-_date = "2026-10-20"
+_date = "2026-10-21"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -50,7 +51,7 @@ WARNING_COLOR = "#e57373"
 # "subgroup" in the databases ("Paint › Gamma" -> Paint); parameters without a database entry and the sub-group "Other" are in Unknown.
 # Icons are Unicode symbols (no image files). Video, TC/UB and Media follow as soon as parameters of those menus are decoded.
 MENUS = [("system", "System", "⚙"), ("camera", "Camera", "📹"), ("paint", "Paint", "🎨"), ("audio", "Audio", "🔊"), ("video", "Video", "🖥"), ("vf", "VF", "👁"), ("tcub", "TC/UB", "⏱"),
-         ("recording", "Recording", "⏺"), ("media", "Media", "💾"), ("file", "File", "📁"), ("unknown", "Unknown", "❓")]
+         ("recording", "Recording", "⏺"), ("media", "Media", "💾"), ("file", "File", "📁"), ("user", "User", "👤"), ("unknown", "Unknown", "❓")]
 GROUPS = [(key, title) for key, title, _icon in MENUS]
 GROUP_ICONS = {key: icon for key, _title, icon in MENUS}
 MENU_OF_PREFIX = {title: key for key, title, _icon in MENUS if key != "unknown"}
@@ -60,7 +61,7 @@ SUBGROUP_ORDER = [
     "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)", "System › Assignable Button", "System › Assignable Dial", "System › Rec Lamp", "System › Fan Control", "System › ND Dial", "System › HOLD Switch Setting", "System › Lens", "System › Language", "System › Clock Set", "System › GPS", "System › IR Remote", "System › Camera Battery Alarm", "System › Camera DC IN Alarm", "System › Ext. Unit Battery Alarm", "System › Ext. Unit DC IN Alarm", "System › Camera Config",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
     "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Maintenance",
-    "Recording › S&Q Motion", "Recording › Interval Rec", "Recording › Simul Rec", "Media › Clip", "Audio › Input", "Audio › Output", "Video › Output", "Video › Output Setting", "Video › Output Display", "Video › Monitor LUT", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File",
+    "Recording › S&Q Motion", "Recording › Interval Rec", "Recording › Simul Rec", "Media › Clip", "Audio › Input", "Audio › Output", "Video › Output", "Video › Output Setting", "Video › Output Display", "Video › Monitor LUT", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File", "User › Menu",
 ]
 REORDER_BY_LOCK = {"Camera › ISO/Gain/EI"}      # sub-groups whose usable rows move to the top, the greyed-out ones follow below a divider line
 CATEGORIES = ()      # the menus are tabs now; a heading per menu inside a tab would only repeat the tab name (the mechanism for headings is kept)
@@ -75,17 +76,21 @@ def menu_of(info: dict | None) -> str:
 
 FILTER_DELAY_MS = 150
 BASE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))  # _MEIPASS: bundled by PyInstaller
-# SCENE and ALL files share the container format but use different parameter IDs -> one database per file type
-PARAM_DB_FILES = {"scene": BASE_DIR / "scene_parameters.json", "all": BASE_DIR / "all_parameters.json"}
+# SCENE, ALL and USER files share the container format but use different parameter IDs -> one database per file type
+PARAM_DB_FILES = {"scene": BASE_DIR / "scene_parameters.json", "all": BASE_DIR / "all_parameters.json", "user": BASE_DIR / "user_parameters.json"}
+USER_MENU_FILE = BASE_DIR / "user_menu_items.json"      # names of the menu item numbers of the user menu (.USER files)
+USER_MENU_BASE = 0x06000000      # a slot of the user menu holds this value plus the number of the menu item (0 = empty slot)
 PARAM_DB_FILE = PARAM_DB_FILES["scene"]
 TEMPLATE_DIR = BASE_DIR / "templates"
 DEFAULTS_FILE = BASE_DIR / "defaults.json"   # neutral values for "Neu" (documented defaults of the manual, no factory dump)
 ID_MAP_FILE = BASE_DIR / "id_map.json"   # SCENE id -> ALL id per model, for switching between the two file types
 MODELS = ("PXW-FS7", "PXW-FS7M2")
 # Supported file types by extension.
-FILE_TYPES = {".scene": "Sony SCENE File", ".all": "Sony ALL File"}
+FILE_TYPES = {".scene": "Sony SCENE File", ".all": "Sony ALL File", ".user": "Sony USER Menu File"}
+KIND_OF_EXT = {".scene": "scene", ".all": "all", ".user": "user"}
+EXT_OF_KIND = {kind: ext.upper() for ext, kind in KIND_OF_EXT.items()}
 # ALL files use the same container (MD5 line, V01.00, name, model, ID=value, %%%%) as SCENE files
-LOADERS = {".scene": lambda path: SceneFile.load(path), ".all": lambda path: SceneFile.load(path)}
+LOADERS = {".scene": lambda path: SceneFile.load(path), ".all": lambda path: SceneFile.load(path), ".user": lambda path: SceneFile.load(path)}
 HISTORY_LIMIT = 200
 COALESCE_SECONDS = 1.0  # consecutive edits of the same field within this time form one undo step
 
@@ -110,6 +115,51 @@ def _read_param_file(kind: str) -> dict:
 
 def load_param_db(kind: str = "scene") -> dict:
     return translate_db({k: v for k, v in _read_param_file(kind).items() if not k.startswith("_")})
+
+
+def load_user_menu_names() -> dict:
+    """Menu item number (str) -> name of the items of the user menu that are known (user_menu_items.json), empty if the file is missing."""
+    try:
+        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+    except (OSError, ValueError):
+        return {}
+    return {str(number): entry["name"] for number, entry in items.items() if isinstance(entry, dict) and entry.get("name")}
+
+
+def load_user_menu_flags() -> dict:
+    """Menu item number -> IDs of the flags (sub-elements of the item that are switched on) of the items whose flags are known."""
+    try:
+        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+    except (OSError, ValueError):
+        return {}
+    return {int(number): list(entry["flags"]) for number, entry in items.items() if isinstance(entry, dict) and entry.get("flags")}
+
+
+def load_user_menu_subs() -> dict:
+    """Menu item number -> (names of its sub-elements, IDs of their flags in the same order) for the items where both are known."""
+    try:
+        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+    except (OSError, ValueError):
+        return {}
+    return {int(number): (list(entry["sub_elements"]), list(entry["flags"])) for number, entry in items.items()
+            if isinstance(entry, dict) and entry.get("sub_elements") and len(entry.get("flags", [])) == len(entry["sub_elements"])}
+
+
+def user_menu_choices(values) -> dict:
+    """Choices of a user menu slot (raw first value -> text): empty, the known menu items by name, then the numbers that occur in the given slot
+    values (``code,sub`` texts) and have no name yet."""
+    names = load_user_menu_names()
+    choices = {"0": tr("(empty)")}
+    for number, name in sorted(names.items(), key=lambda kv: kv[1].lower()):
+        choices[str(USER_MENU_BASE + int(number))] = name
+    unknown = set()
+    for value in values:
+        code = value.split(",")[0].strip()
+        if code.lstrip("-").isdigit() and code not in choices and int(code) - USER_MENU_BASE >= 0:
+            unknown.add(int(code) - USER_MENU_BASE)
+    for number in sorted(unknown):
+        choices[str(USER_MENU_BASE + number)] = tr("Menu item {number} (name not known yet)").format(number=number)
+    return choices
 
 
 def load_param_locks(kind: str) -> list:
@@ -442,7 +492,7 @@ def saved_tab(value) -> str:
 
 
 TABLE_WIDGET_BUDGET = 7600      # widgets of all cached tables plus the one that is built (Windows allows about 10000 window objects per process)
-TABLE_ESTIMATE = {"all": 5200, "scene": 2300}
+TABLE_ESTIMATE = {"all": 5200, "scene": 2300, "user": 1500}
 
 
 GEOMETRY_PATTERN = re.compile(r"(\d+)x(\d+)\+(-?\d+)\+(-?\d+)")
@@ -554,7 +604,7 @@ class SceneFile:
     params: dict = field(default_factory=dict)  # id (str, 5 digits) -> raw value
     checksum_ok: bool = True
     path: Path | None = None
-    number: str = ""   # file number 000-999 (the file name NNN.SCENE / NNN.ALL), empty if the file name is not a number
+    number: str = ""   # file number 000-999 (the file name NNN.SCENE / NNN.ALL / NNN.USER), empty if the file name is not a number
 
     @staticmethod
     def _checksum(body: str) -> str:
@@ -625,12 +675,12 @@ class SceneFile:
 
 
 class SceneSession:
-    """Holds one parameter set per file type (SCENE / ALL) and camera model, so switching back and forth loses nothing.
+    """Holds one parameter set per file type (SCENE / ALL / USER) and camera model, so switching back and forth loses nothing.
 
     store[key]    full parameter set of that profile (key = "<kind>:<model>", incl. values the other profile cannot express)
     baseline[key] state when the profile was last entered; only differences to it are carried over when leaving,
                   so values the other profile cannot express (e.g. BT.2020, ALL-only settings) survive a round trip.
-    Between SCENE and ALL only the IDs of id_map.json are carried over (same value shape required).
+    Between SCENE and ALL only the IDs of id_map.json are carried over (same value shape required); the user menu (USER) is a file of its own, nothing is carried over.
     """
 
     def __init__(self, scene: SceneFile, param_db: dict, rules: dict, kind: str = "scene"):
@@ -656,7 +706,17 @@ class SceneSession:
             return None
 
     def can_switch_kind(self) -> bool:
+        """SCENE <-> ALL (needs the ID mapping of the model and a template of both types)."""
         return self.model in self.id_maps and all(self._template(self.model, k) is not None for k in ("scene", "all"))
+
+    def can_reach(self, target: str) -> bool:
+        """The profile of the given type can be shown: SCENE <-> ALL as can_switch_kind; the user menu (.USER) is a file of its own, it needs a
+        template (or a profile that was visited before) for the model, and so does the way back to SCENE / ALL when the file was opened as .USER."""
+        if target == self.kind:
+            return True
+        if "user" not in (self.kind, target):
+            return self.can_switch_kind()
+        return f"{target}:{self.model}" in self.store or self._template(self.model, target) is not None
 
     def _valid_for(self, key: str, value: str, model: str) -> bool:
         spec = (self.db.get(key) or {}).get("widget") or {}
@@ -711,7 +771,7 @@ class SceneSession:
             slog = target.get("00022") == "1" or target.get("00143") == "1"
             if slog and "00068" in target:
                 target["00068"] = "0"
-        else:
+        elif self.kind == "all":
             flags = [target.get(k) for k in ("00039", "00041", "00190")]
             slog3 = None not in flags and all(f == "0" for f in flags) and target.get("00044") == "0"
             if (target.get("00044") == "1" or slog3) and "00125" in target:
@@ -759,11 +819,11 @@ class SceneSession:
     def switch_kind(self, target_kind: str) -> dict:
         """Switch between SCENE and ALL. Only mapped IDs are carried over; everything else stays in its own profile."""
         report = {"copied": 0, "unmapped": 0, "template": False}
-        if target_kind == self.kind or not self.can_switch_kind():
+        if target_kind == self.kind or not self.can_reach(target_kind):
             return report
         source_key, target_key = self.key, f"{target_kind}:{self.model}"
         src = self.store[source_key]
-        mapping = self._kind_map(self.kind, target_kind)
+        mapping = {} if "user" in (self.kind, target_kind) else self._kind_map(self.kind, target_kind)      # the user menu has nothing in common with the others
         if target_key in self.store:
             target = self.store[target_key]
             candidates = {k: v for k, v in src.items() if self.baseline[source_key].get(k) != v}
@@ -776,7 +836,7 @@ class SceneSession:
             if tid is not None and tid in target and len(value.split(",")) == len(target[tid].split(",")):
                 target[tid] = value
                 report["copied"] += 1
-            elif tid is None:
+            elif tid is None and "user" not in (self.kind, target_kind):
                 report["unmapped"] += 1
         self.store[target_key] = target
         self.baseline[target_key] = dict(target)
@@ -787,7 +847,7 @@ class SceneSession:
 
 def import_candidates(src: SceneFile, src_kind: str, dst_params: dict, dst_kind: str, dst_model: str,
                       dst_db: dict, rules: dict) -> tuple[list[dict], str]:
-    """Which values of file `src` can be imported into the current file (any combination of SCENE/ALL and Mk1/Mk2).
+    """Which values of file `src` can be imported into the current file (any combination of SCENE/ALL and Mk1/Mk2; a USER file only with a USER file of the same model).
 
     Same type and model: IDs are identical. Otherwise the values go through the SCENE ID space (id_map.json for ALL <-> SCENE,
     transfer rules and `only_models` for model differences). Returns (items, reason); reason is set if nothing can be mapped.
@@ -795,6 +855,10 @@ def import_candidates(src: SceneFile, src_kind: str, dst_params: dict, dst_kind:
     """
     id_maps = load_id_map()
     same = src_kind == dst_kind and src.model == dst_model
+    if src_kind == dst_kind == "user" and src.model != dst_model:
+        return [], tr("A user menu file of another camera model cannot be used: the camera accepts only user menu files of its own model.")
+    if "user" in (src_kind, dst_kind) and src_kind != dst_kind:
+        return [], tr("A user menu file can only be compared with or imported from another user menu file.")
     if same:
         pairs = [(k, k, k) for k in src.params if k in dst_params]
     else:
@@ -1337,7 +1401,7 @@ class MenuItem:
 MENU_TEXTS = ["New…", "Open…", "Save", "Save As…", "Import…", "Exit", "Undo", "Redo", "Find", "File", "Edit",
               "Language", "View", "Help", "About {app}…", "All", "None", "Invert selection", "Known only", "Miscellaneous", "Unknown", "Compare…", "Previous difference", "Next difference", "Expand all", "Collapse all"]   # texts that tr() gets through variables
 ABOUT_TEXTS = [
-    "Reads, converts and writes configuration files (SCENE and ALL files) of the Sony PXW-FS7 and PXW-FS7M2 cameras.",
+    "Reads, converts and writes configuration files (SCENE, ALL and user menu files) of the Sony PXW-FS7 and PXW-FS7M2 cameras.",
     "Copyright (c) 2026 Lukas Himmelswanderer. Published under the MIT License.",
     "Unofficial, independent project: it is not affiliated with Sony and is neither supported nor reviewed by Sony. Sony, PXW-FS7 and PXW-FS7M2 and other product and brand names mentioned are the property of their respective owners and are used here only to name the compatible devices.",
     "The file formats were researched by comparing the author's own files in order to achieve interoperability. The program contains neither Sony software nor Sony material.",
@@ -1695,8 +1759,8 @@ def frame_rate_text(num: int, den: int) -> str:
 
 
 def peek_file(path, stat=None) -> dict:
-    """The few facts the file dialog shows about a SCENE / ALL file, read without parsing the whole file (about a tenth of the time of ``SceneFile.load``).
-    Language independent: codes stay codes (the dialog turns them into words). Never raises; ``ok`` is False with ``error`` for a file that is no SCENE / ALL file."""
+    """The few facts the file dialog shows about a SCENE / ALL / USER file, read without parsing the whole file (about a tenth of the time of ``SceneFile.load``).
+    Language independent: codes stay codes (the dialog turns them into words). Never raises; ``ok`` is False with ``error`` for a file that is no SCENE / ALL / USER file."""
     info = {"ok": False, "error": "", "kind": Path(path).suffix.lstrip(".").upper(), "name": "", "model": "", "checksum_ok": None,
             "area": None, "mode": None, "codec": None, "format": "", "size": 0, "mtime": 0.0}
     try:
@@ -1997,7 +2061,7 @@ class FileOpenDialog(ctk.CTkToplevel):
         for name, is_dir in shown:
             self.listbox.insert("end", ("\u25b8 " + name) if is_dir else name)
         self.peeker.clear()
-        self.peeker.submit(str(folder / n) for n, d in shown if not d and n.lower().endswith((".scene", ".all")))
+        self.peeker.submit(str(folder / n) for n, d in shown if not d and n.lower().endswith(tuple(KIND_OF_EXT)))
         self._selected = ""
         self._show_card(None)
         self._status.configure(text="")
@@ -2106,7 +2170,7 @@ class FileOpenDialog(ctk.CTkToplevel):
             return
         self._fields["file"].configure(text=Path(path).name)
         if not info["ok"]:
-            self._status.configure(text=tr("Not a readable SCENE / ALL file."))
+            self._status.configure(text=tr("Not a readable SCENE / ALL / USER file."))
             return
         dash = "\u2013"
         area = {"0": tr("NTSC Area"), "1": tr("PAL Area")}.get(info["area"] or "", dash)
@@ -2117,7 +2181,8 @@ class FileOpenDialog(ctk.CTkToplevel):
                   "format": info["format"] or dash, "checksum": checksum, "modified": time.strftime("%Y-%m-%d %H:%M", time.localtime(info["mtime"]))}
         for key, text in values.items():
             self._fields[key].configure(text=text)
-        self._status.configure(text="" if info["kind"] == "ALL" else tr("SCENE files do not contain area, codec and format."))
+        self._status.configure(text="" if info["kind"] == "ALL" else tr("User menu files do not contain area, codec and format.") if info["kind"] == "USER"
+                               else tr("SCENE files do not contain area, codec and format."))
 
     # -- result -------------------------------------------------------------- #
     def accept(self, typed: bool = False):
@@ -2845,7 +2910,7 @@ class App(ctk.CTk):
         self.lbl_kind = ctk.CTkLabel(head, text=tr("Type"))
         self.var_kind = tk.StringVar(value="SCENE")
         self.seg_kind = ctk.CTkSegmentedButton(
-            head, values=["SCENE", "ALL"], variable=self.var_kind, command=self._switch_kind, state="disabled", height=26
+            head, values=["SCENE", "ALL", "USER"], variable=self.var_kind, command=self._switch_kind, state="disabled", height=26
         )
         lbl_id = ctk.CTkLabel(head, text=tr("File ID"))
         self.var_name = tk.StringVar()
@@ -2963,9 +3028,10 @@ class App(ctk.CTk):
 
     def open_file(self):
         path = self._ask_open_file(tr("Open file"), [
-            ("Sony SCENE/ALL File", "*.SCENE *.ALL"),
+            ("Sony SCENE/ALL/USER File", "*.SCENE *.ALL *.USER"),
             ("Sony SCENE File", "*.SCENE"),
             ("Sony ALL File", "*.ALL"),
+            ("Sony USER Menu File", "*.USER"),
             (tr("All files"), "*.*"),
         ])
         if path and self._confirm_discard(tr("Open")):
@@ -3026,7 +3092,7 @@ class App(ctk.CTk):
         save_settings(last_dir=str(path.parent))
         self._remember_recent(path)
         self.scene.number = path.stem if len(path.stem) == 3 and path.stem.isdigit() else ""
-        return self._adopt("all" if ext == ".all" else "scene")
+        return self._adopt(KIND_OF_EXT[ext])
 
     def _adopt(self, kind: str) -> bool:
         """Make self.scene the current file of the given type (session, parameter database, table)."""
@@ -3047,6 +3113,8 @@ class App(ctk.CTk):
         elif self.session and kind == "scene":
             self.lbl_switch.configure(text=tr("Switching between SCENE and ALL exists only for {models} so far (no mapping for {model}).").format(
                 models=", ".join(load_id_map()), model=self.scene.model))
+        elif self.session and kind == "user":
+            self.lbl_switch.configure(text=tr("User menu file: the slots of the camera's user menu. Which menu item a number means is mostly not known yet."))
         elif self.session:
             self.lbl_switch.configure(text="")   # nothing to report: the disabled model menu already shows that
         elif kind == "all" and not db_applies:
@@ -3542,7 +3610,8 @@ class App(ctk.CTk):
         self.var_kind.set(self.kind.upper())
         self.var_model.set(self.scene.model)
         self.menu_model.configure(state="normal" if self.session and self.scene.model in MODELS else "disabled")
-        self.seg_kind.configure(state="normal" if self.session and self.session.can_switch_kind() else "disabled")
+        self.seg_kind.configure(state="normal" if self.session and self._kinds_reachable() else "disabled")
+        self.menu_model.configure(state="normal" if self.session and self.scene.model in MODELS and self.kind != "user" else "disabled")      # a user menu file is not converted between the models
         self._update_lock_marks()
 
     def _table_footer(self):
@@ -3610,7 +3679,13 @@ class App(ctk.CTk):
         """The selected tab; a file without that block (SCENE files have no Audio) shows the first block it has."""
         if self._tab in self._groups:
             return self._tab
-        return next((g for g, _t in GROUPS if g in self._groups), None)
+        return next((g for g, _t in self._group_order() if g in self._groups), None)
+
+    def _group_order(self) -> list:
+        """The tabs in order: in a user menu file the User tab comes first (the other menus are empty there), otherwise it is not shown at all."""
+        if self.kind == "user":
+            return sorted(GROUPS, key=lambda g: g[0] != "user")
+        return [g for g in GROUPS if g[0] != "user"]
 
     def _apply_group_state(self, group: str):
         info = self._groups[group]
@@ -3623,7 +3698,7 @@ class App(ctk.CTk):
     def _tab_labels(self) -> dict[str, str]:
         """Text of the tabs: icon, block name and (with a file) the number of its parameters (while a filter is active: of those that match)."""
         labels = {}
-        for group, title in GROUPS:
+        for group, title in self._group_order():
             info = self._groups.get(group)
             count = (info["visible"] if self._filter_active() else info["count"]) if info else None
             labels[group] = f"{GROUP_ICONS[group]}  {tr(title)}" + (f"  ({count})" if count else "")
@@ -4449,13 +4524,17 @@ class App(ctk.CTk):
             return None
         try:
             for f in fields:
-                if "choices" not in f:
+                if "choices" not in f and "choices_from" not in f:
                     int(parts[f["index"]])
         except ValueError:
             return None
 
         frame = ctk.CTkFrame(self._row_parent, fg_color="transparent", border_width=0, border_color=CHANGED_COLOR)
-        per_row = 2
+        body = frame
+        if spec.get("sub_elements"):      # the cells are laid out in a grid of their own: the (wide) line of sub-element check boxes below must not stretch it
+            body = ctk.CTkFrame(frame, fg_color="transparent")
+            body.pack(anchor="w")
+        per_row = 3 if spec.get("compact") else 2
         refreshers: list = []
         frame._refresh = lambda: [r() for r in refreshers]
 
@@ -4466,7 +4545,10 @@ class App(ctk.CTk):
             var.set(",".join(items))
 
         def make_choice(cell, f):
-            idx, choices = f["index"], {k: with_raw(v, k) for k, v in f["choices"].items()}
+            if f.get("choices_from") == "user_menu":      # the menu items of the user menu: the known names, and the numbers of this file that have no name yet
+                choices = user_menu_choices(self.scene.params.get(f"{slot:05d}", "") for slot in range(1, 21))
+                f = dict(f, choices=choices)
+            idx, choices = f["index"], {k: with_raw(v, k) for k, v in f["choices"].items()} if "choices_from" not in f else f["choices"]
             cur = var.get().split(",")[idx].strip()
             labels = list(choices.values())
             if cur not in choices:
@@ -4479,6 +4561,15 @@ class App(ctk.CTk):
             menu.set(choices.get(cur, tr("{value} (unknown)").format(value=cur)))
             def choose(lab):
                 self._last_key = None   # every dropdown choice is its own undo step
+                if f.get("choices_from") == "user_menu":      # the sub-element flags of the file follow the item: one undo step for both
+                    code = next((k for k, v in choices.items() if v == lab), None)
+                    mine = next((k for k, v in self.vars.items() if v is var), None)
+                    if code is not None and mine is not None:
+                        old = var.get().split(",")[idx].strip()
+                        parts = var.get().split(",")
+                        parts[idx] = code
+                        self._set_values("__user_item__", {mine: ",".join(parts), **self._user_flag_changes(mine, old, code)})
+                    return
                 next((set_item(idx, k) for k, v in choices.items() if v == lab), None)
 
             def on_box(label=None):
@@ -4600,19 +4691,85 @@ class App(ctk.CTk):
 
         cells = []
         for n, f in enumerate(fields):
-            cell = ctk.CTkFrame(frame, fg_color="transparent")
+            cell = ctk.CTkFrame(body, fg_color="transparent")
             cell.grid(row=n // per_row, column=n % per_row, padx=4, pady=2)
             ctk.CTkLabel(cell, text=f["label"], text_color="gray").pack()
-            (make_choice if "choices" in f else make_step)(cell, f)
+            (make_choice if "choices" in f or "choices_from" in f else make_step)(cell, f)
             cells.append(cell)
-        raw = ctk.CTkLabel(frame, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray", wraplength=430, justify="left")
+        swap = spec.get("swap")      # user menu slots: move the entry one slot up / down (swaps the values with the neighbour)
+        if swap:
+            def move(other_id):
+                other = self.vars.get(other_id)
+                mine = next((k for k, v in self.vars.items() if v is var), None)
+                if other is None or mine is None:
+                    return
+                self._last_key = None
+                self._set_values("__swap__", {mine: other.get(), other_id: var.get()})
+                self._last_key = None
+
+            cell = ctk.CTkFrame(body, fg_color="transparent")
+            cell.grid(row=(len(fields)) // per_row, column=len(fields) % per_row, padx=4, pady=2)
+            ctk.CTkLabel(cell, text=tr("Move"), text_color="gray").pack()
+            bar = ctk.CTkFrame(cell, fg_color="transparent")
+            bar.pack()
+            for symbol, other_id in (("▲", swap.get("up")), ("▼", swap.get("down"))):
+                ctk.CTkButton(bar, text=symbol, width=30, height=26, state="normal" if other_id else "disabled",
+                              command=(lambda o=other_id: move(o))).pack(side="left", padx=2)
+            cells.append(cell)
+        raw = ctk.CTkLabel(body, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray", wraplength=430, justify="left")
         raw.grid(row=(len(fields) - 1) // per_row + 1, column=0, columnspan=per_row, sticky="w", padx=4)
         var.trace_add("write", lambda *_a: raw.configure(text=tr("Raw value: {value}").format(value=var.get())))
+        subs = ctk.CTkFrame(frame, fg_color="transparent") if spec.get("sub_elements") == "user_menu" else None      # check boxes for the sub-elements of the item of a user menu slot
+        watched: set = set()
+        room = [0.0]      # width the line of check boxes may use (set by relayout), the line is as wide as the window allows and wraps there
+        lines: list = []
+
+        def show_subs(*_a):
+            """One check box per sub-element of the chosen item (where the item and its flags are known); each is a flag of the file."""
+            if subs is None:
+                return
+            for w in subs.winfo_children():
+                w.destroy()
+            code = var.get().split(",")[0].strip()
+            number = int(code) - USER_MENU_BASE if code.lstrip("-").isdigit() and int(code) >= USER_MENU_BASE else None
+            known = load_user_menu_subs().get(number) if number is not None else None
+            if not known or any(fid not in self.vars for fid in known[1]):
+                subs.pack_forget()
+                return
+            subs.pack(anchor="w", fill="x", padx=4, pady=(0, 2))
+            line = ctk.CTkFrame(subs, fg_color="transparent", width=max(200, room[0]) if room[0] else 700)
+            line.pack(fill="x")
+            lines[:] = [line]
+            items = [ctk.CTkLabel(line, text=tr("Sub-elements"), text_color="gray")]
+            for name, fid in zip(*known):
+                state = tk.BooleanVar(value=self.vars[fid].get().strip() == "1")
+
+                def toggled(fid=fid, state=state):
+                    self._last_key = None
+                    self._set_values("__user_sub__", {fid: "1" if state.get() else "0"})
+                    self._last_key = None
+
+                items.append(ctk.CTkCheckBox(line, text=name, variable=state, command=toggled, width=20))
+                if fid not in watched:
+                    watched.add(fid)
+                    self.vars[fid].trace_add("write", lambda *_a: self.after_idle(show_subs) if subs.winfo_exists() else None)
+            FlowRow(line, items)      # wraps in a narrow window
+
+        if subs is not None:
+            var.trace_add("write", lambda *_a: self.after_idle(show_subs) if subs.winfo_exists() else None)
+            frame._refresh = lambda: [r() for r in refreshers] + [show_subs()]
+            self.after_idle(show_subs)
 
         def relayout(available: int):
             """Put as many cells in a line as fit into the available width (physical pixels): fields wrap only when the window is narrow."""
             width = max(c.winfo_reqwidth() for c in cells) + 8
             per = max(1, min(len(cells), available // width))
+            if spec.get("compact"):      # cells of different widths (user menu slot): the most columns whose widest cells fit
+                widths = [c.winfo_reqwidth() + 8 for c in cells]
+                per = next((count for count in range(len(cells), 1, -1) if sum(max(widths[i::count]) for i in range(count)) <= available), 1)
+            room[0] = available / frame._get_widget_scaling() - 16
+            if lines and lines[0].winfo_exists() and abs(lines[0].cget("width") - room[0]) > 2 and room[0] > 200:
+                lines[0].configure(width=room[0])
             for n, cell in enumerate(cells):
                 cell.grid(row=n // per, column=n % per, padx=4, pady=2)
             raw.grid(row=(len(cells) - 1) // per + 1, column=0, columnspan=per, sticky="w", padx=4)
@@ -4930,13 +5087,20 @@ class App(ctk.CTk):
 
     def _scene_possible(self) -> bool:
         """SCENE files exist only in Custom mode (manual: not configurable in Cine EI)."""
+        if self.kind == "user" and self.session:      # the ALL profile that is stored decides
+            stored = self.session.store.get(f"all:{self.scene.model}") or {}
+            return str(stored.get("00418", "0")).split(",")[0].strip() != "1"
         return not (self.kind == "all" and self._field_value("00418", 0) == "1")
+
+    def _kinds_reachable(self) -> bool:
+        """At least one other file type can be switched to."""
+        return any(self.session.can_reach(k) for k in KIND_OF_EXT.values() if k != self.kind)
 
     def _update_lock_marks(self):
         """Mark the type switch and the model menu with a lock symbol and a tooltip reason while a choice is locked."""
         if not self.session:
             return
-        kind_reason = "" if self.session.can_switch_kind() else tr("Switching SCENE/ALL does not exist for {model}.").format(model=self.scene.model)
+        kind_reason = "" if self._kinds_reachable() else tr("Switching SCENE/ALL does not exist for {model}.").format(model=self.scene.model)
         if not kind_reason and not self._scene_possible():
             kind_reason = tr("SCENE not possible: SCENE files exist in Custom mode only.")
         model_reason = "" if self.session and self.scene.model in MODELS else tr("There is no model switch for this model.")
@@ -4951,10 +5115,12 @@ class App(ctk.CTk):
                 widget._lock_tip.text = reason
 
     def _update_kind_switch(self):
-        """Grey out the SCENE segment while the ALL file is in Cine EI mode."""
+        """Grey out the SCENE segment while the ALL file is in Cine EI mode, and the USER segment where there is no user menu for the model."""
         possible = self._scene_possible()
         try:
             self.seg_kind._buttons_dict["SCENE"].configure(state="normal" if possible else "disabled")
+            user_ok = bool(self.session) and self.session.can_reach("user")
+            self.seg_kind._buttons_dict["USER"].configure(state="normal" if user_ok else "disabled")
         except (AttributeError, KeyError, tk.TclError):
             return
         self.lbl_scene_hint.configure(text="" if possible else tr("SCENE not possible: SCENE files exist in Custom mode only"))
@@ -5092,6 +5258,16 @@ class App(ctk.CTk):
         self._record(key, merge=True)
         self._update_warnings()
 
+    def _user_flag_changes(self, slot: str, old_code: str, new_code: str) -> dict[str, str]:
+        """The sub-element flags (IDs from 00106) of an item that comes into the user menu are switched on (the camera asks which sub-elements to take along;
+        all of them is the default). Taking an item out leaves its flags as they are (the camera keeps them). An item whose flags are not known is reported:
+        the camera may then miss its sub-elements."""
+        flags = load_user_menu_flags()
+        new = int(new_code) - USER_MENU_BASE if new_code.lstrip("-").isdigit() and int(new_code) >= USER_MENU_BASE else None
+        if new is not None and new not in flags:
+            self.lbl_switch.configure(text=tr("The sub-element flags of this menu item are not known yet: they stay as they are, the camera may ask for them or ignore the entry."))
+        return {fid: "1" for fid in flags.get(new, []) if fid in self.vars}
+
     def _warnings(self) -> list[str]:
         out = []
         for key, widget in self.entries.items():
@@ -5137,7 +5313,7 @@ class App(ctk.CTk):
 
     # -- file type (SCENE / ALL), number and file name --------------------------- #
     def _ext(self) -> str:
-        return ".ALL" if self.kind == "all" else ".SCENE"
+        return EXT_OF_KIND[self.kind]
 
     def _file_label(self) -> str:
         """File name shown in the title: NNN.ALL / NNN.SCENE from the number, else the loaded file name."""
@@ -5193,14 +5369,19 @@ class App(ctk.CTk):
         target = label.lower()
         if not self.session or target == self.kind:
             return
-        if not self.session.can_switch_kind() or (target == "scene" and not self._scene_possible()):
+        if not self.session.can_reach(target) or (target == "scene" and not self._scene_possible()):
             self.var_kind.set(self.kind.upper())
             return
         self._collect()
+        was_user = self.kind == "user"
         r = self.session.switch_kind(target)
         self._apply_kind(target)
         self._populate()
         self._record("__kind__", force_new=True)
+        if target == "user" or was_user:
+            self.lbl_switch.configure(text=tr("Type {type}: the user menu is a file of its own, no values are carried over{template}. Switching back restores the original values. Saving writes {file}.").format(
+                type=target.upper(), file=self._file_label(), template=tr(" (the other values come from the template)") if r["template"] else ""))
+            return
         parts = [tr("{n} values taken over").format(n=r["copied"])]
         if r["unmapped"]:
             parts.append(tr("{n} parameters without a counterpart in the other type (kept stored)").format(n=r["unmapped"]))
@@ -5220,9 +5401,9 @@ class App(ctk.CTk):
             return [], tr("The file could not be read:\n{error}").format(error=exc), ""
         self._collect()
         items, reason = import_candidates(
-            src, "all" if ext == ".all" else "scene", self.scene.params, self.kind, self.scene.model, self.param_db, self.rules
+            src, KIND_OF_EXT[ext], self.scene.params, self.kind, self.scene.model, self.param_db, self.rules
         )
-        return items, reason, f"{Path(path).name} ({'ALL' if ext == '.all' else 'SCENE'}, {src.model})"
+        return items, reason, f"{Path(path).name} ({EXT_OF_KIND[KIND_OF_EXT[ext]]}, {src.model})"
 
     def show_diff(self, items: list[dict], source_text: str, invisible: bool = False, parent=None):
         """Difference view of the current file against another file (the items come from import_plan); `parent` = the window it is opened from."""
@@ -5238,7 +5419,7 @@ class App(ctk.CTk):
     def compare_file(self):
         if not self.scene:
             return
-        path = self._ask_open_file(tr("Compare with…"), [("Sony SCENE/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")])
+        path = self._ask_open_file(tr("Compare with…"), [("Sony SCENE/ALL/USER File", "*.SCENE *.ALL *.USER"), (tr("All files"), "*.*")])
         if not path:
             return
         items, reason, source = self.import_plan(Path(path))
@@ -5250,7 +5431,7 @@ class App(ctk.CTk):
     def import_file(self):
         if not self.scene:
             return
-        path = self._ask_open_file(tr("Import from…"), [("Sony SCENE/ALL File", "*.SCENE *.ALL"), (tr("All files"), "*.*")])
+        path = self._ask_open_file(tr("Import from…"), [("Sony SCENE/ALL/USER File", "*.SCENE *.ALL *.USER"), (tr("All files"), "*.*")])
         if not path:
             return
         items, reason, source = self.import_plan(Path(path))
@@ -5530,7 +5711,7 @@ class App(ctk.CTk):
             defaultextension=self._ext(),
             initialfile=self._file_label(),
             initialdir=str(folder) if folder else None,
-            filetypes=[("Sony ALL File", "*.ALL")] if self.kind == "all" else [("Sony SCENE File", "*.SCENE")],
+            filetypes=[(FILE_TYPES[self._ext().lower()], f"*{self._ext()}")],
         )
         if path:
             self._write(Path(path))
@@ -5566,9 +5747,9 @@ class App(ctk.CTk):
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="SonyConfigEditor",
-        description=tr("Reads, converts and writes configuration files of Sony cinema cameras (.SCENE; .ALL prepared)."),
+        description=tr("Reads, converts and writes configuration files of Sony cinema cameras (.SCENE, .ALL, .USER)."),
     )
-    parser.add_argument("file", nargs="?", type=Path, help=tr("File to open at start-up (*.SCENE)"))
+    parser.add_argument("file", nargs="?", type=Path, help=tr("File to open at start-up (*.SCENE, *.ALL, *.USER)"))
     parser.add_argument("--version", action="version", version=f"{APP_NAME} {_version} ({_date})")
     return parser.parse_args(argv)
 

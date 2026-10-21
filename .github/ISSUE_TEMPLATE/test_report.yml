@@ -46,4 +46,4 @@ body:
     id: files
     attributes:
       label: "Files"
-      description: "Drag a ZIP archive with the SCENE and ALL files and a short text file into this field (GitHub does not accept .SCENE / .ALL directly)."
+      description: "Drag a ZIP archive with the SCENE, ALL (and USER) files and a short text file into this field (GitHub does not accept .SCENE / .ALL / .USER directly)."

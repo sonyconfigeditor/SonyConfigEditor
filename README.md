@@ -2,7 +2,7 @@
 
 <img src="assets/sonyconfigeditor.png" alt="Sony Config Editor logo" width="120">
 
-A desktop tool to read, edit, convert and write the configuration files of the Sony **PXW-FS7** and **PXW-FS7M2** cinema cameras: **SCENE files** (`.SCENE`) and **ALL files** (`.ALL`, the complete camera settings).
+A desktop tool to read, edit, convert and write the configuration files of the Sony **PXW-FS7** and **PXW-FS7M2** cinema cameras: **SCENE files** (`.SCENE`), **ALL files** (`.ALL`, the complete camera settings) and **user menu files** (`.USER`).
 
 > **Unofficial project.** Not affiliated with, supported by or endorsed by Sony. Sony, PXW-FS7 and PXW-FS7M2 are trademarks of their respective owners. The file formats were researched by comparing real camera files. **Use at your own risk:** back up your camera first (save an All File to the SD card) and test new files on the camera before relying on them. Not every decoded setting is confirmed - see "Status of the decoding".
 
@@ -14,17 +14,18 @@ A desktop tool to read, edit, convert and write the configuration files of the S
 
 ## Features
 
-- Opens `.SCENE` and `.ALL` files (menu, recent files list, command line or drag and drop); the checksum is verified and rewritten on save, files round-trip byte-identically.
+- Opens `.SCENE`, `.ALL` and `.USER` files (menu, recent files list, command line or drag and drop); the checksum is verified and rewritten on save, files round-trip byte-identically.
 - Settings are grouped like the camera's menus (one tab per main menu: System, Camera, Paint, Audio, VF, TC/UB, Recording, File, with the camera's sub-menus inside) with dropdowns, step fields (+/- buttons) and check boxes. Unknown IDs stay visible as raw values and are written back unchanged.
 - **Options that are impossible in the current state are greyed out** (e.g. RAW 4096 needs Imager Scan Mode Normal, Detail settings with Detail Off, BT.2020 only on the FS7M2 with a 4K format) and implausible combinations raise a warning.
-- **Type switch SCENE / ALL** and **model switch FS7 / FS7M2** in the header: only mapped values are carried over, everything else stays stored and returns when you switch back.
+- **Type switch SCENE / ALL / USER** (the user menu of the camera, see below) and **model switch FS7 / FS7M2** in the header: only mapped values are carried over, everything else stays stored and returns when you switch back.
 - **Expand all / Collapse all** (View menu, Ctrl+Shift+Down / Up, or the buttons next to the filter) for the sub-groups of the shown tab.
 - **Appearance** (View menu): System, Day or Night mode, remembered between runs.
 - **Tabs** for the camera's main menus (System, Camera, Paint, Audio, VF, TC/UB, Recording, File, Unknown) across the top show one menu at a time, with the number of parameters; each tab remembers where you were. Rows that do not apply (e.g. the ISO rows while the gain mode is dB) are greyed out and sorted below the usable ones.
 - **VF tab with a virtual camera monitor** (ALL files): the picture of the camera monitor shows the display elements at their places with example values, and every check box is connected to the file (VF > Display On/Off, plus Center Marker): switching one changes the file, editing the file in the table changes the picture. The markers of VF > Marker (safety zone, aspect marker or mask, user box, 100 % marker, center marker) are drawn in the chosen colour, and the Marker settings sit directly below the picture. Check boxes whose item the camera greys out (e.g. Focus Area Marker without Focus Assist Indicator) are greyed out as well.
 - **NTSC / PAL area** (System > Country, first item of the first tab): switching it also moves the recording format to the closest frame rate of the new system (50p to 59.94p, 25p to 29.97p and back) with the values that go with it, as the camera does; the changed rows are marked.
 - **Search and filter** (Ctrl+F): by name, ID or value; "changed only" shows everything that differs from the loaded file, "known only" hides undecoded IDs.
-- **Import** (File > Import, Ctrl+I): take over all known differing values from any SCENE/ALL file of either model, or pick single parameters from a list. One undo step.
+- **Import** (File > Import, Ctrl+I): take over all known differing values from any SCENE/ALL file of either model (user menu files: only from a user menu file of the same model), or pick single parameters from a list. One undo step.
+- **User menu files (`.USER`)**: the 20 slots of the camera's user menu as dropdowns of the menu items that are known by name (Base Setting, Rec Format, Codec, ISO/Gain/EI, Noise Suppression and more), arrows to move a slot, check boxes for the sub-elements of items whose sub-elements are known (ISO/Gain/EI, Noise Suppression); a user menu can also be started from a SCENE or ALL file. The camera accepts only the file of its own model, so a user menu file is not converted between FS7 and FS7M2 and is compared or imported only with a user menu file of the same model. Menu items whose number has no name yet are listed as "Menu item N" and kept unchanged; changed files have not been loaded on a camera yet.
 - **Own file dialog** (Open, Import, Compare): shows the facts of the marked file (File ID, area, shooting mode, codec, format) next to the folder list, plus a clickable folder tree (opened down to the current folder).
 - **Recent files** (File menu): the last ten files, newest first; the last used tab and the window position are remembered, too.
 - **Compare** (File > Compare…, Ctrl+D, or "Show differences" in the import dialog): side-by-side view of the current file and another file with readable menu paths such as `Paint/White Clip/White Clip Level` instead of IDs. Changed rows are coloured; Alt+Down / Alt+Up (or F8 / Shift+F8) jump to the next / previous difference, Ctrl+1 shows the full files, Ctrl+2 only the differences.
@@ -51,17 +52,17 @@ Pillow is only used for the logo in the About dialog. Settings (language, last f
 
 ## Usage
 
-1. **Open** a SCENE or ALL file (Ctrl+O, or File > Recent files) or start a **New** one (Ctrl+N).
+1. **Open** a SCENE, ALL or USER file (Ctrl+O, or File > Recent files) or start a **New** one (Ctrl+N).
 2. Change values; use the filter to find them. Greyed-out entries cannot be set in the current state.
-3. Choose the **model** (FS7 / FS7M2) and **type** (SCENE / ALL) in the header if you want to convert.
-4. Set the **file ID** (name, 16 characters) and **number** (000-999); **Save** (Ctrl+S) writes `NNN.SCENE` / `NNN.ALL` into the folder of the loaded file, **Save As** (Ctrl+Shift+S) lets you choose.
+3. Choose the **model** (FS7 / FS7M2) and **type** (SCENE / ALL / USER) in the header if you want to convert (the user menu is a file of its own: nothing is carried over, the model cannot be changed there).
+4. Set the **file ID** (name, 16 characters) and **number** (000-999); **Save** (Ctrl+S) writes `NNN.SCENE` / `NNN.ALL` / `NNN.USER` into the folder of the loaded file, **Save As** (Ctrl+Shift+S) lets you choose.
 5. Copy the file to the camera's SD card and load it in the camera (Scene File / All File menu, see the camera manual for the folder).
 
 Cine EI note: SCENE files exist only in Custom mode; in Cine EI mode only ALL files can be written.
 
 ## Status of the decoding
 
-IDs are decoded by comparing files and the manuals. Decoded so far for the FS7M2 (ALL files): the Paint menu, most of Camera, Audio, VF (Display On/Off, Zebra, Peaking, Marker, parts of VF Setting), the first items of TC/UB, System (base setting, codec / rec format, country) and S&Q Motion; many of the remaining menus are still raw values. Each entry in `scene_parameters.json` / `all_parameters.json` carries a status (`confirmed`, `likely`, `hypothesis`); dropdown entries taken only from the manuals are marked "assumption". What is known and how it was found: [docs/FINDINGS.md](docs/FINDINGS.md); menu dependencies from the manuals: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md). Camera test reports and sample files are welcome.
+IDs are decoded by comparing files and the manuals. Decoded so far for the FS7M2 (ALL files): the Paint menu, most of Camera, Audio, VF (Display On/Off, Zebra, Peaking, Marker, parts of VF Setting), the first items of TC/UB, System (base setting, codec / rec format, country), S&Q Motion and the user menu (slots, 15 menu items, the sub-elements of two of them); many of the remaining menus are still raw values. Each entry in `scene_parameters.json` / `all_parameters.json` carries a status (`confirmed`, `likely`, `hypothesis`); dropdown entries taken only from the manuals are marked "assumption". What is known and how it was found: [docs/FINDINGS.md](docs/FINDINGS.md); menu dependencies from the manuals: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md). Camera test reports and sample files are welcome.
 
 ## Build an executable
 
