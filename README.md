@@ -66,8 +66,10 @@ IDs are decoded by comparing files and the manuals. Decoded so far for the FS7M2
 
 ## Build an executable
 
-- Windows: `build_exe.bat` -> `dist\SonyConfigEditor.exe` (needs `pip install pyinstaller`)
+- Windows: `build_exe.bat` -> `dist\SonyConfigEditor.exe`
 - Linux / macOS: `bash build_app.sh` (untested so far)
+
+Both scripts first check the environment (`tools/check_build_env.py`: Python 3.10+, Tkinter, customtkinter, Pillow, PyInstaller, the data files) and stop with a clear message and the command that fixes each missing item, for example `python -m pip install --upgrade customtkinter pillow pyinstaller`. You can run the check alone: `python tools/check_build_env.py`.
 
 ## Translations
 

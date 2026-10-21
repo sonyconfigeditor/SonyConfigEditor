@@ -23,8 +23,15 @@ case "$OS" in
     *) echo "Unsupported system: $OS (Windows: use build_exe.bat)"; exit 1 ;;
 esac
 
-if ! "$PYTHON" -c "import tkinter" 2>/dev/null; then
-    echo "Python has no Tkinter. Install it first (see the notes at the top of this script)."
+if ! command -v "$PYTHON" >/dev/null 2>&1; then
+    echo "Python was not found ($PYTHON). Install Python 3.10 or newer first (Debian/Ubuntu: sudo apt install python3 python3-venv python3-tk, macOS: python.org installer or: brew install python)."
+    exit 1
+fi
+
+# Python version, Tkinter and the data files; missing pip packages are fine here: they are installed into the virtual environment below
+"$PYTHON" tools/check_build_env.py --install-ok || { echo; echo "The build was not started. Fix the items marked MISSING above, then run ./build_app.sh again."; exit 1; }
+if [ -z "${NO_VENV:-}" ] && ! "$PYTHON" -c "import venv, ensurepip" 2>/dev/null; then
+    echo "The venv module of Python is missing. Debian/Ubuntu: sudo apt install python3-venv   |   or use NO_VENV=1 ./build_app.sh with your own environment."
     exit 1
 fi
 

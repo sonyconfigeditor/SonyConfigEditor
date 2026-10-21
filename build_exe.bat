@@ -5,9 +5,22 @@ REM is embedded in the file properties (Details tab), not in the file name.
 setlocal
 cd /d "%~dp0"
 
-python -m PyInstaller --version >nul 2>&1
+REM 1. Is there a usable Python at all? (the Microsoft Store stub "python.exe" counts as missing)
+python -c "import sys" >nul 2>&1
 if errorlevel 1 (
-    echo PyInstaller not found. Install it with:  python -m pip install pyinstaller
+    echo Python was not found.
+    echo   Install Python 3.10 or newer from https://www.python.org/downloads/ ^(tick "Add python.exe to PATH" in the installer^),
+    echo   or run:  winget install Python.Python.3.12
+    echo   Then open a NEW command prompt and start build_exe.bat again.
+    echo   If Python is installed but not on the PATH, start it via the launcher:  py -3 tools\check_build_env.py
+    exit /b 1
+)
+
+REM 2. Python version, Tkinter, libraries, PyInstaller and the data files: every missing item is listed with the command that fixes it
+python tools\check_build_env.py
+if errorlevel 1 (
+    echo.
+    echo The build was not started. Fix the items marked MISSING above, then run build_exe.bat again.
     exit /b 1
 )
 
