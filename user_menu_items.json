@@ -1,5 +1,5 @@
 {
-  "_note": "Names of the menu item numbers of the user menu (number -> {name, status, flags, sub_elements}). The file stores 0x06000000 plus the number. 'flags' = IDs of the flags of the file that are 1 for the sub-elements of the item that were switched on when it was added, in the order of 'sub_elements' (the dialog of the camera); only given where known.",
+  "_note": "Names of the menu item numbers of the user menu (number -> {name, status, flags, sub_elements}). The file stores 0x06000000 plus the number. 'flags' = IDs of the flags of the file that are 1 for the sub-elements of the item that were switched on when it was added, in the order of 'sub_elements' (the dialog of the camera); only given where known. 'sub_flags' (optional) = the flags of the sub-elements in the order of 'sub_elements' where 'flags' has more entries.",
   "items": {
     "17": {
       "name": "S&Q Motion",
@@ -103,6 +103,78 @@
         "00292"
       ],
       "evidence": "FS7M2 user menu file DEFG, eighth version (2026-10-21): slot 1 changed from ISO/Gain/EI to Noise Suppression: 00001 = 100663485,0 (= 0x06000000 + 189) and flags 00291 and 00292 from 0 to 1 (Setting and Level both selected in the camera dialog).  The ISO/Gain/EI flags stayed as they were (the camera keeps them). Ninth version: Setting deselected: only 00291 went 1 -> 0, so 00291 = Setting and 00292 = Level (confirmed)."
+    },
+    "716": {
+      "name": "ND Filter",
+      "status": "confirmed",
+      "flags": [
+        "00818",
+        "00819",
+        "00820"
+      ],
+      "evidence": "FS7M2 user menu file DEFG, tenth version (2026-10-21): slot 1 changed from Noise Suppression to ND Filter: 00001 = 100664012,0 (= 0x06000000 + 716) and flags 00818, 00819 and 00820 from 0 to 1 (the three sub-elements Preset1, Preset2 and Preset3, all selected in the camera dialog). Eleventh version: Preset1 and Preset3 deselected: 00818 and 00820 went 1 -> 0, 00819 stayed 1, so Preset2 = 00819 (confirmed); Preset1 and Preset3 are 00818 / 00820 in an order not yet known. Twelfth version: Preset2 and Preset3 deselected: 00819 and 00820 went 1 -> 0. With the eleventh version (Preset1 and Preset3 off: 00818, 00820) every flag is decided: Preset1 = 00818, Preset2 = 00819, Preset3 = 00820 (00820 is in both sets = Preset3).",
+      "sub_elements": [
+        "Preset1",
+        "Preset2",
+        "Preset3"
+      ]
+    },
+    "474": {
+      "name": "Focus",
+      "status": "confirmed",
+      "flags": [
+        "00571",
+        "00572",
+        "00573",
+        "00574",
+        "00670",
+        "00757",
+        "00758",
+        "00759",
+        "00775",
+        "00776",
+        "00777",
+        "01310",
+        "01904",
+        "01905"
+      ],
+      "evidence": "FS7M2 user menu file DEFG, thirteenth version (2026-10-21): slot 1 changed from ND Filter to Focus: 00001 = 100663770,0 (= 0x06000000 + 474) and 14 flags from 0 to 1 (all three sub-elements Focus Area, Focus Area (Push AF) and AF Assist selected in the camera dialog): 00571 to 00574, 00670, 00757 to 00759, 00775 to 00777, 01310, 01904 and 01905 (01310, 01904 and 01905 exist only in FS7M2 files). Several flags per sub-element: which flags belong to which sub-element is not isolated yet (no sub_elements entry until it is). Fourteenth version: Focus Area deselected: only 00670 went 1 -> 0, so Focus Area = 00670 (one flag); the other 13 flags belong to Focus Area (Push AF) and AF Assist (or are not sub-element flags). Fifteenth version: Focus Area (Push AF) deselected (against the version with all three on): only 01904 went 1 -> 0, so Focus Area (Push AF) = 01904. AF Assist is not isolated yet (candidate: 01905); the other twelve flags (00571-00574, 00757-00759, 00775-00777, 01310) stayed on when either sub-element was deselected. Sixteenth version: AF Assist deselected: only 01905 went 1 -> 0, so AF Assist = 01905. All three sub-elements have one flag each (00670, 01904, 01905); the other eleven flags (00571-00574, 00757-00759, 00775-00777, 01310) stay on whichever sub-element is deselected: they come on with the item (flags of the item itself), 'flags' holds all fourteen, 'sub_flags' the three of the sub-elements.",
+      "sub_elements": [
+        "Focus Area",
+        "Focus Area (Push AF)",
+        "AF Assist"
+      ],
+      "sub_flags": [
+        "00670",
+        "01904",
+        "01905"
+      ]
+    },
+    "130": {
+      "name": "Color Bars",
+      "status": "confirmed",
+      "flags": [
+        "00233",
+        "00232"
+      ],
+      "evidence": "FS7M2 user menu file DEFG, seventeenth version (2026-10-21): slot 1 changed from Focus to Color Bars: 00001 = 100663426,0 (= 0x06000000 + 130) and flags 00232 and 00233 from 0 to 1 (the sub-elements Setting and Type, both selected in the camera dialog). The FS7 sample file has the same number 130 in a slot and, among its flags, 00228, 00229 and 00233 (00228 and 00229 exist only in FS7 files): the Mk1 item has different sub-elements. Eighteenth version: Setting deselected: only 00233 went 1 -> 0, so Setting = 00233 and Type = 00232 (the order of the dialog is against the flag numbers; 'flags' is in the order of the sub-elements).",
+      "sub_elements": [
+        "Setting",
+        "Type"
+      ]
+    },
+    "556": {
+      "name": "Flicker Reduce",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG, nineteenth version (2026-10-21): slot 1 changed from Color Bars to Flicker Reduce: 00001 = 100663852,0 (= 0x06000000 + 556); no flag changed (against the version before, with Color Bars Setting off): the flags of its sub-elements Mode and Frequency (as the camera dialog lists them) were on already, probably from an item registered earlier in the same menu. The flags are not known yet (they have to be found by deselecting a sub-element: the flag that goes off is its flag). Twentieth version: Mode deselected: only 00658 went 1 -> 0, so Mode = 00658 (the flag was on already). Twenty-first version: Frequency deselected (against the version with both on): only 00659 went 1 -> 0, so Frequency = 00659 and Mode = 00658.",
+      "sub_elements": [
+        "Mode",
+        "Frequency"
+      ],
+      "flags": [
+        "00658",
+        "00659"
+      ]
     }
   }
 }

@@ -136,13 +136,14 @@ def load_user_menu_flags() -> dict:
 
 
 def load_user_menu_subs() -> dict:
-    """Menu item number -> (names of its sub-elements, IDs of their flags in the same order) for the items where both are known."""
+    """Menu item number -> (names of its sub-elements, IDs of their flags in the same order) for the items where both are known. 'sub_flags' are the flags of the
+    sub-elements; 'flags' (all flags that come on with the item) can hold more (Focus: twelve flags that no sub-element switches)."""
     try:
         items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
     except (OSError, ValueError):
         return {}
-    return {int(number): (list(entry["sub_elements"]), list(entry["flags"])) for number, entry in items.items()
-            if isinstance(entry, dict) and entry.get("sub_elements") and len(entry.get("flags", [])) == len(entry["sub_elements"])}
+    return {int(number): (list(entry["sub_elements"]), list(entry.get("sub_flags", entry.get("flags", [])))) for number, entry in items.items()
+            if isinstance(entry, dict) and entry.get("sub_elements") and len(entry.get("sub_flags", entry.get("flags", []))) == len(entry["sub_elements"])}
 
 
 def user_menu_choices(values) -> dict:

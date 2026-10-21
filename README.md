@@ -62,7 +62,7 @@ Cine EI note: SCENE files exist only in Custom mode; in Cine EI mode only ALL fi
 
 ## Status of the decoding
 
-IDs are decoded by comparing files and the manuals. Decoded so far for the FS7M2 (ALL files): the Paint menu, most of Camera, Audio, VF (Display On/Off, Zebra, Peaking, Marker, parts of VF Setting), the first items of TC/UB, System (base setting, codec / rec format, country), S&Q Motion and the user menu (slots, 15 menu items, the sub-elements of two of them); many of the remaining menus are still raw values. Each entry in `scene_parameters.json` / `all_parameters.json` carries a status (`confirmed`, `likely`, `hypothesis`); dropdown entries taken only from the manuals are marked "assumption". What is known and how it was found: [docs/FINDINGS.md](docs/FINDINGS.md); menu dependencies from the manuals: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md). Camera test reports and sample files are welcome.
+IDs are decoded by comparing files and the manuals. Decoded so far for the FS7M2 (ALL files): the Paint menu, most of Camera, Audio, VF (Display On/Off, Zebra, Peaking, Marker, parts of VF Setting), the first items of TC/UB, System (base setting, codec / rec format, country), S&Q Motion and the user menu (slots, 19 menu items, the sub-elements of six of them); many of the remaining menus are still raw values. Each entry in `scene_parameters.json` / `all_parameters.json` carries a status (`confirmed`, `likely`, `hypothesis`); dropdown entries taken only from the manuals are marked "assumption". What is known and how it was found: [docs/FINDINGS.md](docs/FINDINGS.md); menu dependencies from the manuals: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md). Camera test reports and sample files are welcome.
 
 ## Build an executable
 
