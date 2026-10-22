@@ -570,5 +570,6 @@
   "A user menu file of another camera model cannot be used: the camera accepts only user menu files of its own model.": "不能使用其他攝影機型號的使用者選單檔案：攝影機只接受自己型號的使用者選單檔案。",
   "Sub-elements": "子元素",
   "Reads, converts and writes configuration files (SCENE, ALL and user menu files) of the Sony PXW-FS7 and PXW-FS7M2 cameras.": "讀取、轉換並寫入 Sony PXW-FS7 和 PXW-FS7M2 攝影機的配置檔案（SCENE、ALL 和使用者選單檔案）。",
-  "Not a readable SCENE / ALL / USER file.": "不是可讀取的 SCENE / ALL / USER 檔案。"
+  "Not a readable SCENE / ALL / USER file.": "不是可讀取的 SCENE / ALL / USER 檔案。",
+  "Thanks to Doug Jensen (Vortex Media) for his FS7 field guide and its scene files, which helped in understanding the formats:": "感謝 Doug the author of sample set A（sample set A）的 FS7 實戰指南及其場景檔案，它們幫助我們理解這些檔案格式："
 }

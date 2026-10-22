@@ -38,10 +38,11 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.3.0"
-_date = "2026-10-21"
+_date = "2026-10-22"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
+THANKS_LINKS = ["https://vortexmedia.com/", "https://vortexmedia.com/field-guide-books.html"]      # sample set A (Doug the author of sample set A), agreed 2026-10-22
 SCENE_MAGIC = "V01.00^^^^^^^^^"
 SCENE_NAME_WIDTH = 17  # name field incl. '^' padding
 SCENE_FOOTER = "%%%%"
@@ -1408,6 +1409,7 @@ ABOUT_TEXTS = [
     "The file formats were researched by comparing the author's own files in order to achieve interoperability. The program contains neither Sony software nor Sony material.",
     "Use at your own risk: the software is provided without any warranty (see license text). Files created with this program change settings of your camera. Before loading them, back up the current state (save an All File to the SD card). Flawless operation with every camera and every firmware cannot be guaranteed.",
     "Uses: customtkinter (MIT License), darkdetect (BSD License), packaging (BSD License), Pillow (MIT-CMU License) and the Python standard library (Tkinter, Tcl/Tk). The EXE is built with PyInstaller and contains its bootloader (GPL-2.0-or-later with an exception for the bundled program). The license texts are under \"Third-party licenses\".",
+    "Thanks to Doug Jensen (Vortex Media) for his FS7 field guide and its scene files, which helped in understanding the formats:",
 ]
 
 
@@ -1453,6 +1455,15 @@ def open_mail_client() -> bool:
             return bool(webbrowser.open(url))
         except Exception:
             return False
+
+
+def open_web_page(url: str) -> bool:
+    """Open a fixed web address of the program (About dialog) in the default browser. Returns False on failure."""
+    try:
+        import webbrowser
+        return bool(webbrowser.open(url))
+    except Exception:
+        return False
 
 
 LOGO_FILE = BASE_DIR / "assets" / "sonyconfigeditor.png"
@@ -1537,6 +1548,11 @@ class AboutDialog(ctk.CTkToplevel):
             label = ctk.CTkLabel(frame, text=tr(source), wraplength=wrap, justify="left", anchor="w")
             label.pack(anchor="w", pady=(0, 8))
             self.texts.append(label)
+        for url in THANKS_LINKS:
+            thanks = ctk.CTkLabel(frame, text=url, text_color=app._c["accent"], anchor="w", cursor="hand2", font=ctk.CTkFont(underline=True))
+            thanks.pack(anchor="w")
+            thanks.bind("<Button-1>", lambda _e, u=url: open_web_page(u))
+        tk.Frame(frame, height=max(2, app._sc(2)), bg="#8a8a8a").pack(fill="x", pady=10)      # line between the thanks links and the contact address
         link = ctk.CTkLabel(frame, text=CONTACT_EMAIL, text_color=app._c["accent"], anchor="w", cursor="hand2",
                             font=ctk.CTkFont(underline=True))
         link.pack(anchor="w")

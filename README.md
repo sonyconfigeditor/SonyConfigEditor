@@ -87,6 +87,10 @@ Developed with the help of an AI coding assistant (Claude by Anthropic); all cha
 
 Questions, ideas and sample files: [GitHub Discussions](https://github.com/sonyconfigeditor/SonyConfigEditor/discussions). Camera test reports and anything private: sonyconfigeditor@gmail.com
 
+## Thanks
+
+Thanks to Doug Jensen of [Vortex Media](https://vortexmedia.com/) for his FS7 [field guide books](https://vortexmedia.com/field-guide-books.html) and their scene files, which helped in understanding the formats.
+
 ## License
 
 MIT, see [LICENSE](LICENSE). Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Copyright (c) 2026 Lukas Himmelswanderer.

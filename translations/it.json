@@ -570,5 +570,6 @@
   "A user menu file of another camera model cannot be used: the camera accepts only user menu files of its own model.": "Un file del menu utente di un altro modello di camera non può essere usato: la camera accetta solo file del menu utente del proprio modello.",
   "Sub-elements": "Sottoelementi",
   "Reads, converts and writes configuration files (SCENE, ALL and user menu files) of the Sony PXW-FS7 and PXW-FS7M2 cameras.": "Legge, converte e scrive file di configurazione (file SCENE, ALL e del menu utente) delle camere Sony PXW-FS7 e PXW-FS7M2.",
-  "Not a readable SCENE / ALL / USER file.": "Non è un file SCENE / ALL / USER leggibile."
+  "Not a readable SCENE / ALL / USER file.": "Non è un file SCENE / ALL / USER leggibile.",
+  "Thanks to Doug Jensen (Vortex Media) for his FS7 field guide and its scene files, which helped in understanding the formats:": "Grazie a Doug Jensen (Vortex Media) per la sua guida pratica alla FS7 e per i suoi file di scena, che hanno aiutato a capire i formati:"
 }
