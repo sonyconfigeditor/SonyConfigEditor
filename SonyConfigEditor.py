@@ -1312,7 +1312,8 @@ def hue_sat_hex(degrees: int, saturation: int) -> str:
 
 class ColorWheelDialog(ctk.CTkToplevel):
     """Colour wheel for Skin Detail: the angle is the hue (0 to 359 degrees, red to the right, counter-clockwise), the distance from the centre the
-    saturation (centre -99, edge +99). One click calls ``on_pick(hue, saturation)`` and closes the window."""
+    saturation (centre -99, edge +99). A click calls ``on_pick(hue, saturation)`` and moves the mark; the window stays open until it is closed
+    (Esc, the close button, a click outside of it)."""
 
     SIZE = 240      # unscaled pixels
     _images: dict = {}
@@ -1332,26 +1333,46 @@ class ColorWheelDialog(ctk.CTkToplevel):
         self.canvas.pack(padx=16, pady=(0, 14))
         self._image = self._wheel_image(self._size)
         self.canvas.create_image(0, 0, image=self._image, anchor="nw")
+        self._width = width
+        self._draw(hue, saturation)
+        self.canvas.bind("<Button-1>", self.click)
+        self.bind("<Escape>", lambda _e: self.destroy())
+        if not invisible:      # (hidden test windows never have the focus)
+            self.bind("<FocusOut>", lambda _e: self.after(60, self._close_if_outside), add="+")      # a click outside closes the wheel
+            self.after(80, self.focus_force)      # the wheel has the focus, so leaving it (a click elsewhere) can close it
+
+    def _close_if_outside(self):
+        """The focus left the window (a click on another window of the program or of the desktop): close it."""
+        try:
+            if not self.winfo_exists():
+                return
+            focused = self.focus_displayof()
+            if focused is None or not str(focused).startswith(str(self)):
+                self.destroy()
+        except tk.TclError:
+            pass
+
+    def _draw(self, hue: int, saturation: int):
+        """Mark of the chosen colour and, with a width, the guide lines of the colour range."""
+        self.canvas.delete("marks")
         radius = self._size / 2
         angle, dist = math.radians(hue), (saturation + 99) / 198 * radius
         x, y = radius + math.cos(angle) * dist, radius - math.sin(angle) * dist
         mark = max(4, self._size // 40)
-        self.canvas.create_oval(x - mark, y - mark, x + mark, y + mark, outline="black", width=2)
-        self.canvas.create_oval(x - mark + 2, y - mark + 2, x + mark - 2, y + mark - 2, outline="white", width=1)
-        if width is not None:      # guide lines: the colour range around the hue (assumption: the width is split evenly to both sides)
-            self._guides(hue, width)
-        self.canvas.bind("<Button-1>", self.click)
-        self.bind("<Escape>", lambda _e: self.destroy())
+        self.canvas.create_oval(x - mark, y - mark, x + mark, y + mark, outline="black", width=2, tags="marks")
+        self.canvas.create_oval(x - mark + 2, y - mark + 2, x + mark - 2, y + mark - 2, outline="white", width=1, tags="marks")
+        if self._width is not None:      # guide lines: the colour range around the hue (assumption: the width is split evenly to both sides)
+            self._guides(hue, self._width, saturation)
 
-    def _guides(self, hue: int, width: int):
+    def _guides(self, hue: int, width: int, saturation: int):
         radius, half = self._size / 2, width / 2
+        arc_radius = max(radius * 0.12, (saturation + 99) / 198 * radius)      # the arc runs through the marked point (not at the edge)
         for colour, line in (("black", 3), ("white", 1)):
             for edge in {hue - half, hue + half}:
                 angle = math.radians(edge)
-                self.canvas.create_line(radius, radius, radius + math.cos(angle) * radius, radius - math.sin(angle) * radius, fill=colour, width=line)
+                self.canvas.create_line(radius, radius, radius + math.cos(angle) * radius, radius - math.sin(angle) * radius, fill=colour, width=line, tags="marks")
             if width > 0:
-                inset = radius * 0.04
-                self.canvas.create_arc(inset, inset, self._size - inset, self._size - inset, start=hue - half, extent=width, style="arc", outline=colour, width=line)
+                self.canvas.create_arc(radius - arc_radius, radius - arc_radius, radius + arc_radius, radius + arc_radius, start=hue - half, extent=width, style="arc", outline=colour, width=line, tags="marks")
 
     @classmethod
     def _wheel_image(cls, size: int):
@@ -1385,7 +1406,7 @@ class ColorWheelDialog(ctk.CTkToplevel):
 
     def click(self, event):
         hue, saturation = self.pick_at(event.x, event.y)
-        self.destroy()
+        self._draw(hue, saturation)
         self._on_pick(hue, saturation)
 
 
@@ -2034,7 +2055,10 @@ class FileOpenDialog(ctk.CTkToplevel):
         self._nav_tips = [Tooltip(self.back_button, tr("Back to the previous folder")), Tooltip(self.forward_button, tr("Forward to the next folder")), Tooltip(self.up_button, tr("Up one folder"))]
         self.drive_var = tk.StringVar()
         drives = drive_roots()
-        self.drive_menu = ctk.CTkOptionMenu(bar, values=drives, variable=self.drive_var, width=sc(80), command=lambda d: self.navigate(Path(d)))
+        self.drive_menu = ctk.CTkOptionMenu(bar, values=drives, variable=self.drive_var, dynamic_resizing=False,
+                                          width=round(max(font.measure(d) for d in drives) / scale) + 38,      # as wide as the longest entry plus the arrow (customtkinter scales the width itself)
+                                          command=lambda d: self.navigate(Path(d)))
+        self.drive_menu._dropdown_menu.configure(min_character_width=0)      # customtkinter pads every entry of the list to 18 characters: a drive letter needs 3
         self.drive_menu.grid(row=0, column=3, padx=(0, sc(6)))
         self.path_var = tk.StringVar()
         self.path_entry = ctk.CTkEntry(bar, textvariable=self.path_var)
@@ -4809,6 +4833,9 @@ class App(ctk.CTk):
                 current = raw_to_step(int(var.get().split(",")[sat_idx]), unit, 1, False)
                 w_idx = f.get("width_index")
                 width = raw_to_step(int(var.get().split(",")[w_idx]), fields[w_idx].get("unit", unit), 1, False) if w_idx is not None else None
+                old = getattr(self, "_wheel", None)
+                if old is not None and old.winfo_exists():
+                    old.destroy()      # one wheel at a time
                 wheel = ColorWheelDialog(self, int(shown()), current, pick_colour, invisible=invisible, width=width)
                 self._wheel = wheel
                 return wheel
