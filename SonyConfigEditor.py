@@ -38,7 +38,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.3.0"
-_date = "2026-10-22"
+_date = "2026-10-23"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -80,6 +80,9 @@ BASE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))  # _M
 # SCENE, ALL and USER files share the container format but use different parameter IDs -> one database per file type
 PARAM_DB_FILES = {"scene": BASE_DIR / "scene_parameters.json", "all": BASE_DIR / "all_parameters.json", "user": BASE_DIR / "user_parameters.json"}
 USER_MENU_FILE = BASE_DIR / "user_menu_items.json"      # names of the menu item numbers of the user menu (.USER files)
+NO_NAME = ""      # content of the file name field of the open dialog while no file is marked
+USER_SLOTS = 20      # slots of the user menu (IDs 00001 to 00020)
+USER_PREVIEW_SLOTS = 6      # the file dialog shows the first six
 USER_MENU_BASE = 0x06000000      # a slot of the user menu holds this value plus the number of the menu item (0 = empty slot)
 PARAM_DB_FILE = PARAM_DB_FILES["scene"]
 TEMPLATE_DIR = BASE_DIR / "templates"
@@ -1779,7 +1782,7 @@ def peek_file(path, stat=None) -> dict:
     """The few facts the file dialog shows about a SCENE / ALL / USER file, read without parsing the whole file (about a tenth of the time of ``SceneFile.load``).
     Language independent: codes stay codes (the dialog turns them into words). Never raises; ``ok`` is False with ``error`` for a file that is no SCENE / ALL / USER file."""
     info = {"ok": False, "error": "", "kind": Path(path).suffix.lstrip(".").upper(), "name": "", "model": "", "checksum_ok": None,
-            "area": None, "mode": None, "codec": None, "format": "", "size": 0, "mtime": 0.0}
+            "area": None, "mode": None, "codec": None, "format": "", "slots": [], "size": 0, "mtime": 0.0}
     try:
         stat = stat or os.stat(path)
         info["size"], info["mtime"] = stat.st_size, stat.st_mtime
@@ -1803,6 +1806,15 @@ def peek_file(path, stat=None) -> dict:
         key = line[:5]
         if key in wanted and line[5:6] == "=":
             wanted[key] = line[6:].split(",")
+    if info["kind"] == "USER":      # menu item numbers of the 20 slots (None = empty slot)
+        slots: list = [None] * USER_SLOTS
+        for line in lines[4:4 + USER_SLOTS]:
+            key = line[:5]
+            if key.isdigit() and 1 <= int(key) <= USER_SLOTS and line[5:6] == "=":
+                code = line[6:].split(",")[0].strip()
+                if code.lstrip("-").isdigit() and int(code) > USER_MENU_BASE:
+                    slots[int(key) - 1] = int(code) - USER_MENU_BASE
+        info["slots"] = slots
     pick = lambda fields, i: fields[i].strip() if fields and len(fields) > i else None
     info["area"], info["mode"], info["codec"] = pick(wanted["00159"], 0), pick(wanted["00418"], 0), pick(wanted["00150"], 16)
     f = wanted["00150"]
@@ -1925,6 +1937,9 @@ class FileOpenDialog(ctk.CTkToplevel):
         colors = app._c
         self._types = [(label, patterns.split()) for label, patterns in filetypes]
         self._folder = Path.home()
+        self._history: list[Path] = []      # folders left behind, newest last (the back button)
+        self._forward: list[Path] = []      # folders left by going back (the forward button); a new way clears them
+        self._started = False
         self._entries: list[tuple[str, bool]] = []
         self._dir_cache: dict[Path, list[Path]] = {}
         self._codec_names = self._load_codec_names()
@@ -1959,23 +1974,48 @@ class FileOpenDialog(ctk.CTkToplevel):
         self._tree_paths: list[Path] = []
         self.tree.bind("<<ListboxSelect>>", lambda _e: self._on_tree_select())
         ctk.CTkLabel(card, text=tr("Preview"), font=ctk.CTkFont(weight="bold"), text_color=colors["accent"], anchor="w").grid(row=0, column=0, columnspan=2, sticky="w", padx=sc(12), pady=(sc(10), sc(6)))
-        rows = (("name", "File ID"), ("file", "File"), ("kind", "Type"), ("model", "Model"), ("area", "Area"), ("mode", "Shooting Mode"),
-                ("codec", "Codec"), ("format", "Format"), ("checksum", "Checksum"), ("modified", "Modified"))
+        rows = (("name", "File ID"), ("file", "File"), ("kind", "Type"), ("model", "Model"), ("checksum", "Checksum"), ("modified", "Modified"))      # the same for every file type
+        extra_rows = (("area", "Area"), ("mode", "Shooting Mode"), ("codec", "Codec"), ("format", "Format"))      # ALL files only
         # the value column is as wide as the longest content that can occur, so the values keep a fixed distance to the captions
         widest = ["n" * 16, "0000-00-00 00:00", "3840×2160 119.88p", "PXW-FS7M2", tr("NTSC Area"), tr("PAL Area"), tr("Custom"), tr("Cine EI"), tr("Does not match"), "SCENE"]
         widest += list(self._codec_names.values())
+        widest.append("n" * 26)      # long file names are cut in the middle to this width, so the card never grows with the name
         value_width = max(font.measure(text) for text in widest)
-        card.grid_columnconfigure(0, minsize=max(font.measure(tr(label)) for _key, label in rows) + sc(26))
-        card.grid_columnconfigure(1, minsize=value_width + sc(12))
+        caption_width = max(font.measure(tr(label)) for _key, label in rows + extra_rows) + sc(26)
+        # below the common rows: a block of fixed height (ALL: area, mode, codec, format; USER: the first slots; others: the note), so the card never changes its size
+        self._extra = tk.Frame(card, bg=colors["card"])
+        self._extra.grid(row=len(rows) + 1, column=0, columnspan=2, sticky="nw", padx=(sc(3), 0), pady=(0, sc(10)))      # clear of the rounded border of the card (the rows inside move back by the same amount)
+        self._dx = sc(3)
+        card.grid_columnconfigure(0, minsize=caption_width)
+        self._extra.grid_columnconfigure(0, minsize=caption_width - self._dx)
+        for holder in (card, self._extra):
+            holder.grid_columnconfigure(1, minsize=value_width + sc(12))
         self._fields: dict[str, tk.Label] = {}
-        for row, (key, label) in enumerate(rows, 1):
-            tk.Label(card, text=tr(label), anchor="w", bg=colors["card"], fg="#8a8a8a", font=font).grid(row=row, column=0, sticky="w", padx=(sc(12), 0), pady=sc(2))
-            value = tk.Label(card, text="", anchor="w", justify="left", bg=colors["card"], fg=colors["text"], font=font)
-            value.grid(row=row, column=1, sticky="w", padx=(0, sc(12)), pady=sc(2))
-            self._fields[key] = value
-        self._status = tk.Label(card, text="", anchor="nw", justify="left", bg=colors["card"], fg="#8a8a8a", font=font,
-                                wraplength=value_width + max(font.measure(tr(label)) for _key, label in rows) + sc(14))
-        self._status.grid(row=20, column=0, columnspan=2, sticky="nw", padx=sc(12), pady=(sc(10), sc(10)))
+        self._captions: dict[str, tk.Label] = {}
+        for holder, group, first in ((card, rows, 1), (self._extra, extra_rows, 0)):
+            for row, (key, label) in enumerate(group, first):
+                caption = tk.Label(holder, text=tr(label), anchor="w", bg=colors["card"], fg="#8a8a8a", font=font)
+                caption.grid(row=row, column=0, sticky="w", padx=(sc(12) - (self._dx if holder is self._extra else 0), 0), pady=sc(2))
+                value = tk.Label(holder, text="", anchor="w", justify="left", bg=colors["card"], fg=colors["text"], font=font)
+                value.grid(row=row, column=1, sticky="w", padx=(0, sc(12)), pady=sc(2))
+                self._fields[key] = value
+                self._captions[key] = caption
+        self._slot_rows: list[tuple[tk.Label, tk.Label]] = []      # user menu files: the first slots
+        for n in range(1, USER_PREVIEW_SLOTS + 1):
+            caption = tk.Label(self._extra, text=tr("Slot {number}").format(number=n), anchor="w", bg=colors["card"], fg="#8a8a8a", font=font)
+            value = tk.Label(self._extra, text="", anchor="w", justify="left", bg=colors["card"], fg=colors["text"], font=font)
+            self._slot_rows.append((caption, value))
+        small = tkfont.Font(font=font)
+        small.configure(size=int(small.cget("size") * 0.9) if small.cget("size") > 0 else int(small.cget("size") * 1.1))      # smaller: the dots must not make the card higher
+        self._dots_font = small
+        self._slot_more = tk.Label(self._extra, text="⋮", anchor="w", bg=colors["card"], fg=colors["text"], font=small, pady=0, bd=0)      # three dots one above the other
+        self._value_width = value_width
+        self._fit_width = value_width - sc(8)      # text width that fits into the value column (the labels have a small inner margin)
+        self._font = font
+        self._status = tk.Label(self._extra, text="", anchor="nw", justify="left", bg=colors["card"], fg="#8a8a8a", font=font,
+                                wraplength=value_width + caption_width - sc(12))
+        self._extra_mode = ""
+        self._fix_extra_height()
 
         # right: path bar, list, file name
         right = ctk.CTkFrame(self, fg_color="transparent")
@@ -1984,16 +2024,21 @@ class FileOpenDialog(ctk.CTkToplevel):
         right.grid_rowconfigure(1, weight=1)
         bar = ctk.CTkFrame(right, fg_color="transparent")
         bar.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, sc(6)))
-        bar.grid_columnconfigure(2, weight=1)
+        bar.grid_columnconfigure(4, weight=1)
+        self.back_button = ctk.CTkButton(bar, text="\u2190", width=sc(34), command=self.go_back, state="disabled")      # to the folder visited before
+        self.back_button.grid(row=0, column=0, padx=(0, sc(6)))
+        self.forward_button = ctk.CTkButton(bar, text="\u2192", width=sc(34), command=self.go_forward, state="disabled")      # undoes a step back
+        self.forward_button.grid(row=0, column=1, padx=(0, sc(6)))
         self.up_button = ctk.CTkButton(bar, text="\u2191", width=sc(34), command=self.go_up)
-        self.up_button.grid(row=0, column=0, padx=(0, sc(6)))
+        self.up_button.grid(row=0, column=2, padx=(0, sc(6)))
+        self._nav_tips = [Tooltip(self.back_button, tr("Back to the previous folder")), Tooltip(self.forward_button, tr("Forward to the next folder")), Tooltip(self.up_button, tr("Up one folder"))]
         self.drive_var = tk.StringVar()
         drives = drive_roots()
         self.drive_menu = ctk.CTkOptionMenu(bar, values=drives, variable=self.drive_var, width=sc(80), command=lambda d: self.navigate(Path(d)))
-        self.drive_menu.grid(row=0, column=1, padx=(0, sc(6)))
+        self.drive_menu.grid(row=0, column=3, padx=(0, sc(6)))
         self.path_var = tk.StringVar()
         self.path_entry = ctk.CTkEntry(bar, textvariable=self.path_var)
-        self.path_entry.grid(row=0, column=2, sticky="ew")
+        self.path_entry.grid(row=0, column=4, sticky="ew")
         self.path_entry.bind("<Return>", lambda _e: self.navigate(Path(self.path_var.get().strip().strip('"')), fallback=True))
         self.listbox = tk.Listbox(right, activestyle="none", exportselection=False, bg=colors["entry"], fg=colors["text"], font=colors["font"], relief="flat",
                                   highlightthickness=sc(1), highlightbackground=colors["border"], highlightcolor=colors["focus"],
@@ -2010,13 +2055,16 @@ class FileOpenDialog(ctk.CTkToplevel):
         low.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(sc(8), 0))
         low.grid_columnconfigure(1, weight=1)
         ctk.CTkLabel(low, text=tr("File name:")).grid(row=0, column=0, sticky="w", padx=(0, sc(8)))
-        self.name_var = tk.StringVar()
+        self.name_var = tk.StringVar(value=NO_NAME)
         self.name_entry = ctk.CTkEntry(low, textvariable=self.name_var)
+        self.name_entry.bind("<FocusIn>", lambda _e: self.name_var.get() == NO_NAME and self.name_var.set(""), add="+")      # typing starts on an empty field
+        self.name_entry.bind("<FocusOut>", lambda _e: not self.name_var.get().strip() and self.name_var.set(NO_NAME), add="+")
         self.name_entry.grid(row=0, column=1, sticky="ew")
         self.name_entry.bind("<Return>", lambda _e: self.accept(typed=True))
         labels = [label for label, _p in self._types]
         self.type_var = tk.StringVar(value=labels[0])
-        self.type_menu = ctk.CTkOptionMenu(low, values=labels, variable=self.type_var, command=lambda _v: self.navigate(self._folder), dynamic_resizing=False, width=sc(230))
+        self.type_menu = ctk.CTkOptionMenu(low, values=labels, variable=self.type_var, command=lambda _v: self.navigate(self._folder), dynamic_resizing=False,
+                                          width=round(max(colors["font"].measure(label) for label in labels) / scale) + 50)      # as wide as its longest text (customtkinter scales the width itself); the file name gets the rest
         self.type_menu.grid(row=0, column=2, padx=(sc(8), 0))
         buttons = ctk.CTkFrame(low, fg_color="transparent")
         buttons.grid(row=1, column=0, columnspan=3, sticky="e", pady=(sc(10), 0))
@@ -2049,7 +2097,7 @@ class FileOpenDialog(ctk.CTkToplevel):
                 return patterns
         return ["*.*"]
 
-    def navigate(self, folder: Path, fallback: bool = False):
+    def navigate(self, folder: Path, fallback: bool = False, going_back: bool = False):
         """Show a folder. A name that is no folder: with ``fallback`` (typed path) the file is selected if it exists, otherwise nothing changes."""
         folder = Path(folder)
         if not folder.is_dir():
@@ -2063,7 +2111,14 @@ class FileOpenDialog(ctk.CTkToplevel):
         except OSError as exc:
             self._status.configure(text=exc.strerror or str(exc))
             return
+        if self._started and folder != self._folder and not going_back:
+            self._history.append(self._folder)
+            del self._history[:-50]
+            self._forward.clear()
+        self._started = True
         self._folder = folder
+        self.back_button.configure(state="normal" if self._history else "disabled")
+        self.forward_button.configure(state="normal" if self._forward else "disabled")
         self._dir_cache.pop(folder, None)      # the folder we enter is read afresh
         self.path_var.set(str(folder))
         drive = folder.drive + "\\" if folder.drive else ""
@@ -2080,6 +2135,7 @@ class FileOpenDialog(ctk.CTkToplevel):
         self.peeker.clear()
         self.peeker.submit(str(folder / n) for n, d in shown if not d and n.lower().endswith(tuple(KIND_OF_EXT)))
         self._selected = ""
+        self.name_var.set(NO_NAME)
         self._show_card(None)
         self._status.configure(text="")
         self._fill_tree()
@@ -2130,6 +2186,26 @@ class FileOpenDialog(ctk.CTkToplevel):
         if chosen and self._tree_paths[chosen[0]] != self._folder:
             self.navigate(self._tree_paths[chosen[0]])
 
+    def go_back(self):
+        """Back to the folder that was shown before; every press goes one step further back."""
+        while self._history:
+            folder = self._history.pop()
+            if folder.is_dir() and folder != self._folder:
+                self._forward.append(self._folder)
+                self.navigate(folder, going_back=True)
+                return
+        self.back_button.configure(state="disabled")
+
+    def go_forward(self):
+        """Undoes a step back."""
+        while self._forward:
+            folder = self._forward.pop()
+            if folder.is_dir() and folder != self._folder:
+                self._history.append(self._folder)
+                self.navigate(folder, going_back=True)
+                return
+        self.forward_button.configure(state="disabled")
+
     def go_up(self):
         parent = self._folder.parent
         if parent != self._folder:
@@ -2153,6 +2229,7 @@ class FileOpenDialog(ctk.CTkToplevel):
         name, is_dir = self._entries[chosen[0]]
         if is_dir:
             self._selected = ""
+            self.name_var.set(NO_NAME)      # no file marked: the name of the file before must not stay
             self._show_card(None)
             return
         self.name_var.set(name)
@@ -2177,15 +2254,16 @@ class FileOpenDialog(ctk.CTkToplevel):
     def _show_card(self, path):
         for label in self._fields.values():
             label.configure(text="")
+        self._layout_extra("note")
         if not path:
             self._status.configure(text=tr("Mark a file to see its details."))
             return
         info = self.cache.get(path)
         if info is None:
-            self._fields["file"].configure(text=Path(path).name)
+            self._fields["file"].configure(text=self._shorten_name(Path(path).name, self._fit_width))
             self._status.configure(text=tr("Reading…"))
             return
-        self._fields["file"].configure(text=Path(path).name)
+        self._fields["file"].configure(text=self._shorten_name(Path(path).name, self._fit_width))
         if not info["ok"]:
             self._status.configure(text=tr("Not a readable SCENE / ALL / USER file."))
             return
@@ -2198,25 +2276,96 @@ class FileOpenDialog(ctk.CTkToplevel):
                   "format": info["format"] or dash, "checksum": checksum, "modified": time.strftime("%Y-%m-%d %H:%M", time.localtime(info["mtime"]))}
         for key, text in values.items():
             self._fields[key].configure(text=text)
-        self._status.configure(text="" if info["kind"] == "ALL" else tr("User menu files do not contain area, codec and format.") if info["kind"] == "USER"
-                               else tr("SCENE files do not contain area, codec and format."))
+        if info["kind"] == "ALL":
+            self._layout_extra("all")
+        elif info["kind"] == "USER":
+            self._layout_extra("user", info["slots"])
+        else:
+            self._status.configure(text=tr("SCENE files do not contain area, codec and format."))
+
+    def _layout_extra(self, mode: str, slots: list = ()):
+        """The block below the common rows. 'all': area / shooting mode / codec / format. 'user': the first slots (name, or 'ID number' when the item is not
+        known, shortened with '...') and three dots when more slots are filled. 'note': only the note line (status)."""
+        sc = self.app._sc
+        self._extra_mode = mode
+        for key in ("area", "mode", "codec", "format"):
+            for widget in (self._captions[key], self._fields[key]):
+                widget.grid() if mode == "all" else widget.grid_remove()
+        if mode == "user":
+            self._status.grid_remove()
+        else:
+            self._status.configure(text="")
+            self._status.grid(row=10, column=0, columnspan=2, sticky="nw", padx=sc(12) - self._dx, pady=(sc(10), sc(10)))
+        names = load_user_menu_names()
+        for index, (caption, value) in enumerate(self._slot_rows):
+            if mode != "user":
+                caption.grid_remove()
+                value.grid_remove()
+                continue
+            number = slots[index] if index < len(slots) else None
+            text = "–" if number is None else names.get(str(number)) or tr("ID {number}").format(number=number)
+            value.configure(text=self._shorten(text, self._fit_width))
+            caption.grid(row=index, column=0, sticky="w", padx=(sc(12) - self._dx, 0), pady=0)      # tight, so that the block is no higher than the ALL rows
+            value.grid(row=index, column=1, sticky="w", padx=(0, sc(12)), pady=0)
+        if mode == "user" and any(number is not None for number in slots[USER_PREVIEW_SLOTS:]):
+            self._slot_more.grid(row=USER_PREVIEW_SLOTS, column=1, sticky="w", padx=(0, sc(12)), pady=(0, sc(1)))
+        else:
+            self._slot_more.grid_remove()
+
+    def _fix_extra_height(self):
+        """Gives the block below the common rows the height of its highest variant (ALL rows, user slots, longest note), so that marking another
+        file does not move anything: the card keeps its size."""
+        height = width = 0
+        notes = [tr("Mark a file to see its details."), tr("Reading…"), tr("Not a readable SCENE / ALL / USER file."), tr("SCENE files do not contain area, codec and format.")]
+        for mode, texts in (("all", [""]), ("user", [""]), ("note", notes)):
+            for note in texts:
+                self._layout_extra(mode, [1] * USER_SLOTS)
+                self._status.configure(text=note)
+                self._extra.update_idletasks()
+                height, width = max(height, self._extra.winfo_reqheight()), max(width, self._extra.winfo_reqwidth())
+        self._layout_extra("note")
+        self._extra.grid_propagate(False)
+        self._extra.configure(height=height, width=width)
+
+    def _shorten_name(self, name: str, width: int) -> str:
+        """A file name that is too wide for the card: beginning, '...', and the end with the extension; the cut is made at the underscores where possible
+        (001_DEFG_v18_color_bars_setting_off.USER -> 001_DEFG_v18_c..._setting_off.USER)."""
+        measure = self._font.measure
+        if measure(name) <= width:
+            return name
+        stem, ext = os.path.splitext(name)
+        tails = [stem[i:] + ext for i in range(len(stem) - 1, 0, -1) if stem[i] == "_" and measure(stem[i:] + ext) <= width * 0.6]
+        tail = tails[-1] if tails else stem[-6:] + ext
+        while len(tail) > len(ext) + 1 and measure(tail + "...") > width * 0.65:
+            tail = tail[1:]
+        head = stem
+        while head and measure(head + "..." + tail) > width:
+            head = head[:-1]
+        return head + "..." + tail
+
+    def _shorten(self, text: str, width: int) -> str:
+        if self._font.measure(text) <= width:
+            return text
+        while text and self._font.measure(text + "...") > width:
+            text = text[:-1]
+        return text.rstrip() + "..."
 
     # -- result -------------------------------------------------------------- #
     def accept(self, typed: bool = False):
         """Open the marked entry (folder: go in); with ``typed`` (Enter in the name field) the text decides."""
         chosen = self.listbox.curselection()
-        if chosen and not typed and self._entries[chosen[0]][1]:
+        if chosen and self._entries[chosen[0]][1] and (not typed or self.name_var.get().strip() in ("", NO_NAME)):      # Enter in the empty name field opens a marked folder, too
             self.navigate(self._folder / self._entries[chosen[0]][0])
-            self.name_var.set("")
+            self.name_var.set(NO_NAME)
             return
         text = self.name_var.get().strip().strip('"')
-        if not text:
+        if not text or text == NO_NAME:
             self.bell()
             return
         path = Path(text) if Path(text).is_absolute() else self._folder / text
         if path.is_dir():
             self.navigate(path)
-            self.name_var.set("")
+            self.name_var.set(NO_NAME)
         elif path.is_file():
             self.result = str(path)
             self.destroy()

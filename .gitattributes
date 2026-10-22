@@ -1,0 +1,4 @@
+# camera files are byte exact (LF, latin-1, MD5 line): never convert line endings
+*.SCENE -text
+*.ALL -text
+*.USER -text

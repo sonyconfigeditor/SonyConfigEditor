@@ -571,5 +571,10 @@
   "Sub-elements": "子元素",
   "Reads, converts and writes configuration files (SCENE, ALL and user menu files) of the Sony PXW-FS7 and PXW-FS7M2 cameras.": "读取、转换并写入 Sony PXW-FS7 和 PXW-FS7M2 摄像机的配置文件（SCENE、ALL 和用户菜单文件）。",
   "Not a readable SCENE / ALL / USER file.": "不是可读取的 SCENE / ALL / USER 文件。",
-  "Thanks to Doug Jensen (Vortex Media) for his FS7 field guide and its scene files, which helped in understanding the formats:": "感谢 Doug the author of sample set A（sample set A）的 FS7 实战指南及其场景文件，它们帮助我们理解了这些文件格式："
+  "Thanks to Doug Jensen (Vortex Media) for his FS7 field guide and its scene files, which helped in understanding the formats:": "感谢 Doug the author of sample set A（sample set A）的 FS7 实战指南及其场景文件，它们帮助我们理解了这些文件格式：",
+  "Slot {number}": "位置 {number}",
+  "ID {number}": "ID {number}",
+  "Back to the previous folder": "返回上一个文件夹",
+  "Forward to the next folder": "前进到下一个文件夹",
+  "Up one folder": "上一级文件夹"
 }

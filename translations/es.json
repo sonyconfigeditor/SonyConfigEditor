@@ -574,5 +574,10 @@
   "Sub-elements": "Subelementos",
   "Reads, converts and writes configuration files (SCENE, ALL and user menu files) of the Sony PXW-FS7 and PXW-FS7M2 cameras.": "Lee, convierte y escribe archivos de configuración (archivos SCENE, ALL y de menú de usuario) de las cámaras Sony PXW-FS7 y PXW-FS7M2.",
   "Not a readable SCENE / ALL / USER file.": "No es un archivo SCENE / ALL / USER legible.",
-  "Thanks to Doug Jensen (Vortex Media) for his FS7 field guide and its scene files, which helped in understanding the formats:": "Gracias a Doug Jensen (Vortex Media) por su guía de campo de la FS7 y sus archivos de escena, que ayudaron a comprender los formatos:"
+  "Thanks to Doug Jensen (Vortex Media) for his FS7 field guide and its scene files, which helped in understanding the formats:": "Gracias a Doug Jensen (Vortex Media) por su guía de campo de la FS7 y sus archivos de escena, que ayudaron a comprender los formatos:",
+  "Slot {number}": "Posición {number}",
+  "ID {number}": "ID {number}",
+  "Back to the previous folder": "Volver a la carpeta anterior",
+  "Forward to the next folder": "Avanzar a la carpeta siguiente",
+  "Up one folder": "Subir una carpeta"
 }
