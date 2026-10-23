@@ -8164,36 +8164,65 @@
     "group": "video",
     "subgroup": "System › Clock Set",
     "order": 1,
-    "evidence": "FS7M2 round 108 (2026-10-18, ALL only; the manual lists System > Clock Set as All File), Time Zone UTC +1:00 (Europe) -> UTC +5:30 (Mumbai) changed ALL 00163 from `1,0` to `5,30`: hours and minutes of the offset to UTC. How negative zones are stored is not seen yet (the menu offers UTC -12:00 to +14:00 in 30 minute steps). Round 116 (2026-10-18): Time Zone UTC +5:30 -> UTC -5:00 (New York) changed 00163 from `5,30` to `-5,0`: west of UTC the hours are negative and the minutes stay 0 (how a zone like -3:30 is stored is not seen yet). Round 117: Time Zone UTC -5:00 -> UTC -3:30 (Newfoundland) changed 00163 from `-5,0` to `-3,-30`: west of UTC both the hours and the minutes are negative.",
+    "evidence": "FS7M2 round 108 (2026-10-18, ALL only; the manual lists System > Clock Set as All File), Time Zone UTC +1:00 (Europe) -> UTC +5:30 (Mumbai) changed ALL 00163 from `1,0` to `5,30`: hours and minutes of the offset to UTC. How negative zones are stored is not seen yet (the menu offers UTC -12:00 to +14:00 in 30 minute steps). Round 116 (2026-10-18): Time Zone UTC +5:30 -> UTC -5:00 (New York) changed 00163 from `5,30` to `-5,0`: west of UTC the hours are negative and the minutes stay 0 (how a zone like -3:30 is stored is not seen yet). Round 117: Time Zone UTC -5:00 -> UTC -3:30 (Newfoundland) changed 00163 from `-5,0` to `-3,-30`: west of UTC both the hours and the minutes are negative. 2026-10-23: the menu is a list of 53 offsets (UTC -12:00 to +14:00, 30 minute steps) named after cities in the camera; the app shows one dropdown entry per offset with one or two well-known cities or regions (our own choice, not the camera's list). Zones between -1:00 and +1:00 with a half hour (-0:30 as `0,-30`) are assumed from the sign rule.",
     "widget": {
-      "type": "stepfields",
-      "unit": 1,
-      "range": [
-        -12,
-        14
-      ],
-      "max_raw": 32767,
-      "min_raw": -32768,
-      "note": "Offset to UTC: hours and minutes (menu: UTC -12:00 to +14:00 in steps of 30 minutes). West of UTC both values are negative (-3,-30 = UTC -3:30).",
-      "fields": [
-        {
-          "index": 0,
-          "label": "Hours",
-          "range": [
-            -12,
-            14
-          ]
-        },
-        {
-          "index": 1,
-          "label": "Minutes",
-          "choices": {
-            "0": "0",
-            "30": "30",
-            "-30": "-30"
-          }
-        }
-      ]
+      "type": "choice",
+      "note": "Offset to UTC (menu: UTC -12:00 to +14:00 in steps of 30 minutes). The cities in brackets are examples for the offset; the camera stores only hours and minutes (west of UTC both negative: -3,-30 = UTC -3:30).",
+      "choices": {
+        "-12,0": "UTC -12:00 (Baker Island)",
+        "-11,-30": "UTC -11:30",
+        "-11,0": "UTC -11:00 (Pago Pago, Midway)",
+        "-10,-30": "UTC -10:30",
+        "-10,0": "UTC -10:00 (Honolulu, Tahiti)",
+        "-9,-30": "UTC -9:30 (Marquesas Islands)",
+        "-9,0": "UTC -9:00 (Anchorage)",
+        "-8,-30": "UTC -8:30",
+        "-8,0": "UTC -8:00 (Los Angeles, Vancouver)",
+        "-7,-30": "UTC -7:30",
+        "-7,0": "UTC -7:00 (Denver, Phoenix)",
+        "-6,-30": "UTC -6:30",
+        "-6,0": "UTC -6:00 (Chicago, Mexico City)",
+        "-5,-30": "UTC -5:30",
+        "-5,0": "UTC -5:00 (New York, Bogotá)",
+        "-4,-30": "UTC -4:30",
+        "-4,0": "UTC -4:00 (Santiago, Halifax)",
+        "-3,-30": "UTC -3:30 (St. John's (Newfoundland))",
+        "-3,0": "UTC -3:00 (São Paulo, Buenos Aires)",
+        "-2,-30": "UTC -2:30",
+        "-2,0": "UTC -2:00 (South Georgia, Fernando de Noronha)",
+        "-1,-30": "UTC -1:30",
+        "-1,0": "UTC -1:00 (Azores, Cape Verde)",
+        "0,-30": "UTC -0:30",
+        "0,0": "UTC +0:00 (London, Reykjavík)",
+        "0,30": "UTC +0:30",
+        "1,0": "UTC +1:00 (Berlin, Paris)",
+        "1,30": "UTC +1:30",
+        "2,0": "UTC +2:00 (Athens, Cairo)",
+        "2,30": "UTC +2:30",
+        "3,0": "UTC +3:00 (Moscow, Istanbul)",
+        "3,30": "UTC +3:30 (Tehran)",
+        "4,0": "UTC +4:00 (Dubai, Baku)",
+        "4,30": "UTC +4:30 (Kabul)",
+        "5,0": "UTC +5:00 (Karachi, Tashkent)",
+        "5,30": "UTC +5:30 (Mumbai, New Delhi)",
+        "6,0": "UTC +6:00 (Dhaka, Almaty)",
+        "6,30": "UTC +6:30 (Yangon)",
+        "7,0": "UTC +7:00 (Bangkok, Jakarta)",
+        "7,30": "UTC +7:30",
+        "8,0": "UTC +8:00 (Beijing, Singapore)",
+        "8,30": "UTC +8:30",
+        "9,0": "UTC +9:00 (Tokyo, Seoul)",
+        "9,30": "UTC +9:30 (Adelaide, Darwin)",
+        "10,0": "UTC +10:00 (Sydney, Brisbane)",
+        "10,30": "UTC +10:30 (Lord Howe Island)",
+        "11,0": "UTC +11:00 (Nouméa, Solomon Islands)",
+        "11,30": "UTC +11:30",
+        "12,0": "UTC +12:00 (Auckland, Fiji)",
+        "12,30": "UTC +12:30",
+        "13,0": "UTC +13:00 (Tonga, Samoa)",
+        "13,30": "UTC +13:30",
+        "14,0": "UTC +14:00 (Kiritimati)"
+      }
     }
   },
   "00003": {

@@ -386,6 +386,133 @@ def quiet_scrollbar(scrollbar) -> None:
     scrollbar._draw = draw
 
 
+LONG_LIST = 15            # dropdowns with more entries open a popup with a scrollable list
+LONG_LIST_ROWS = 16       # visible rows of that popup
+POPUPS_INVISIBLE = False  # set by the tests: no visible window, no grab, no focus
+
+
+class ListPopup(tk.Toplevel):
+    """Scrollable replacement for the dropdown of a long list. The native menu of Windows only scrolls with its arrows (Tk does not hand the mouse
+    wheel to it); this list scrolls with the wheel, the arrow keys and Page Up/Down, Enter or a click picks, Esc or a click outside closes.
+    It reads the entries (text, disabled or not) from the dropdown menu of the option menu, so locked entries stay locked."""
+
+    def __init__(self, option_menu, invisible: bool = False):
+        super().__init__(option_menu.winfo_toplevel())      # a child of the window, not of the option menu: a rebuilt row must not take the list with it
+        self.withdraw()           # placed first, shown afterwards (no flash in the corner of the screen)
+        self.option_menu, self.dropdown = option_menu, option_menu._dropdown_menu
+        self.invisible = invisible
+        self.overrideredirect(True)
+        if invisible:
+            self.attributes("-alpha", 0)
+        dropdown = self.dropdown
+        fg, bg, hover = dropdown.cget("fg"), dropdown.cget("bg"), dropdown.cget("activebackground")
+        self.configure(background="#808080")
+        count = len(dropdown._values)
+        self.texts = [dropdown.entrycget(i, "label").strip() for i in range(count)]
+        self.enabled = [dropdown.entrycget(i, "state") != "disabled" for i in range(count)]
+        body = tk.Frame(self, bg=bg)
+        body.pack(fill="both", expand=True, padx=1, pady=1)
+        font = self._font = tkfont.Font(root=self, font=dropdown._apply_font_scaling(dropdown._font))      # the scaled font of the dropdown (high DPI)
+        zero = max(1, font.measure("0"))
+        chars = -(-max(font.measure("  " + text) for text in self.texts) // zero) + 2       # as wide as the longest text needs, not as the number of letters
+        self.listbox = tk.Listbox(body, height=min(count, LONG_LIST_ROWS), width=chars, activestyle="none", exportselection=False,
+                                  selectmode="browse", bg=bg, fg=fg, selectbackground=hover, selectforeground=fg, highlightthickness=0, borderwidth=0,
+                                  font=font, cursor="hand2")
+        scroll = ctk.CTkScrollbar(body, command=self.listbox.yview, width=14)
+        self.listbox.configure(yscrollcommand=scroll.set)
+        scroll.pack(side="right", fill="y")
+        self.listbox.pack(side="left", fill="both", expand=True)
+        for i, text in enumerate(self.texts):
+            self.listbox.insert("end", "  " + text)
+            if not self.enabled[i]:
+                self.listbox.itemconfigure(i, fg="#8a8a8a")
+        current = option_menu.get()
+        values = list(dropdown._values)
+        start = values.index(current) if current in values else 0
+        self.listbox.selection_set(start)
+        self.listbox.activate(start)
+        self.listbox.see(start)
+        self._place()
+        self.bind("<Button-1>", self._press)
+        self.bind("<Escape>", lambda _e: self.destroy())
+        self.listbox.bind("<Return>", lambda _e: self._pick(self.listbox.index("active")))
+        self.listbox.bind("<Motion>", self._hover)
+        self.deiconify()
+        if not invisible:
+            self.after(50, self._take_input)      # not inside the click that opened the list (like the dialogs)
+
+    def _take_input(self):
+        """A click anywhere else only closes the list; the keys go to the list."""
+        if not self.winfo_exists():
+            return
+        try:
+            self.grab_set()
+        except tk.TclError:
+            pass
+        self.listbox.focus_force()
+
+    def _place(self):
+        """Below the option menu, above it (or shifted up) when the list would leave the screen; at least as wide as the option menu."""
+        self.update_idletasks()      # (the window is withdrawn: sizes are known, nothing is drawn)
+        anchor = self.option_menu
+        width, height = max(self.winfo_reqwidth(), anchor.winfo_width()), self.winfo_reqheight()
+        x, y = anchor.winfo_rootx(), anchor.winfo_rooty() + anchor.winfo_height()
+        screen_w, screen_h = self.winfo_screenwidth(), self.winfo_screenheight()
+        if y + height > screen_h:
+            above = anchor.winfo_rooty() - height
+            y = above if above >= 0 else max(0, screen_h - height)
+        x = max(0, min(x, screen_w - width))
+        self.geometry(f"{width}x{height}+{x}+{y}")
+
+    def _row_at(self, y_root: int) -> int:
+        return self.listbox.nearest(y_root - self.listbox.winfo_rooty())
+
+    def _hover(self, event):
+        row = self.listbox.nearest(event.y)
+        if self.enabled[row]:
+            self.listbox.selection_clear(0, "end")
+            self.listbox.selection_set(row)
+            self.listbox.activate(row)
+
+    def _press(self, event):
+        left, top = self.winfo_rootx(), self.winfo_rooty()
+        if not (left <= event.x_root < left + self.winfo_width() and top <= event.y_root < top + self.winfo_height()):
+            self.destroy()
+            return "break"
+        if event.widget is self.listbox:
+            self._pick(self._row_at(event.y_root))
+            return "break"
+        return None
+
+    def _pick(self, row: int):
+        if not (0 <= row < len(self.texts)) or not self.enabled[row]:
+            return
+        value = self.dropdown._values[row]
+        self.destroy()
+        self.dropdown._button_callback(value)
+
+    def destroy(self):
+        try:
+            self.grab_release()
+        except tk.TclError:
+            pass
+        super().destroy()
+
+
+_open_dropdown_menu_native = ctk.CTkOptionMenu._open_dropdown_menu
+
+
+def _open_dropdown_menu_long(self):
+    """Long lists get the scrollable popup, short ones keep the menu of the system."""
+    if len(self._values) > LONG_LIST:
+        ListPopup(self, invisible=POPUPS_INVISIBLE)
+    else:
+        _open_dropdown_menu_native(self)
+
+
+ctk.CTkOptionMenu._open_dropdown_menu = _open_dropdown_menu_long
+
+
 def tr_status(status: str) -> str:
     """Decoding status (likely / hypothesis) in the active language."""
     return {"likely": tr("likely"), "hypothesis": tr("hypothesis")}.get(status, status)
@@ -1031,7 +1158,7 @@ def describe_value(info: dict | None, raw: str, params: dict) -> str:
     kind = widget.get("type")
     try:
         if kind == "choice":
-            return widget["choices"].get(parts[0], raw)
+            return widget["choices"].get(",".join(parts), widget["choices"].get(parts[0], raw))      # a choice can be a pair of values (Time Zone: hours,minutes)
         if kind == "checkbox":
             return tr("On") if parts[widget.get("index", 0)] == widget.get("on", "1") else tr("Off")
         if kind == "hexbytes":
@@ -2838,27 +2965,47 @@ class TabBar(ctk.CTkFrame):
         return self._value
 
 
-class Tooltip:
-    """Small text window shown while the mouse is over a widget."""
+HELP_DELAY = 600      # ms the mouse rests on a control before its explanation appears (the explanations of the controls; info symbols show at once)
 
-    def __init__(self, widget, text: str = ""):
-        self.widget, self.text, self._tip = widget, text, None
-        widget.bind("<Enter>", self._show, add="+")
+
+class Tooltip:
+    """Small text window shown while the mouse is over a widget (after `delay` ms)."""
+
+    def __init__(self, widget, text: str = "", delay: int = 0):
+        self.widget, self.text, self.delay, self._tip, self._job = widget, text, delay, None, None
+        widget.bind("<Enter>", self._enter, add="+")
         widget.bind("<Leave>", self._hide, add="+")
         widget.bind("<Destroy>", self._hide, add="+")
+        widget.bind("<ButtonPress>", self._hide, add="+")
+
+    def _enter(self, _e=None):
+        if self._tip or self._job or not self.text:
+            return
+        if self.delay:
+            self._job = self.widget.after(self.delay, self._show)
+        else:
+            self._show()
 
     def _show(self, _e=None):
-        if self._tip or not self.text:
+        self._job = None
+        text = self.text() if callable(self.text) else self.text      # a function gives a text that follows the current state
+        if self._tip or not text:
             return
         self._tip = tk.Toplevel(self.widget)
         self._tip.wm_overrideredirect(True)
         self._tip.wm_geometry(f"+{self.widget.winfo_rootx() + 16}+{self.widget.winfo_rooty() + self.widget.winfo_height() + 4}")
         app = self.widget.nametowidget(".")   # the App: its font and _sc() follow the Windows scaling
         sc = getattr(app, "_sc", lambda px: px)
-        tk.Label(self._tip, text=self.text, justify="left", wraplength=sc(520), bg="#ffffe0", fg="#202020",
+        tk.Label(self._tip, text=text, justify="left", wraplength=sc(520), bg="#ffffe0", fg="#202020",
                  font=getattr(app, "_font", None), relief="solid", borderwidth=1, padx=sc(8), pady=sc(5)).pack()
 
     def _hide(self, _e=None):
+        if self._job:
+            try:
+                self.widget.after_cancel(self._job)
+            except (ValueError, tk.TclError):
+                pass
+            self._job = None
         if self._tip:
             self._tip.destroy()
             self._tip = None
@@ -3270,13 +3417,14 @@ class App(ctk.CTk):
         self._build_menu()
 
         self.clipbar = ctk.CTkFrame(self)      # ALL files only: clip name and start number (packed by _update_clip_row)
-        ctk.CTkLabel(self.clipbar, text=tr("Clip name")).pack(side="left", padx=(10, 4), pady=3)
+        lbl_clip = ctk.CTkLabel(self.clipbar, text=tr("Clip name"))
+        lbl_clip.pack(side="left", padx=(10, 4), pady=3)
         self.var_clip_name = tk.StringVar()
         self.entry_clip = ctk.CTkEntry(self.clipbar, textvariable=self.var_clip_name, width=260, height=26)
         self.entry_clip.pack(side="left", padx=4)
-        self.lbl_clip_hint = InfoLabel(self.clipbar)
-        self.lbl_clip_hint.set_info(tr("Clip name = title prefix (00285). The running clip number (Number Set) is not stored in the ALL file: the camera counts it internally."))
-        self.lbl_clip_hint.pack(side="left", padx=12)
+        clip_text = tr("Clip name: the text every new clip name starts with (the title prefix). The running clip number (Number Set) is not stored in the ALL file: the camera counts it itself.")
+        Tooltip(lbl_clip, clip_text, delay=HELP_DELAY)
+        Tooltip(self.entry_clip, clip_text, delay=HELP_DELAY)
         self._clip_sync = False
 
         head = ctk.CTkFrame(self)
@@ -3308,6 +3456,24 @@ class App(ctk.CTk):
         self.lbl_sum = ctk.CTkLabel(info, text="")
         self.lbl_sum.pack(side="right", padx=(6, 10))
         self._head_flow = FlowRow(head, [self.lbl_kind, self.seg_kind, lbl_id, entry_name, lbl_no, self.entry_number, self.lbl_model, self.menu_model], right=(info,))
+        # explanations of the header controls; the ones with a lock mark (type, model) get the reason in front of the text, see _update_lock_marks
+        buttons = self.seg_kind._buttons_dict
+        self._header_help = {
+            self.lbl_kind: tr("File type. The camera knows three kinds of settings files: SCENE, ALL and USER. This switch decides which kind you edit; values that the other kind has no place for are kept and come back when you switch back."),
+            buttons["SCENE"]: tr("SCENE file: the picture look of one scene (paint settings such as gamma, matrix, detail, knee, white balance). Scene files only exist in Custom mode, not in Cine EI."),
+            buttons["ALL"]: tr("ALL file: nearly all camera settings in one file. It holds everything a scene file holds plus recording format, audio, viewfinder, timecode, system and more. In Cine EI mode only ALL files can be saved."),
+            buttons["USER"]: tr("USER file: the user menu of the camera, up to 20 menu items you put together for quick access, with the sub-elements chosen for each item."),
+            self.lbl_model: tr("Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold is kept and returns when you switch back. A user menu (USER) cannot be converted: the camera refuses a user menu file of the other model."),
+            self.menu_model: tr("Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold is kept and returns when you switch back. A user menu (USER) cannot be converted: the camera refuses a user menu file of the other model."),
+        }
+        for widget, text in self._header_help.items():
+            widget._lock_tip = Tooltip(widget, text, delay=HELP_DELAY)
+        Tooltip(lbl_id, tr("Name stored inside the file (at most 16 characters); the camera shows it in its file list. It is not the file name on the card, that comes from type and number (see File no.)."), delay=HELP_DELAY)
+        Tooltip(entry_name, tr("Name stored inside the file (at most 16 characters); the camera shows it in its file list. It is not the file name on the card, that comes from type and number (see File no.)."), delay=HELP_DELAY)
+        no_text = lambda: tr("Number from 000 to 999. Type and number make the file name on the card, and the camera finds the file by this name. Right now: {name}").format(
+            name=f"{self.var_number.get().zfill(3) if self.var_number.get() else 'NNN'}{self._ext()}")      # (the extension carries its dot)
+        Tooltip(lbl_no, no_text, delay=HELP_DELAY)
+        self._no_tip = Tooltip(self.entry_number, no_text, delay=HELP_DELAY)
 
 
         self.messages = messages = ctk.CTkFrame(self, fg_color="transparent", height=0)
@@ -3340,6 +3506,14 @@ class App(ctk.CTk):
         button_collapse = ctk.CTkButton(filt, text=tr("Collapse all"), width=self._tr_width("Collapse all", 100), height=26, command=self.collapse_all)
         self.lbl_filter = ctk.CTkLabel(filt, text="", text_color="gray")
         self._filt_flow = FlowRow(filt, [lbl_search, self.entry_search, box_changed, box_known, button_clear, button_expand, button_collapse], right=(self.lbl_filter,))
+        search_text = tr("Type part of a parameter name, an ID number or a value to show only the matching rows, in all tabs. With several words, every word must match. Esc clears the field. Shortcut: Ctrl+F.")
+        Tooltip(lbl_search, search_text, delay=HELP_DELAY)
+        Tooltip(self.entry_search, search_text, delay=HELP_DELAY)
+        Tooltip(box_changed, tr("Show only the rows whose value you changed since the file was loaded."), delay=HELP_DELAY)
+        Tooltip(box_known, tr("Hide the parameters whose meaning is not known yet (they only show raw numbers)."), delay=HELP_DELAY)
+        Tooltip(button_clear, tr("Clear the search field and both checkboxes: all rows are shown again."), delay=HELP_DELAY)
+        Tooltip(button_expand, tr("Open all blocks of the current tab."), delay=HELP_DELAY)
+        Tooltip(button_collapse, tr("Close all blocks of the current tab."), delay=HELP_DELAY)
         # tabs for the main blocks (Video, Audio, ...): only the selected block is in the table, so the table stays short
         tabs = ctk.CTkFrame(self, fg_color="transparent")
         tabs.pack(fill="x", padx=8, pady=(0, 2))
@@ -5502,8 +5676,9 @@ class App(ctk.CTk):
             label.configure(text=f"{text} 🔒" if reason else text, text_color=WARNING_COLOR if reason else ("gray10", "gray90"))
             for widget in (label, *widgets):
                 if not hasattr(widget, "_lock_tip"):
-                    widget._lock_tip = Tooltip(widget)
-                widget._lock_tip.text = reason
+                    widget._lock_tip = Tooltip(widget, delay=HELP_DELAY)
+                help_text = self._header_help.get(widget, "")
+                widget._lock_tip.text = f"{reason}\n\n{help_text}" if reason and help_text else reason or help_text
 
     def _update_kind_switch(self):
         """Grey out the SCENE segment while the ALL file is in Cine EI mode, and the USER segment where there is no user menu for the model."""
