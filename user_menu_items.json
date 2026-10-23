@@ -192,7 +192,21 @@
     "11": {
       "name": "Zebra",
       "status": "confirmed",
-      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+      "flags": [
+        "00113",
+        "00114",
+        "00115",
+        "00117",
+        "00116"
+      ],
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places. Round 54 to 57 (2026-10-23): Zebra alone in slot 1 (code 0x0600000B) with its five sub-elements on switched 00113 to 00117 from 0 to 1 (v54). Pattern files: A (1, 3, 5 off) switched 00113, 00115, 00116 to 0 (v55); B (2, 3 off) 00114, 00115 (v56); C (4, 5 off) 00116, 00117 (v57). So Setting = 00113, Zebra Select = 00114, Zebra1 Level = 00115, Zebra1 Aperture Level = 00117, Zebra2 Level = 00116 (the last two swapped against the flag numbers).",
+      "sub_elements": [
+        "Setting",
+        "Zebra Select",
+        "Zebra1 Level",
+        "Zebra1 Aperture Level",
+        "Zebra2 Level"
+      ]
     },
     "520": {
       "name": "Audio Input",
@@ -341,6 +355,41 @@
         "01014",
         "01015",
         "01016"
+      ]
+    },
+    "383": {
+      "name": "Matrix",
+      "status": "confirmed",
+      "flags": [
+        "00485",
+        "00841",
+        "00486",
+        "00487",
+        "00488",
+        "00489",
+        "00490",
+        "00491",
+        "00492",
+        "00493",
+        "00494",
+        "00495",
+        "00496"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 49): Matrix alone in slot 1 (code 0x06000000 + 383) with all 13 sub-elements switched on in the camera dialog, in this order: Setting, Adaptive Matrix, Preset Matrix, Preset Select, User Matrix, Level, Phase, User Matrix R-G, User Matrix R-B, User Matrix G-R, User Matrix G-B, User Matrix B-R, User Matrix B-G. No flag changed against the file before (all their flags were already 1), so the flag IDs come from four files with deselected sub-elements (rounds 50 to 53, binary codes of the element numbers 1 to 13): A (1, 3, 5, 7, 9, 11, 13 off) switched 00485, 00486, 00488, 00490, 00492, 00494, 00496 to 0; B (2, 3, 6, 7, 10, 11 off) 00486, 00489, 00490, 00493, 00494, 00841; C (4, 5, 6, 7, 12, 13 off) 00487, 00488, 00489, 00490, 00495, 00496; D (8 to 13 off) 00491 to 00496. Every flag has a unique code: Setting 00485, Adaptive Matrix 00841 (the only one outside the run 00485 to 00496), Preset Matrix 00486, Preset Select 00487, User Matrix 00488, Level 00489, Phase 00490, User Matrix R-G 00491, R-B 00492, G-R 00493, G-B 00494, B-R 00495, B-G 00496.",
+      "sub_elements": [
+        "Setting",
+        "Adaptive Matrix",
+        "Preset Matrix",
+        "Preset Select",
+        "User Matrix",
+        "Level",
+        "Phase",
+        "User Matrix R-G",
+        "User Matrix R-B",
+        "User Matrix G-R",
+        "User Matrix G-B",
+        "User Matrix B-R",
+        "User Matrix B-G"
       ]
     }
   }
