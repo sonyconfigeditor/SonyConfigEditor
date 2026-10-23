@@ -136,7 +136,7 @@ def load_user_menu_flags() -> dict:
         items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
     except (OSError, ValueError):
         return {}
-    return {int(number): list(entry["flags"]) for number, entry in items.items() if isinstance(entry, dict) and entry.get("flags")}
+    return {int(number): list(entry["flags"]) for number, entry in items.items() if isinstance(entry, dict) and isinstance(entry.get("flags"), list)}      # an empty list = known: the item has no sub-elements
 
 
 def load_user_menu_subs() -> dict:
@@ -2776,6 +2776,7 @@ class App(ctk.CTk):
         self._built_kind: str | None = None
         self._built_db: dict = {}
         self._built_look: tuple = ()
+        self._built_choices: frozenset = frozenset()
         self._last_dir: Path | None = None   # folder of the last opened/saved file (remembered in the settings file)
         saved_dir = load_settings().get("last_dir")
         if isinstance(saved_dir, str) and is_safe_dir(saved_dir):      # no network (UNC) paths from the file: checking them would contact a foreign server
@@ -3328,7 +3329,7 @@ class App(ctk.CTk):
         return True
 
     TABLE_STATE = ("table", "entries", "vars", "_groups", "_rows", "_subheads", "_cats", "_lazy_groups", "_reflow",
-                   "_built_model", "_built_kind", "_built_db", "_built_look")
+                   "_built_model", "_built_kind", "_built_db", "_built_look", "_built_choices")
 
     def _look(self) -> tuple:
         """What the built widgets depend on besides the values: a table built for another look must be rebuilt."""
@@ -3337,8 +3338,15 @@ class App(ctk.CTk):
     def _table_key(self) -> tuple:
         return (self.kind, self.scene.model)
 
+    def _user_choice_keys(self) -> frozenset:
+        """The menu items the slots of a user menu file offer (known names and the unnamed numbers of this file): a table built with other ones is stale."""
+        if self.kind != "user" or self.scene is None:
+            return frozenset()
+        return frozenset(user_menu_choices(self.scene.params.get(f"{slot:05d}", "") for slot in range(1, USER_SLOTS + 1)))
+
     def _table_valid(self, state: dict) -> bool:
-        return state["_built_db"] == self.param_db and state["_built_look"] == self._look() and set(state["vars"]) == set(self.scene.params)
+        return (state["_built_db"] == self.param_db and state["_built_look"] == self._look() and set(state["vars"]) == set(self.scene.params)
+                and state["_built_choices"] == self._user_choice_keys())
 
     def _swap_table(self, key: tuple, state: dict):
         """Show the table that was built earlier for the profile `key`; the table shown so far is kept for the way back."""
@@ -3480,6 +3488,7 @@ class App(ctk.CTk):
         self._built_kind = self.kind
         self._built_db = self.param_db
         self._built_look = self._look()
+        self._built_choices = self._user_choice_keys()
         self._groups = {}
         self._rows = {}
         self._subheads = []
@@ -4986,7 +4995,8 @@ class App(ctk.CTk):
     def _can_refresh_in_place(self) -> bool:
         """True if the table already shows the same parameters of the same type and model: then only the values change."""
         return (bool(self.vars) and set(self.vars) == set(self.scene.params) and self._built_model == self.scene.model
-                and self._built_kind == self.kind and self._built_db == self.param_db and self._built_look == self._look())
+                and self._built_kind == self.kind and self._built_db == self.param_db and self._built_look == self._look()
+                and self._built_choices == self._user_choice_keys())
 
     @lazy
     def _refresh_in_place(self, reset_original: bool = False):

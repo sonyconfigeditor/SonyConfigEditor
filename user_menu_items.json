@@ -24,7 +24,19 @@
     "364": {
       "name": "Base Setting",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Round 25 (2026-10-23): Base Setting alone in slot 1 with its four sub-elements (Shooting Mode, Color Space, Imager Scan Mode, Rec/Out EI Applied) switched on: compared with the file before, only flag 01907 changed (0 to 1); the other flags of the item were already 1 from earlier files, so they show only when sub-elements are switched off (not decoded yet). Round 26: all four sub-elements switched off in the dialog: the camera did not register the item (slot 1 stayed empty) and exactly four flags went from 1 to 0: 00462, 00463, 01166 and 01907, so these are the flags of the four sub-elements (their assignment is not known yet). Round 27: Base Setting registered again with Shooting Mode and Imager Scan Mode switched off (Color Space and Rec/Out EI Applied on): flags 00462 and 01166 are 0, 00463 and 01907 are 1, so {Shooting Mode, Imager Scan Mode} = {00462, 01166} and {Color Space, Rec/Out EI Applied} = {00463, 01907}. Round 28: Color Space and Imager Scan Mode switched off (Shooting Mode and Rec/Out EI Applied on): 00463 and 01166 are 0, 00462 and 01907 are 1. Together with round 27: Imager Scan Mode = 01166 (off in both), Shooting Mode = 00462, Color Space = 00463, Rec/Out EI Applied = 01907 (dialog order = flag order 00462, 00463, 01166, 01907).",
+      "sub_elements": [
+        "Shooting Mode",
+        "Color Space",
+        "Imager Scan Mode",
+        "Rec/Out EI Applied"
+      ],
+      "flags": [
+        "00462",
+        "00463",
+        "01166",
+        "01907"
+      ]
     },
     "433": {
       "name": "Output Format",
@@ -44,7 +56,8 @@
     "700": {
       "name": "Codec",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. The user confirmed on the FS7M2 camera (2026-10-23) that Codec has no sub-element: the camera does not ask for any when it is added, so it needs no flags.",
+      "flags": []
     },
     "704": {
       "name": "Simul Rec",
@@ -174,6 +187,108 @@
       "flags": [
         "00658",
         "00659"
+      ]
+    },
+    "11": {
+      "name": "Zebra",
+      "status": "confirmed",
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+    },
+    "520": {
+      "name": "Audio Input",
+      "status": "confirmed",
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+    },
+    "67": {
+      "name": "Audio Output",
+      "status": "confirmed",
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+    },
+    "739": {
+      "name": "Clip",
+      "status": "confirmed",
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+    },
+    "500": {
+      "name": "Assignable Button",
+      "status": "confirmed",
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+    },
+    "1157": {
+      "name": "Assignable Dial",
+      "status": "confirmed",
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+    },
+    "1116": {
+      "name": "Lens",
+      "status": "confirmed",
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+    },
+    "1109": {
+      "name": "AF Micro Adjustment",
+      "status": "confirmed",
+      "flags": [
+        "01211",
+        "01212",
+        "01213"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-23, rounds 22 to 24): AF Micro Adjustment alone in slot 1 (code 0x06000000 + 1109) with its three sub-elements (Setting, Amount, Clear All) all switched on in the camera dialog: flags 01211, 01212 and 01213 changed from 0 to 1 (compared with the file before). Setting switched off: only 01211 changed (Setting = 01211). With Setting still off, Clear All switched off as well: only 01213 changed (Clear All = 01213); the one flag that stays on is Amount = 01212. So the dialog order Setting, Amount, Clear All follows the flag numbers here.",
+      "sub_elements": [
+        "Setting",
+        "Amount",
+        "Clear All"
+      ]
+    },
+    "240": {
+      "name": "White",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 29): White alone in slot 1 (code 0x06000000 + 240) with all its sub-elements switched on (the user named them in the dialog order: Preset White, Color Temp <A>, Color Balance <A>, R Gain <A>, B Gain <A>, the same block for <B>, Filter White Memory, Shockless White, White Switch <B>, ATW Speed). Compared with the file before (Base Setting, round 28) ten flags changed from 0 to 1: 00342, 00990, 00996, 00998, 00999, 01000, 01001, 01002, 01322, 01431; the item has more sub-elements than that, so the other flags were on already from earlier files (they show only when sub-elements are switched off, not decoded yet). Round 30 (pattern file 1, elements 1, 3, 5, 7, 9, 11, 13 switched off): flags 00342, 00345, 00990, 00999, 01000, 01002 and 01322 went from 1 to 0 (00345 had been on already). Round 31 (pattern file 2, elements 2, 3, 6, 7, 10, 11 switched off): flags 00344, 00345, 00996, 01000, 01322 and 01431 went from 1 to 0. With round 30 this gives the groups: elements 3, 7, 11 = {00345, 01000, 01322}; elements 1, 5, 9, 13 = {00342, 00990, 00999, 01002}; elements 2, 6, 10 = {00344, 00996, 01431}. Round 32 (pattern file 3, elements 4, 5, 6, 7, 12, 13 switched off; compared with the all-on file of round 29): flags 00342, 00346, 00998, 00999, 01000 and 01431 went from 1 to 0 (00344, 00345, 00346 were on already, so the item has 13 flags). Resolved so far: element 6 (Color Temp <B>) = 01431, 7 (Color Balance <B>) = 01000, 8 (R Gain <B>) = 01001; pairs still open: {4, 12} = {00346, 00998}, {5, 13} = {00342, 00999}, {1, 9} = {00990, 01002}, {2, 10} = {00344, 00996}, {3, 11} = {00345, 01322}. Round 33 (pattern file 4, elements 8 to 13 switched off): flags 00342, 00344, 00345, 00346, 01001 and 01002 went from 1 to 0. This separates the pairs of round 32; all four pattern files agree with the assignment (the element lists are in the dialog order): Preset White = 00990, Color Temp <A> = 00996, Color Balance <A> = 01322, R Gain <A> = 00998, B Gain <A> = 00999, Color Temp <B> = 01431, Color Balance <B> = 01000, R Gain <B> = 01001, B Gain <B> = 01002, Filter White Memory = 00344, Shockless White = 00345, White Switch <B> = 00346, ATW Speed = 00342.",
+      "sub_elements": [
+        "Preset White",
+        "Color Temp <A>",
+        "Color Balance <A>",
+        "R Gain <A>",
+        "B Gain <A>",
+        "Color Temp <B>",
+        "Color Balance <B>",
+        "R Gain <B>",
+        "B Gain <B>",
+        "Filter White Memory",
+        "Shockless White",
+        "White Switch <B>",
+        "ATW Speed"
+      ],
+      "flags": [
+        "00990",
+        "00996",
+        "01322",
+        "00998",
+        "00999",
+        "01431",
+        "01000",
+        "01001",
+        "01002",
+        "00344",
+        "00345",
+        "00346",
+        "00342"
+      ]
+    },
+    "335": {
+      "name": "Black",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 34): Black alone in slot 1 (code 0x06000000 + 335) with its four sub-elements (Setting, Master Black, R Black, B Black) switched on in the dialog. Compared with the file before (White with six sub-elements off, round 33) only slot 1 changed: no flag went from 0 to 1, so all four flags of Black were on already from earlier files (they show only when sub-elements are switched off, not decoded yet). Round 35: all four sub-elements switched off: the camera did not register the item (slot 1 empty) and exactly four flags went from 1 to 0: 00437, 00438, 00439 and 00440, the flags of the four sub-elements (assignment not known yet). Round 36: Black registered again with only Setting and Master Black on: flags 00437 and 00438 went from 0 to 1 (00439 and 00440 stay 0), so {Setting, Master Black} = {00437, 00438} and {R Black, B Black} = {00439, 00440}. Round 37: Black registered with only Setting and R Black on: 00437 and 00440 on, 00438 off again. With round 36: Setting = 00437 (on in both), Master Black = 00438, R Black = 00440, B Black = 00439 (the dialog order does not follow the flag numbers here: R Black has the higher number).",
+      "sub_elements": [
+        "Setting",
+        "Master Black",
+        "R Black",
+        "B Black"
+      ],
+      "flags": [
+        "00437",
+        "00438",
+        "00440",
+        "00439"
       ]
     }
   }
