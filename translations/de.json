@@ -629,5 +629,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "Zurück zum vorherigen Ordner",
   "Forward to the next folder": "Vor zum nächsten Ordner",
-  "Up one folder": "Eine Ebene nach oben"
+  "Up one folder": "Eine Ebene nach oben",
+  "At their own slots (a filled slot is replaced)": "An ihren eigenen Plätzen (ein belegter Platz wird ersetzt)",
+  "Append behind the last filled slot, in their order": "Hinter dem letzten belegten Platz anhängen, in ihrer Reihenfolge",
+  "This user menu file has no menu items.": "Diese User-Menü-Datei enthält keine Menüpunkte.",
+  "Import: {n} menu items taken over.": "Import: {n} Menüpunkte übernommen.",
+  "Undo reverts the whole import.": "Rückgängig macht den ganzen Import rückgängig.",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "Wähle die Menüpunkte, die übernommen werden sollen. Die für einen Punkt gewählten Unterelemente kommen mit.",
+  "{n} filled slots were replaced.": "{n} belegte Plätze wurden ersetzt.",
+  "{n} items did not fit into the 20 slots.": "{n} Punkte passten nicht mehr in die 20 Plätze.",
+  "{n} items have no known sub-element flags: those stay as they are.": "Bei {n} Punkten sind die Unterelement-Flags noch nicht bekannt: sie bleiben, wie sie sind.",
+  "User menu": "User-Menü",
+  "already in the menu": "schon im Menü",
+  "(item)": "(Punkt)",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "Die Kamera füllt das User-Menü vom ersten Platz an ohne Lücken: die Plätze {slots} blieben leer. Hänge die Punkte stattdessen an, oder übernimm auch die Punkte dazwischen."
 }

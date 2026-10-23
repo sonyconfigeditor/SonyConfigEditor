@@ -167,6 +167,92 @@ def user_menu_choices(values) -> dict:
     return choices
 
 
+def user_flag_owners() -> dict:
+    """Flag ID -> (name of the menu item, name of the sub-element or '') for the flags of the user menu that are known."""
+    try:
+        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+    except (OSError, ValueError):
+        return {}
+    owners = {}
+    for entry in items.values():
+        if not isinstance(entry, dict) or not entry.get("name"):
+            continue
+        subs, flags = entry.get("sub_elements") or [], entry.get("flags") or []
+        own = entry.get("sub_flags", flags)
+        for flag in flags:
+            owners.setdefault(flag, (entry["name"], ""))
+        if subs and len(own) == len(subs):
+            for sub, flag in zip(subs, own):
+                owners[flag] = (entry["name"], sub)
+    return owners
+
+
+def user_menu_items_of(params: dict) -> list[dict]:
+    """The filled slots of a user menu file: {"slot", "number", "name", "raw"} in slot order (name = the known name or 'ID number')."""
+    names = load_user_menu_names()
+    out = []
+    for slot in range(1, USER_SLOTS + 1):
+        raw = params.get(f"{slot:05d}", "")
+        code = raw.split(",")[0].strip()
+        if code.lstrip("-").isdigit() and int(code) > USER_MENU_BASE:
+            number = int(code) - USER_MENU_BASE
+            out.append({"slot": slot, "number": number, "name": names.get(str(number)) or tr("ID {number}").format(number=number), "raw": raw})
+    return out
+
+
+def plan_user_import(src_params: dict, dst_params: dict, chosen: list[dict], mode: str) -> tuple[dict, dict]:
+    """Values that bring the chosen menu items of one user menu file into another. ``mode`` 'same': each item goes to its own slot (a slot that is
+    filled is replaced); 'append': the items go behind the last filled slot, in their order, as far as the 20 slots reach. The flags of the sub-elements of an
+    item with known flags come along with the values of the source (so its sub-element selection is taken over).
+    The camera fills the user menu from the first slot on without gaps (every file we know is like that): a result with a gap that was not there before
+    is reported in ``report["gap"]`` (the empty slots in front of the last filled one) and must not be written.
+    Returns (values by ID, report {"placed", "replaced", "dropped", "no_flags", "gap"})."""
+    flags = load_user_menu_flags()
+    values: dict[str, str] = {}
+    report = {"placed": 0, "replaced": 0, "dropped": 0, "no_flags": 0, "gap": []}
+    filled = [i["slot"] for i in user_menu_items_of(dst_params)]
+    placed_slots = set(filled)
+    next_slot = (max(filled) if filled else 0) + 1
+    for item in chosen:
+        if mode == "same":
+            slot = item["slot"]
+            if slot in filled:
+                report["replaced"] += 1
+        else:
+            slot = next_slot
+            if slot > USER_SLOTS:
+                report["dropped"] += 1
+                continue
+            next_slot += 1
+        values[f"{slot:05d}"] = item["raw"]
+        placed_slots.add(slot)
+        report["placed"] += 1
+        if item["number"] in flags:
+            for flag in flags[item["number"]]:
+                if flag in src_params:
+                    values[flag] = src_params[flag]
+        else:
+            report["no_flags"] += 1
+    was_gapless = set(filled) == set(range(1, len(filled) + 1))
+    if was_gapless and placed_slots != set(range(1, len(placed_slots) + 1)):
+        report["gap"] = [s for s in range(1, max(placed_slots) + 1) if s not in placed_slots]
+    return values, report
+
+
+def slot_ranges(slots: list) -> str:
+    """'7-12, 15' for a list of slot numbers."""
+    parts, start, previous = [], None, None
+    for slot in sorted(slots) + [None]:
+        if start is None:
+            start = previous = slot
+        elif slot is not None and slot == previous + 1:
+            previous = slot
+        else:
+            parts.append(str(start) if start == previous else f"{start}-{previous}")
+            start = previous = slot
+    return ", ".join(parts)
+
+
 def load_param_locks(kind: str) -> list:
     """Sub-groups that are greyed out while a condition holds (see _locks in the database)."""
     return translate_db(_read_param_file(kind).get("_locks", []))
@@ -995,8 +1081,11 @@ def describe_value(info: dict | None, raw: str, params: dict) -> str:
     return raw
 
 
-def build_diff_rows(items: list[dict], cur_params: dict, db: dict) -> list[dict]:
-    """Rows of the difference view in camera-menu order: {"path", "left", "right", "differs", "tid"} (parts of combined rows are left out)."""
+def build_diff_rows(items: list[dict], cur_params: dict, db: dict, user: bool = False) -> list[dict]:
+    """Rows of the difference view in camera-menu order: {"path", "left", "right", "differs", "tid"} (parts of combined rows are left out).
+    ``user``: the files are user menu files: slots show the menu item names, flags the sub-element they belong to."""
+    if user:
+        return build_user_diff_rows(items, cur_params)
     new_params = dict(cur_params)
     for item in items:
         new_params[item["tid"]] = item["new"]
@@ -1023,6 +1112,41 @@ def build_diff_rows(items: list[dict], cur_params: dict, db: dict) -> list[dict]
                 row["path"] += f" [ID {row['tid']}]"
         seen.add(row["path"])
     return rows
+
+
+def build_user_diff_rows(items: list[dict], cur_params: dict) -> list[dict]:
+    """Difference rows of two user menu files: 'User menu/Slot 3' with the item names, then the sub-element selections 'User menu/<item>/<sub-element>' (On/Off);
+    flags that belong to no known item are listed by ID at the end."""
+    new_params = dict(cur_params)
+    for item in items:
+        new_params[item["tid"]] = item["new"]
+    names = load_user_menu_names()
+    owners = user_flag_owners()
+
+    def item_text(raw: str) -> str:
+        code = raw.split(",")[0].strip()
+        if code == "0":
+            return tr("(empty)")
+        if code.lstrip("-").isdigit() and int(code) > USER_MENU_BASE:
+            number = int(code) - USER_MENU_BASE
+            return names.get(str(number)) or tr("ID {number}").format(number=number)
+        return raw
+
+    slots, flags, rest = [], [], []
+    for item in items:
+        tid = item["tid"]
+        if tid.isdigit() and 1 <= int(tid) <= USER_SLOTS:
+            slots.append({"path": f"{tr('User menu')}/{tr('Slot {number}').format(number=int(tid))}", "tid": tid, "differs": item["differs"],
+                          "left": item_text(item["cur"]), "right": item_text(item["new"])})
+        elif tid in owners:
+            name, sub = owners[tid]
+            on, off = tr("On"), tr("Off")
+            flags.append({"path": f"{tr('User menu')}/{name}/{sub or tr('(item)')}", "tid": tid, "differs": item["differs"],
+                          "left": on if item["cur"].strip() == "1" else off, "right": on if item["new"].strip() == "1" else off})
+        else:
+            rest.append({"path": f"{tr('Unknown')}/ID {tid}", "tid": tid, "differs": item["differs"], "left": item["cur"], "right": item["new"]})
+    flags.sort(key=lambda r: (r["path"], r["tid"]))
+    return slots + flags + rest
 
 
 # --------------------------------------------------------------------------- #
@@ -1140,6 +1264,66 @@ class ImportDialog(ctk.CTkToplevel):
 
     def _all_known(self):
         self.result = [i for i in self.items if i["known"] and i["differs"]]
+        self.destroy()
+
+
+class UserImportDialog(ctk.CTkToplevel):
+    """Import of menu items from another user menu file: the items of that file with check boxes (the ones that are in the current menu already are not
+    ticked), and where they go: to their own slots or behind the last filled slot. `result` = (chosen items, mode) or None."""
+
+    def __init__(self, app, items: list[dict], present: set, source_text: str, invisible: bool = False, validate=None):
+        super().__init__(app)
+        apply_window_icon(self)
+        if invisible:
+            self.attributes("-alpha", 0)
+        self.app, self.items, self.result, self.source_text = app, items, None, source_text
+        self.validate = validate      # (chosen items, mode) -> text of the problem, or "" when the import is possible
+        self.title(tr("Import from {source}").format(source=source_text))
+        fit_dialog(self, app, 0.6, 0.8)
+        make_transient(self, app)
+        ctk.CTkLabel(self, text=tr("Choose the menu items to take over. The sub-elements that were selected for an item come along."), anchor="w",
+                     justify="left", wraplength=app._sc(560)).pack(fill="x", padx=12, pady=(10, 4))
+        self.var_mode = tk.StringVar(value="append")
+        for value, text in (("same", tr("At their own slots (a filled slot is replaced)")), ("append", tr("Append behind the last filled slot, in their order"))):
+            ctk.CTkRadioButton(self, text=text, variable=self.var_mode, value=value).pack(anchor="w", padx=16, pady=2)
+        bar = ctk.CTkFrame(self, fg_color="transparent")
+        bar.pack(fill="x", padx=8, pady=(6, 2))
+        for source, command in (("All", lambda: self._set_all(True)), ("None", lambda: self._set_all(False))):
+            ctk.CTkButton(bar, text=tr(source), width=app._tr_width(source, 90), height=26, command=command).pack(side="left", padx=(6, 2))
+        self.list = ctk.CTkScrollableFrame(self)
+        self.list.pack(fill="both", expand=True, padx=8, pady=2)
+        self.vars = []
+        for item in items:
+            here = item["number"] in present
+            var = tk.BooleanVar(value=not here)
+            text = f"{tr('Slot {number}').format(number=item['slot'])}:  {item['name']}" + (f"   ({tr('already in the menu')})" if here else "")
+            ctk.CTkCheckBox(self.list, text=text, variable=var, width=20, checkbox_width=20, checkbox_height=20).pack(anchor="w", padx=6, pady=2)
+            self.vars.append(var)
+        self.lbl_problem = ctk.CTkLabel(self, text="", text_color="#e06c3c", anchor="w", justify="left", wraplength=app._sc(560))
+        self.lbl_problem.pack(fill="x", padx=12)
+        foot = ctk.CTkFrame(self, fg_color="transparent")
+        foot.pack(fill="x", padx=8, pady=(2, 8))
+        ctk.CTkButton(foot, text=tr("Import selection"), width=app._tr_width("Import selection", 150), command=self._ok).pack(side="right", padx=4)
+        ctk.CTkButton(foot, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy).pack(side="right", padx=4)
+        ctk.CTkButton(foot, text=tr("Show differences"), width=app._tr_width("Show differences", 170), command=self._show_diff).pack(side="left", padx=4)
+        self.bind("<Escape>", lambda _e: self.destroy())
+
+    def _set_all(self, value: bool):
+        for var in self.vars:
+            var.set(value)
+
+    def _show_diff(self):
+        self.app.show_diff(self.app._user_import_diff_items, self.source_text, parent=self)
+        self.after(50, self.grab_set)
+
+    def _ok(self):
+        chosen, mode = [i for i, v in zip(self.items, self.vars) if v.get()], self.var_mode.get()
+        problem = self.validate(chosen, mode) if self.validate and chosen else ""
+        self.lbl_problem.configure(text=problem)
+        if problem:      # the window stays open: the choice can be changed
+            self.bell()
+            return
+        self.result = (chosen, mode)
         self.destroy()
 
 
@@ -4767,7 +4951,9 @@ class App(ctk.CTk):
                         old = var.get().split(",")[idx].strip()
                         parts = var.get().split(",")
                         parts[idx] = code
-                        self._set_values("__user_item__", {mine: ",".join(parts), **self._user_flag_changes(mine, old, code)})
+                        values = {mine: ",".join(parts), **self._user_flag_changes(mine, old, code)}
+                        values.update(self._packed_slots(values))      # the camera has no gaps: an emptied slot closes up, an item put behind the last one moves up
+                        self._set_values("__user_item__", values)
                     return
                 next((set_item(idx, k) for k, v in choices.items() if v == lab), None)
 
@@ -4906,7 +5092,9 @@ class App(ctk.CTk):
                 if other is None or mine is None:
                     return
                 self._last_key = None
-                self._set_values("__swap__", {mine: other.get(), other_id: var.get()})
+                values = {mine: other.get(), other_id: var.get()}
+                values.update(self._packed_slots(values))      # moving an item into an empty slot would leave a gap: the order stays packed
+                self._set_values("__swap__", values)
                 self._last_key = None
 
             cell = ctk.CTkFrame(body, fg_color="transparent")
@@ -5461,6 +5649,17 @@ class App(ctk.CTk):
         self._record(key, merge=True)
         self._update_warnings()
 
+    def _packed_slots(self, changes: dict) -> dict[str, str]:
+        """The 20 slots of a user menu with ``changes`` applied, closed up: the filled slots in their order from the first slot on, the empty ones behind them
+        (the camera fills the user menu from the front without gaps). Returns the slots whose value differs from the current one."""
+        ids = [f"{n:05d}" for n in range(1, USER_SLOTS + 1)]
+        if self.kind != "user" or any(i not in self.vars for i in ids):
+            return {}
+        current = {i: changes.get(i, self.vars[i].get()) for i in ids}
+        filled = [v for v in (current[i] for i in ids) if v.split(",")[0].strip() not in ("0", "")]
+        packed = {i: (filled[n] if n < len(filled) else "0,0") for n, i in enumerate(ids)}
+        return {i: v for i, v in packed.items() if self.vars[i].get() != v or changes.get(i, v) != v}
+
     def _user_flag_changes(self, slot: str, old_code: str, new_code: str) -> dict[str, str]:
         """The sub-element flags (IDs from 00106) of an item that comes into the user menu are switched on (the camera asks which sub-elements to take along;
         all of them is the default). Taking an item out leaves its flags as they are (the camera keeps them). An item whose flags are not known is reported:
@@ -5611,7 +5810,7 @@ class App(ctk.CTk):
     def show_diff(self, items: list[dict], source_text: str, invisible: bool = False, parent=None):
         """Difference view of the current file against another file (the items come from import_plan); `parent` = the window it is opened from."""
         self._collect()
-        rows = build_diff_rows(items, self.scene.params, self.param_db)
+        rows = build_diff_rows(items, self.scene.params, self.param_db, user=self.kind == "user")
         dialog = DiffDialog(self, rows, source_text, invisible=invisible, parent=parent)
         if not invisible:
             dialog.after(50, dialog.grab_set)
@@ -5641,11 +5840,64 @@ class App(ctk.CTk):
         if not items:
             messagebox.showinfo(APP_NAME, reason or tr("Nothing can be imported from this file."))
             return
+        if self.kind == "user":      # a user menu: whole menu items (with their sub-elements) instead of single IDs
+            self._import_user_items(Path(path), items, source)
+            return
         dialog = ImportDialog(self, items, source)
         dialog.after(50, dialog.grab_set)
         self.wait_window(dialog)
         if dialog.result:
             self.apply_import(dialog.result)
+
+    def _import_user_items(self, path: Path, items: list[dict], source: str, invisible: bool = False):
+        """Import of menu items from another user menu file (see UserImportDialog); one undo step."""
+        src = LOADERS[path.suffix.lower()](path)
+        theirs = user_menu_items_of(src.params)
+        if not theirs:
+            messagebox.showinfo(APP_NAME, tr("This user menu file has no menu items."))
+            return None
+        self._user_import_diff_items = items
+        present = {i["number"] for i in user_menu_items_of({k: v.get() for k, v in self.vars.items()})}
+        dialog = UserImportDialog(self, theirs, present, source, invisible=invisible,
+                                  validate=lambda chosen, mode: self._user_import_problem(src.params, chosen, mode))
+        if invisible:
+            return dialog
+        dialog.after(50, dialog.grab_set)
+        self.wait_window(dialog)
+        if dialog.result and dialog.result[0]:
+            self.apply_user_import(src.params, *dialog.result)
+        return dialog
+
+    def _user_import_problem(self, src_params: dict, chosen: list[dict], mode: str) -> str:
+        """Why the chosen items cannot go into the menu this way ('' if they can): the camera fills the slots from the front without gaps."""
+        self._collect()
+        _values, report = plan_user_import(src_params, {k: v.get() for k, v in self.vars.items()}, chosen, mode)
+        if report["gap"]:
+            return tr("The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.").format(
+                slots=slot_ranges(report["gap"]))
+        return ""
+
+    def apply_user_import(self, src_params: dict, chosen: list[dict], mode: str) -> dict:
+        """Take the chosen menu items of another user menu file over into the current one (own slots or appended); one undo step."""
+        self._collect()
+        current = {k: v.get() for k, v in self.vars.items()}
+        values, report = plan_user_import(src_params, current, chosen, mode)
+        if report["gap"]:      # never write a menu with gaps
+            self.lbl_switch.configure(text=self._user_import_problem(src_params, chosen, mode))
+            return report
+        changed = {k: v for k, v in values.items() if k in self.vars and self.vars[k].get() != v}
+        if changed:
+            self._set_values("__import__", changed)
+            self._last_key = None
+        text = tr("Import: {n} menu items taken over.").format(n=report["placed"])
+        if report["replaced"]:
+            text += " " + tr("{n} filled slots were replaced.").format(n=report["replaced"])
+        if report["dropped"]:
+            text += " " + tr("{n} items did not fit into the 20 slots.").format(n=report["dropped"])
+        if report["no_flags"]:
+            text += " " + tr("{n} items have no known sub-element flags: those stay as they are.").format(n=report["no_flags"])
+        self.lbl_switch.configure(text=text + " " + tr("Undo reverts the whole import."))
+        return report
 
     def apply_import(self, items: list[dict]) -> int:
         """Write the chosen values into the current file as one undo step. Returns how many values changed."""

@@ -579,5 +579,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "Kembali ke folder sebelumnya",
   "Forward to the next folder": "Maju ke folder berikutnya",
-  "Up one folder": "Naik satu folder"
+  "Up one folder": "Naik satu folder",
+  "At their own slots (a filled slot is replaced)": "Di slot masing-masing (slot yang terisi diganti)",
+  "Append behind the last filled slot, in their order": "Tambahkan setelah slot terisi terakhir, sesuai urutannya",
+  "This user menu file has no menu items.": "File menu pengguna ini tidak berisi item menu.",
+  "Import: {n} menu items taken over.": "Impor: {n} item menu diambil alih.",
+  "Undo reverts the whole import.": "Urungkan membatalkan seluruh impor.",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "Pilih item menu yang akan diambil alih. Sub-elemen yang dipilih untuk sebuah item ikut terbawa.",
+  "{n} filled slots were replaced.": "{n} slot yang terisi diganti.",
+  "{n} items did not fit into the 20 slots.": "{n} item tidak muat di 20 slot.",
+  "{n} items have no known sub-element flags: those stay as they are.": "Untuk {n} item, flag sub-elemen belum diketahui: tetap seperti semula.",
+  "User menu": "Menu pengguna",
+  "already in the menu": "sudah ada di menu",
+  "(item)": "(item)",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "Kamera mengisi menu pengguna dari slot pertama tanpa celah: slot {slots} akan tetap kosong. Tambahkan item di akhir, atau ambil juga item di antaranya."
 }

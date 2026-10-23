@@ -579,5 +579,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "Volver a la carpeta anterior",
   "Forward to the next folder": "Avanzar a la carpeta siguiente",
-  "Up one folder": "Subir una carpeta"
+  "Up one folder": "Subir una carpeta",
+  "At their own slots (a filled slot is replaced)": "En sus propias posiciones (una posición ocupada se sustituye)",
+  "Append behind the last filled slot, in their order": "Añadir tras la última posición ocupada, en su orden",
+  "This user menu file has no menu items.": "Este archivo de menú de usuario no contiene elementos de menú.",
+  "Import: {n} menu items taken over.": "Importación: {n} elementos de menú incorporados.",
+  "Undo reverts the whole import.": "Deshacer revierte toda la importación.",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "Elige los elementos de menú que se incorporan. Los subelementos seleccionados para un elemento se incorporan con él.",
+  "{n} filled slots were replaced.": "Se sustituyeron {n} posiciones ocupadas.",
+  "{n} items did not fit into the 20 slots.": "{n} elementos no cabían en las 20 posiciones.",
+  "{n} items have no known sub-element flags: those stay as they are.": "De {n} elementos no se conocen aún las marcas de subelementos: se quedan como están.",
+  "User menu": "Menú de usuario",
+  "already in the menu": "ya está en el menú",
+  "(item)": "(elemento)",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "La cámara llena el menú de usuario desde la primera posición sin huecos: las posiciones {slots} quedarían vacías. Añade los elementos al final o incorpora también los intermedios."
 }

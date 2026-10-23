@@ -580,5 +580,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "Voltar à pasta anterior",
   "Forward to the next folder": "Avançar para a pasta seguinte",
-  "Up one folder": "Subir uma pasta"
+  "Up one folder": "Subir uma pasta",
+  "At their own slots (a filled slot is replaced)": "Nas suas próprias posições (uma posição ocupada é substituída)",
+  "Append behind the last filled slot, in their order": "Acrescentar após a última posição ocupada, pela sua ordem",
+  "This user menu file has no menu items.": "Este ficheiro do menu do utilizador não tem itens de menu.",
+  "Import: {n} menu items taken over.": "Importação: {n} itens de menu adotados.",
+  "Undo reverts the whole import.": "Anular reverte toda a importação.",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "Escolha os itens de menu a adotar. Os subelementos selecionados para um item vêm com ele.",
+  "{n} filled slots were replaced.": "{n} posições ocupadas foram substituídas.",
+  "{n} items did not fit into the 20 slots.": "{n} itens não couberam nas 20 posições.",
+  "{n} items have no known sub-element flags: those stay as they are.": "De {n} itens ainda não se conhecem as marcas dos subelementos: ficam como estão.",
+  "User menu": "Menu do utilizador",
+  "already in the menu": "já está no menu",
+  "(item)": "(item)",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "A câmara preenche o menu do utilizador desde a primeira posição sem lacunas: as posições {slots} ficariam vazias. Acrescente os itens ao fim ou adote também os intermédios."
 }

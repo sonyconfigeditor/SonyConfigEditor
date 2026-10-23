@@ -579,5 +579,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "Назад к предыдущей папке",
   "Forward to the next folder": "Вперёд к следующей папке",
-  "Up one folder": "На уровень вверх"
+  "Up one folder": "На уровень вверх",
+  "At their own slots (a filled slot is replaced)": "В их собственные слоты (занятый слот заменяется)",
+  "Append behind the last filled slot, in their order": "Добавить после последнего занятого слота, в их порядке",
+  "This user menu file has no menu items.": "В этом файле пользовательского меню нет пунктов меню.",
+  "Import: {n} menu items taken over.": "Импорт: перенесено пунктов меню: {n}.",
+  "Undo reverts the whole import.": "Отмена возвращает весь импорт.",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "Выберите пункты меню для переноса. Выбранные для пункта подэлементы переносятся вместе с ним.",
+  "{n} filled slots were replaced.": "Заменено занятых слотов: {n}.",
+  "{n} items did not fit into the 20 slots.": "Не поместилось в 20 слотов: {n}.",
+  "{n} items have no known sub-element flags: those stay as they are.": "Для {n} пунктов флаги подэлементов ещё неизвестны: они остаются как есть.",
+  "User menu": "Меню пользователя",
+  "already in the menu": "уже есть в меню",
+  "(item)": "(пункт)",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "Камера заполняет пользовательское меню с первого слота без пропусков: слоты {slots} остались бы пустыми. Добавьте пункты в конец или перенесите и промежуточные пункты."
 }

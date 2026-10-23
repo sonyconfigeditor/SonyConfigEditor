@@ -579,5 +579,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "Retour au dossier précédent",
   "Forward to the next folder": "Avancer au dossier suivant",
-  "Up one folder": "Dossier parent"
+  "Up one folder": "Dossier parent",
+  "At their own slots (a filled slot is replaced)": "À leurs propres emplacements (un emplacement occupé est remplacé)",
+  "Append behind the last filled slot, in their order": "Ajouter après le dernier emplacement occupé, dans leur ordre",
+  "This user menu file has no menu items.": "Ce fichier de menu utilisateur ne contient aucun élément de menu.",
+  "Import: {n} menu items taken over.": "Import : {n} éléments de menu repris.",
+  "Undo reverts the whole import.": "Annuler défait tout l'import.",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "Choisissez les éléments de menu à reprendre. Les sous-éléments choisis pour un élément sont repris avec lui.",
+  "{n} filled slots were replaced.": "{n} emplacements occupés ont été remplacés.",
+  "{n} items did not fit into the 20 slots.": "{n} éléments ne tenaient plus dans les 20 emplacements.",
+  "{n} items have no known sub-element flags: those stay as they are.": "Pour {n} éléments, les indicateurs de sous-éléments ne sont pas encore connus : ils restent tels quels.",
+  "User menu": "Menu utilisateur",
+  "already in the menu": "déjà dans le menu",
+  "(item)": "(élément)",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "La caméra remplit le menu utilisateur dès le premier emplacement sans trous : les emplacements {slots} resteraient vides. Ajoutez plutôt les éléments à la fin ou reprenez aussi ceux du milieu."
 }

@@ -576,5 +576,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "Torna alla cartella precedente",
   "Forward to the next folder": "Avanti alla cartella successiva",
-  "Up one folder": "Cartella superiore"
+  "Up one folder": "Cartella superiore",
+  "At their own slots (a filled slot is replaced)": "Nelle loro posizioni (una posizione occupata viene sostituita)",
+  "Append behind the last filled slot, in their order": "Aggiungi dopo l'ultima posizione occupata, nel loro ordine",
+  "This user menu file has no menu items.": "Questo file del menu utente non contiene voci di menu.",
+  "Import: {n} menu items taken over.": "Importazione: {n} voci di menu acquisite.",
+  "Undo reverts the whole import.": "Annulla ripristina l'intera importazione.",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "Scegli le voci di menu da acquisire. I sotto-elementi selezionati per una voce vengono acquisiti con essa.",
+  "{n} filled slots were replaced.": "{n} posizioni occupate sono state sostituite.",
+  "{n} items did not fit into the 20 slots.": "{n} voci non sono entrate nelle 20 posizioni.",
+  "{n} items have no known sub-element flags: those stay as they are.": "Per {n} voci i flag dei sotto-elementi non sono ancora noti: restano invariati.",
+  "User menu": "Menu utente",
+  "already in the menu": "già nel menu",
+  "(item)": "(voce)",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "La camera riempie il menu utente dalla prima posizione senza vuoti: le posizioni {slots} resterebbero vuote. Aggiungi le voci in coda oppure acquisisci anche quelle intermedie."
 }

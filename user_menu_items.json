@@ -290,6 +290,58 @@
         "00440",
         "00439"
       ]
+    },
+    "163": {
+      "name": "Gamma",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 38): Gamma alone in slot 1 (code 0x06000000 + 163) with its eight sub-elements (Setting, Step Gamma, Master Gamma, R Gamma, G Gamma, B Gamma, Gamma Category, Gamma Select) switched on in the dialog. Compared with the file before (Black, round 37) only slot 1 changed: no flag went from 0 to 1, so all eight flags of Gamma were on already from earlier files (they show only when sub-elements are switched off, not decoded yet). Round 39 (pattern file 1, elements 1, 3, 5, 7 switched off): flags 00265, 00267, 00271 and 00282 went from 1 to 0. Round 40 (pattern file 2, elements 2, 3, 6, 7 switched off): flags 00266, 00267, 00271 and 00283 went from 1 to 0. With round 39: elements 3, 7 = {00267, 00271}; elements 1, 5 = {00265, 00282}; elements 2, 6 = {00266, 00283}. Round 41 (pattern file 3, elements 4, 5, 6, 7 switched off): flags 00271, 00281, 00282 and 00283 went from 1 to 0. Together with rounds 39 and 40 seven sub-elements are determined: Setting = 00265, Step Gamma = 00266, Master Gamma = 00267, R Gamma = 00281, G Gamma = 00282, B Gamma = 00283, Gamma Category = 00271; Gamma Select (element 8) was off in none of the three files and is decided by round 42. Round 42 (pattern file 4, only element 8 switched off): only flag 00272 went from 1 to 0, so Gamma Select = 00272. All four pattern files agree with the assignment (dialog order): Setting = 00265, Step Gamma = 00266, Master Gamma = 00267, R Gamma = 00281, G Gamma = 00282, B Gamma = 00283, Gamma Category = 00271, Gamma Select = 00272.",
+      "sub_elements": [
+        "Setting",
+        "Step Gamma",
+        "Master Gamma",
+        "R Gamma",
+        "G Gamma",
+        "B Gamma",
+        "Gamma Category",
+        "Gamma Select"
+      ],
+      "flags": [
+        "00265",
+        "00266",
+        "00267",
+        "00281",
+        "00282",
+        "00283",
+        "00271",
+        "00272"
+      ]
+    },
+    "396": {
+      "name": "Offset White",
+      "status": "confirmed",
+      "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 43): Offset White alone in slot 1 (code 0x06000000 + 396) with all its sub-elements switched on (named by the user in the dialog order: Offset White, Warm Cool, Warm Cool Balance for <A>, the same block for <B>, then Offset White, Warm Cool and Warm Cool Balance for <ATW>). Compared with the file before (Gamma, round 42) nine consecutive flags went from 0 to 1: 01008 to 01016 (the sub-element names are assigned later with pattern files). Round 44 (pattern file 1, elements 1, 3, 5, 7, 9 to be switched off): only four flags went from 1 to 0: 01008, 01010, 01012 and 01014 (01016 stayed on; one deselection did not show, to be clarified). Round 45 (pattern file 1 repeated with all five deselections): flags 01008, 01010, 01012, 01014 and 01016 went from 1 to 0 (elements 1, 3, 5, 7, 9; the 9 had been forgotten in round 44). Round 46 (pattern file 2, elements 2, 3, 6, 7 switched off): flags 01009, 01010, 01013 and 01014 went from 1 to 0. With round 45: elements 3, 7 = {01010, 01014}; elements 1, 5, 9 = {01008, 01012, 01016}; elements 2, 6 = {01009, 01013}; elements 4, 8 = {01011, 01015} (the two left over). Round 47 (pattern file 3, elements 4, 5, 6, 7 switched off): flags 01011, 01012, 01013 and 01014 went from 1 to 0. Determined so far: Warm Cool <A> (2) = 01009, Warm Cool Balance <A> (3) = 01010, Offset White <B> (4) = 01011, Warm Cool <B> (5) = 01012, Warm Cool Balance <B> (6) = 01013, Offset White <ATW> (7) = 01014, Warm Cool <ATW> (8) = 01015 (the one left over); Offset White <A> (1) and Warm Cool Balance <ATW> (9) are {01008, 01016} in an order that round 48 decides. Round 48 (pattern file 4, elements 8 and 9 switched off): flags 01015 and 01016 went from 1 to 0, so Warm Cool <ATW> = 01015 and Warm Cool Balance <ATW> = 01016, and Offset White <A> = 01008. All four pattern files agree: the dialog order follows the flag numbers 01008 to 01016 (Offset White <A> = 01008, Warm Cool <A> = 01009, Warm Cool Balance <A> = 01010, Offset White <B> = 01011, Warm Cool <B> = 01012, Warm Cool Balance <B> = 01013, Offset White <ATW> = 01014, Warm Cool <ATW> = 01015, Warm Cool Balance <ATW> = 01016).",
+      "sub_elements": [
+        "Offset White <A>",
+        "Warm Cool <A>",
+        "Warm Cool Balance <A>",
+        "Offset White <B>",
+        "Warm Cool <B>",
+        "Warm Cool Balance <B>",
+        "Offset White <ATW>",
+        "Warm Cool <ATW>",
+        "Warm Cool Balance <ATW>"
+      ],
+      "flags": [
+        "01008",
+        "01009",
+        "01010",
+        "01011",
+        "01012",
+        "01013",
+        "01014",
+        "01015",
+        "01016"
+      ]
     }
   }
 }

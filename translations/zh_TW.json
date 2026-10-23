@@ -576,5 +576,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "返回上一個資料夾",
   "Forward to the next folder": "前進到下一個資料夾",
-  "Up one folder": "上一層資料夾"
+  "Up one folder": "上一層資料夾",
+  "At their own slots (a filled slot is replaced)": "放到各自的位置（已佔用的位置會被取代）",
+  "Append behind the last filled slot, in their order": "依原順序附加到最後一個已佔用位置之後",
+  "This user menu file has no menu items.": "此使用者選單檔案不含選單項目。",
+  "Import: {n} menu items taken over.": "匯入：已採用 {n} 個選單項目。",
+  "Undo reverts the whole import.": "復原會還原整個匯入。",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "選擇要採用的選單項目。為某選單項目選取的子項會一併帶入。",
+  "{n} filled slots were replaced.": "已取代 {n} 個已佔用位置。",
+  "{n} items did not fit into the 20 slots.": "有 {n} 項放不進 20 個位置。",
+  "{n} items have no known sub-element flags: those stay as they are.": "有 {n} 項的子項旗標尚不明確，維持原樣。",
+  "User menu": "使用者選單",
+  "already in the menu": "已在選單中",
+  "(item)": "（選單項目）",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "相機從第一個位置起連續填入使用者選單，不留空位：位置 {slots} 將保持空白。請改為附加，或同時採用中間的選單項目。"
 }

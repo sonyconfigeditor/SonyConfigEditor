@@ -576,5 +576,18 @@
   "ID {number}": "ID {number}",
   "Back to the previous folder": "返回上一个文件夹",
   "Forward to the next folder": "前进到下一个文件夹",
-  "Up one folder": "上一级文件夹"
+  "Up one folder": "上一级文件夹",
+  "At their own slots (a filled slot is replaced)": "放到各自的位置（已占用的位置会被替换）",
+  "Append behind the last filled slot, in their order": "按原顺序追加到最后一个已占用位置之后",
+  "This user menu file has no menu items.": "此用户菜单文件不含菜单项。",
+  "Import: {n} menu items taken over.": "导入：已采用 {n} 个菜单项。",
+  "Undo reverts the whole import.": "撤销会还原整个导入。",
+  "Choose the menu items to take over. The sub-elements that were selected for an item come along.": "选择要采用的菜单项。为某菜单项选中的子项会一并带入。",
+  "{n} filled slots were replaced.": "已替换 {n} 个已占用位置。",
+  "{n} items did not fit into the 20 slots.": "有 {n} 项放不进 20 个位置。",
+  "{n} items have no known sub-element flags: those stay as they are.": "有 {n} 项的子项标志尚不明确，保持原样。",
+  "User menu": "用户菜单",
+  "already in the menu": "已在菜单中",
+  "(item)": "（菜单项）",
+  "The camera fills the user menu from the first slot on without gaps: slots {slots} would stay empty. Append the items instead, or also take over the items in between.": "相机从第一个位置起连续填充用户菜单，不留空位：位置 {slots} 将保持为空。请改为追加，或同时采用中间的菜单项。"
 }
