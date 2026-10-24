@@ -615,5 +615,9 @@
   "Media menu: how clips are named (auto naming, camera ID, reel number, title prefix, number set).": "Media 選單：片段的命名方式（自動命名、相機 ID、捲號、標題前綴、起始編號）。",
   "File menu: the clip and scene file settings of the camera.": "File 選單：相機的片段和場景檔設定。",
   "The 20 slots of the camera's user menu with the menu items you put there and the sub-elements chosen for each item.": "相機使用者選單的 20 個位置，以及您放入的選單項目和為每個項目選定的子項。",
-  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "含義尚未明確的參數。它們顯示原始值，並原樣寫回。"
+  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "含義尚未明確的參數。它們顯示原始值，並原樣寫回。",
+  "already in slot {number}": "已在位置 {number}",
+  "{name} is already in slot {number}: a menu item can be in the user menu once only.": "{name} 已在位置 {number}：每個選單項目在使用者選單中只能出現一次。",
+  "{n} items were left out because they are in the menu already (every item can be there once only).": "已略過 {n} 項，因為它們已在選單中（每項只能出現一次）。",
+  "{name} has no sub-element left: the camera does not keep such an item, so it was taken out of the menu.": "{name} 已沒有任何子項：相機不會保留這樣的選單項目，因此已將其從選單中移除。"
 }

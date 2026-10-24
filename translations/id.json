@@ -618,5 +618,9 @@
   "Media menu: how clips are named (auto naming, camera ID, reel number, title prefix, number set).": "Menu Media: cara klip diberi nama (penamaan otomatis, ID kamera, nomor reel, awalan judul, nomor awal).",
   "File menu: the clip and scene file settings of the camera.": "Menu File: pengaturan klip dan file scene kamera.",
   "The 20 slots of the camera's user menu with the menu items you put there and the sub-elements chosen for each item.": "20 slot menu pengguna kamera dengan item menu yang Anda tempatkan di sana dan sub-elemen yang dipilih untuk setiap item.",
-  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "Parameter yang artinya belum diketahui. Menampilkan nilai mentah dan ditulis kembali tanpa perubahan."
+  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "Parameter yang artinya belum diketahui. Menampilkan nilai mentah dan ditulis kembali tanpa perubahan.",
+  "already in slot {number}": "sudah ada di slot {number}",
+  "{name} is already in slot {number}: a menu item can be in the user menu once only.": "{name} sudah ada di slot {number}: sebuah item menu hanya dapat ada satu kali di menu pengguna.",
+  "{n} items were left out because they are in the menu already (every item can be there once only).": "{n} item dilewati karena sudah ada di menu (setiap item hanya dapat ada satu kali).",
+  "{name} has no sub-element left: the camera does not keep such an item, so it was taken out of the menu.": "{name} tidak punya sub-elemen lagi: kamera tidak menyimpan item seperti itu, jadi item ini dikeluarkan dari menu."
 }

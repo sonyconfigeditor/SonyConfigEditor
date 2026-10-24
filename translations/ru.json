@@ -618,5 +618,9 @@
   "Media menu: how clips are named (auto naming, camera ID, reel number, title prefix, number set).": "Меню Media: как именуются клипы (автоимя, ID камеры, номер катушки, префикс названия, начальный номер).",
   "File menu: the clip and scene file settings of the camera.": "Меню File: настройки клипов и файлов сцен камеры.",
   "The 20 slots of the camera's user menu with the menu items you put there and the sub-elements chosen for each item.": "20 слотов пользовательского меню камеры с размещёнными в них пунктами меню и выбранными для каждого пункта подэлементами.",
-  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "Параметры, значение которых ещё неизвестно. Они показывают исходные значения и записываются обратно без изменений."
+  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "Параметры, значение которых ещё неизвестно. Они показывают исходные значения и записываются обратно без изменений.",
+  "already in slot {number}": "уже в слоте {number}",
+  "{name} is already in slot {number}: a menu item can be in the user menu once only.": "{name} уже в слоте {number}: пункт меню может быть в пользовательском меню только один раз.",
+  "{n} items were left out because they are in the menu already (every item can be there once only).": "Пропущено пунктов: {n}, так как они уже есть в меню (каждый пункт может быть в нём только один раз).",
+  "{name} has no sub-element left: the camera does not keep such an item, so it was taken out of the menu.": "У пункта «{name}» не осталось подэлементов: камера не хранит такой пункт, поэтому он удалён из меню."
 }

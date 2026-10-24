@@ -167,6 +167,25 @@ def user_menu_choices(values) -> dict:
     return choices
 
 
+def user_menu_slot_sub(number: int) -> str | None:
+    """The second value of a slot (``code,sub``) for a menu item, as the camera writes it: -1 for an item without sub-elements, 0 for one with sub-elements
+    (every item checked so far; Codec has 0 in an FS7M2 file although it has none: ``slot_sub`` in the item overrides). None while we do not know the item's
+    sub-elements: the value of the slot stays as it is."""
+    try:
+        entry = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {}).get(str(number))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(entry, dict):
+        return None
+    if entry.get("slot_sub") is not None:
+        return str(entry["slot_sub"])
+    if entry.get("sub_elements"):
+        return "0"
+    if entry.get("flags") == []:
+        return "-1"
+    return None
+
+
 def user_flag_owners() -> dict:
     """Flag ID -> (name of the menu item, name of the sub-element or '') for the flags of the user menu that are known."""
     try:
@@ -206,14 +225,20 @@ def plan_user_import(src_params: dict, dst_params: dict, chosen: list[dict], mod
     item with known flags come along with the values of the source (so its sub-element selection is taken over).
     The camera fills the user menu from the first slot on without gaps (every file we know is like that): a result with a gap that was not there before
     is reported in ``report["gap"]`` (the empty slots in front of the last filled one) and must not be written.
-    Returns (values by ID, report {"placed", "replaced", "dropped", "no_flags", "gap"})."""
+    A menu item can be in the user menu only once (confirmed on the camera): an item that is in the menu already is left out (``report["skipped"]``).
+    Returns (values by ID, report {"placed", "replaced", "dropped", "no_flags", "gap", "skipped"})."""
     flags = load_user_menu_flags()
     values: dict[str, str] = {}
-    report = {"placed": 0, "replaced": 0, "dropped": 0, "no_flags": 0, "gap": []}
-    filled = [i["slot"] for i in user_menu_items_of(dst_params)]
+    report = {"placed": 0, "replaced": 0, "dropped": 0, "no_flags": 0, "gap": [], "skipped": 0}
+    present = user_menu_items_of(dst_params)
+    filled = [i["slot"] for i in present]
+    in_menu = {i["number"] for i in present}
     placed_slots = set(filled)
     next_slot = (max(filled) if filled else 0) + 1
     for item in chosen:
+        if item["number"] in in_menu:
+            report["skipped"] += 1
+            continue
         if mode == "same":
             slot = item["slot"]
             if slot in filled:
@@ -489,7 +514,7 @@ class ListPopup(tk.Toplevel):
             return
         value = self.dropdown._values[row]
         self.destroy()
-        self.dropdown._button_callback(value)
+        self.dropdown._command(value)      # (what the entries of the dropdown menu call)
 
     def destroy(self):
         try:
@@ -1419,13 +1444,14 @@ class UserImportDialog(ctk.CTkToplevel):
             ctk.CTkButton(bar, text=tr(source), width=app._tr_width(source, 90), height=26, command=command).pack(side="left", padx=(6, 2))
         self.list = ctk.CTkScrollableFrame(self)
         self.list.pack(fill="both", expand=True, padx=8, pady=2)
-        self.vars = []
+        self.vars, self.available = [], []
         for item in items:
-            here = item["number"] in present
+            here = item["number"] in present      # a menu item can be in the user menu only once: the ones that are there cannot be ticked
             var = tk.BooleanVar(value=not here)
             text = f"{tr('Slot {number}').format(number=item['slot'])}:  {item['name']}" + (f"   ({tr('already in the menu')})" if here else "")
-            ctk.CTkCheckBox(self.list, text=text, variable=var, width=20, checkbox_width=20, checkbox_height=20).pack(anchor="w", padx=6, pady=2)
+            ctk.CTkCheckBox(self.list, text=text, variable=var, width=20, checkbox_width=20, checkbox_height=20, state="disabled" if here else "normal").pack(anchor="w", padx=6, pady=2)
             self.vars.append(var)
+            self.available.append(not here)
         self.lbl_problem = ctk.CTkLabel(self, text="", text_color="#e06c3c", anchor="w", justify="left", wraplength=app._sc(560))
         self.lbl_problem.pack(fill="x", padx=12)
         foot = ctk.CTkFrame(self, fg_color="transparent")
@@ -1436,15 +1462,15 @@ class UserImportDialog(ctk.CTkToplevel):
         self.bind("<Escape>", lambda _e: self.destroy())
 
     def _set_all(self, value: bool):
-        for var in self.vars:
-            var.set(value)
+        for var, available in zip(self.vars, self.available):
+            var.set(value and available)
 
     def _show_diff(self):
         self.app.show_diff(self.app._user_import_diff_items, self.source_text, parent=self)
         self.after(50, self.grab_set)
 
     def _ok(self):
-        chosen, mode = [i for i, v in zip(self.items, self.vars) if v.get()], self.var_mode.get()
+        chosen, mode = [i for i, v, ok in zip(self.items, self.vars, self.available) if v.get() and ok], self.var_mode.get()
         problem = self.validate(chosen, mode) if self.validate and chosen else ""
         self.lbl_problem.configure(text=problem)
         if problem:      # the window stays open: the choice can be changed
@@ -3125,6 +3151,7 @@ class App(ctk.CTk):
         self._subheads: list[dict] = []
         self._filter_job = None
         self._stash: dict[tuple, dict[str, str]] = {}   # (parameter, choice that was left) -> values the choice replaced
+        self._user_slot_updaters: dict = {}      # user menu slot -> function that greys out the items that sit in another slot
         self._saved: tuple | None = None  # state key of the last loaded/saved version (for the "*" marker)
 
         self._scale = scale
@@ -5138,15 +5165,36 @@ class App(ctk.CTk):
             else:
                 menu = ctk.CTkOptionMenu(cell, values=labels, width=self._menu_width(labels, 100), dynamic_resizing=False)
             menu.set(choices.get(cur, tr("{value} (unknown)").format(value=cur)))
+            is_slot = f.get("choices_from") == "user_menu"
+            my_key = lambda: next((k for k, v in self.vars.items() if v is var), None)      # (the variable is in self.vars only after the row is built)
+
+            def in_other_slots() -> dict:
+                """Code of an item -> number of the slot it is in, for the other slots: a menu item can be in the user menu only once."""
+                used, mine_key = {}, my_key()
+                for number in range(1, USER_SLOTS + 1):
+                    key = f"{number:05d}"
+                    if key != mine_key and key in self.vars:
+                        code = self.vars[key].get().split(",")[0].strip()
+                        if code not in ("0", ""):
+                            used.setdefault(code, number)
+                return used
+
             def choose(lab):
                 self._last_key = None   # every dropdown choice is its own undo step
                 if f.get("choices_from") == "user_menu":      # the sub-element flags of the file follow the item: one undo step for both
                     code = next((k for k, v in choices.items() if v == lab), None)
                     mine = next((k for k, v in self.vars.items() if v is var), None)
+                    taken = in_other_slots().get(code)
+                    if taken is not None:      # (the list greys such items out; this guards the other ways in)
+                        self.lbl_switch.configure(text=tr("{name} is already in slot {number}: a menu item can be in the user menu once only.").format(name=lab, number=taken))
+                        refresh_choice()
+                        return
                     if code is not None and mine is not None:
                         old = var.get().split(",")[idx].strip()
                         parts = var.get().split(",")
                         parts[idx] = code
+                        if len(parts) > 1 and code.lstrip("-").isdigit() and int(code) > USER_MENU_BASE:      # the second value follows the item (not shown: nobody sets it by hand)
+                            parts[1] = user_menu_slot_sub(int(code) - USER_MENU_BASE) or parts[1]
                         values = {mine: ",".join(parts), **self._user_flag_changes(mine, old, code)}
                         values.update(self._packed_slots(values))      # the camera has no gaps: an emptied slot closes up, an item put behind the last one moves up
                         self._set_values("__user_item__", values)
@@ -5163,10 +5211,22 @@ class App(ctk.CTk):
 
             def refresh_choice():
                 now = var.get().split(",")[idx].strip()
-                menu.configure(values=list(choices.values()) + ([] if now in choices else [tr("{value} (unknown)").format(value=now)]))
+                labels_now = list(choices.values()) + ([] if now in choices else [tr("{value} (unknown)").format(value=now)])
+                menu.configure(values=labels_now)
                 menu.set(choices.get(now, tr("{value} (unknown)").format(value=now)))
+                if is_slot and not pair and my_key() is not None:      # the items that are in other slots stay visible but cannot be picked
+                    used = in_other_slots()
+                    self._fill_menu(menu, labels_now, {label: tr("already in slot {number}").format(number=used[code]) for code, label in choices.items() if code in used})
+                    self._user_slot_updaters[my_key()] = refresh_choice
 
             refreshers.append(refresh_choice)
+            if is_slot:      # once the row is in the table (its variable is known then): grey out what sits in another slot
+                def first_refresh():
+                    try:
+                        refresh_choice()
+                    except tk.TclError:
+                        pass
+                menu.after_idle(first_refresh)
 
         def make_step(cell, f):
             idx = f["index"]
@@ -5274,7 +5334,7 @@ class App(ctk.CTk):
             refreshers.append(show_all)
 
         cells = []
-        for n, f in enumerate(fields):
+        for n, f in enumerate([f for f in fields if not f.get("hidden")]):      # (a hidden field keeps its value in the file and is not shown)
             cell = ctk.CTkFrame(body, fg_color="transparent")
             cell.grid(row=n // per_row, column=n % per_row, padx=4, pady=2)
             ctk.CTkLabel(cell, text=f["label"], text_color="gray").pack()
@@ -5310,36 +5370,73 @@ class App(ctk.CTk):
         room = [0.0]      # width the line of check boxes may use (set by relayout), the line is as wide as the window allows and wraps there
         lines: list = []
 
+        built: dict = {}      # what the check boxes show now: the item and the variables of the boxes (the boxes are kept while only flags change)
+
         def show_subs(*_a):
             """One check box per sub-element of the chosen item (where the item and its flags are known); each is a flag of the file."""
             if subs is None:
                 return
-            for w in subs.winfo_children():
-                w.destroy()
             code = var.get().split(",")[0].strip()
             number = int(code) - USER_MENU_BASE if code.lstrip("-").isdigit() and int(code) >= USER_MENU_BASE else None
             known = load_user_menu_subs().get(number) if number is not None else None
             if not known or any(fid not in self.vars for fid in known[1]):
+                for w in subs.winfo_children():
+                    w.destroy()
+                built.clear()
                 subs.pack_forget()
                 return
+            if built.get("number") == number and built.get("lines") and built["lines"][0].winfo_exists():
+                # the same item: only the flags changed. The boxes stay where they are and take the new states (rebuilding them showed the boxes
+                # piled up for a moment before they moved to their places)
+                for state, fid in zip(built["states"], known[1]):
+                    state.set(self.vars[fid].get().strip() == "1")
+                all_on_now = all(self.vars[fid].get().strip() == "1" for fid in known[1])
+                built["all_state"].set(all_on_now)
+                built["all_box"].configure(state="disabled" if all_on_now else "normal")
+                return
+            for w in subs.winfo_children():
+                w.destroy()
             subs.pack(anchor="w", fill="x", padx=4, pady=(0, 2))
+            ctk.CTkLabel(subs, text=tr("Sub-elements"), text_color="gray").pack(anchor="w")      # the caption has a line of its own: the check boxes below start at the left edge
             line = ctk.CTkFrame(subs, fg_color="transparent", width=max(200, room[0]) if room[0] else 700)
             line.pack(fill="x")
             lines[:] = [line]
-            items = [ctk.CTkLabel(line, text=tr("Sub-elements"), text_color="gray")]
+            items = []
+            slot_key = next((k for k, v in self.vars.items() if v is var), None)
+
+            def apply_flags(changes: dict):
+                """Write the flags of the check boxes as one undo step. An item without any sub-element is not kept by the camera: it leaves the menu (the slots behind move up)."""
+                self._last_key = None
+                values = dict(changes)
+                on_now = [fid for fid in known[1] if values.get(fid, self.vars[fid].get()).strip() == "1"]
+                if not on_now and slot_key is not None:
+                    values[slot_key] = "0,0"
+                    values.update(self._packed_slots(values))
+                    self.lbl_switch.configure(text=tr("{name} has no sub-element left: the camera does not keep such an item, so it was taken out of the menu.").format(
+                        name=load_user_menu_names().get(str(number), "")))
+                self._set_values("__user_sub__", values)
+                self._last_key = None
+
+            all_on = all(self.vars[fid].get().strip() == "1" for fid in known[1])
+            all_state = tk.BooleanVar(value=all_on)
+            # "All" only switches everything on (it is not a way to empty the item by accident): it is greyed out and ticked while everything is on already.
+            # It looks different from the sub-elements (own colour, bold) and a bar separates it from them.
+            all_box = ctk.CTkCheckBox(line, text=tr("All"), variable=all_state, width=20, state="disabled" if all_on else "normal", font=ctk.CTkFont(weight="bold"),
+                                      fg_color="#3a8f5c", hover_color="#2f7a4d", border_color="#3a8f5c", command=lambda: apply_flags({fid: "1" for fid in known[1]}))
+            items.append(all_box)
+            items.append(ctk.CTkLabel(line, text="│", text_color="gray"))
+            states = []
             for name, fid in zip(*known):
                 state = tk.BooleanVar(value=self.vars[fid].get().strip() == "1")
-
-                def toggled(fid=fid, state=state):
-                    self._last_key = None
-                    self._set_values("__user_sub__", {fid: "1" if state.get() else "0"})
-                    self._last_key = None
-
-                items.append(ctk.CTkCheckBox(line, text=name, variable=state, command=toggled, width=20))
+                states.append(state)
+                items.append(ctk.CTkCheckBox(line, text=name, variable=state, command=lambda fid=fid, state=state: apply_flags({fid: "1" if state.get() else "0"}), width=20))
                 if fid not in watched:
                     watched.add(fid)
                     self.vars[fid].trace_add("write", lambda *_a: self.after_idle(show_subs) if subs.winfo_exists() else None)
-            FlowRow(line, items)      # wraps in a narrow window
+            built.update(number=number, lines=lines, states=states, all_state=all_state, all_box=all_box)
+            flow = FlowRow(line, items)      # wraps in a narrow window
+            subs.update_idletasks()      # the width is known now: the boxes go to their places at once, not in a second step
+            flow.layout(force=True)
 
         if subs is not None:
             var.trace_add("write", lambda *_a: self.after_idle(show_subs) if subs.winfo_exists() else None)
@@ -5880,6 +5977,11 @@ class App(ctk.CTk):
     @lazy
     def _update_warnings(self):
         self._refresh_availability()   # the options that are possible depend on the other values
+        for refresh in list(self._user_slot_updaters.values()):      # the user menu slots grey out the items that sit in another slot
+            try:
+                refresh()
+            except tk.TclError:
+                pass
         warnings = self._warnings()
         self.lbl_warn.configure(text=("⚠ " + "\n⚠ ".join(warnings)) if warnings else "")
         if warnings:
@@ -6091,6 +6193,8 @@ class App(ctk.CTk):
             text += " " + tr("{n} filled slots were replaced.").format(n=report["replaced"])
         if report["dropped"]:
             text += " " + tr("{n} items did not fit into the 20 slots.").format(n=report["dropped"])
+        if report["skipped"]:
+            text += " " + tr("{n} items were left out because they are in the menu already (every item can be there once only).").format(n=report["skipped"])
         if report["no_flags"]:
             text += " " + tr("{n} items have no known sub-element flags: those stay as they are.").format(n=report["no_flags"])
         self.lbl_switch.configure(text=text + " " + tr("Undo reverts the whole import."))
@@ -6104,6 +6208,19 @@ class App(ctk.CTk):
             self._last_key = None   # own undo step
         self.lbl_switch.configure(text=tr("Import: {n} values taken over ({same} were already equal). Undo reverts the whole import.").format(n=len(values), same=len(items) - len(values)))
         return len(values)
+
+    def bring_to_front(self):
+        """Put the window above all other windows and give it the focus (used once at the start). Windows does not let a program take the foreground by
+        itself in every case: the window is made 'topmost' for a moment (which puts it on top of the stack in any case) and the focus is asked for."""
+        try:
+            if self.state() == "iconic":
+                self.deiconify()
+            self.lift()
+            self.attributes("-topmost", True)
+            self.focus_force()
+            self.after(400, lambda: self.attributes("-topmost", False))      # (not for good: the window must not stay above the others)
+        except tk.TclError:
+            pass
 
     def _switch_model(self, target: str):
         if not self.session or target == self.scene.model:
@@ -6415,6 +6532,7 @@ def main(argv: list[str] | None = None) -> int:
     app = App()
     if args.file is not None:
         app.after(100, lambda: app.open_path(args.file))
+    app.after(150, app.bring_to_front)      # on start the window is above all other windows (only here: the tests create the window without this)
     app.mainloop()
     return 0
 

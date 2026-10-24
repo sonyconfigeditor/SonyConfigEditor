@@ -615,5 +615,9 @@
   "Media menu: how clips are named (auto naming, camera ID, reel number, title prefix, number set).": "Menu Media: come vengono nominati i clip (nome automatico, ID camera, numero di bobina, prefisso del titolo, numero iniziale).",
   "File menu: the clip and scene file settings of the camera.": "Menu File: le impostazioni dei clip e dei file scena della camera.",
   "The 20 slots of the camera's user menu with the menu items you put there and the sub-elements chosen for each item.": "Le 20 posizioni del menu utente della camera con le voci di menu che vi inserisci e i sotto-elementi scelti per ciascuna.",
-  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "Parametri il cui significato non è ancora noto. Mostrano valori grezzi e vengono riscritti senza modifiche."
+  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "Parametri il cui significato non è ancora noto. Mostrano valori grezzi e vengono riscritti senza modifiche.",
+  "already in slot {number}": "già nella posizione {number}",
+  "{name} is already in slot {number}: a menu item can be in the user menu once only.": "{name} è già nella posizione {number}: una voce di menu può essere presente una sola volta nel menu utente.",
+  "{n} items were left out because they are in the menu already (every item can be there once only).": "{n} voci sono state omesse perché sono già nel menu (ogni voce può essere presente una sola volta).",
+  "{name} has no sub-element left: the camera does not keep such an item, so it was taken out of the menu.": "{name} non ha più sotto-elementi: la camera non conserva una voce così, quindi è stata tolta dal menu."
 }
