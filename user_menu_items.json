@@ -4,12 +4,36 @@
     "17": {
       "name": "S&Q Motion",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+      "flags": [
+        "00119",
+        "01079",
+        "00121"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Rounds 95 to 97 (2026-10-24): S&Q Motion alone in slot 1 (code 0x06000011) with its three sub-elements on (v95) changed no flag (all were on already). Pattern files: A (1 and 3 off) switched 00119 and 00121 to 0 (v96); B (2 and 3 off) 00121 and 01079 (v97). So Setting = 00119, High Frame Rate Mode = 01079, Frame Rate = 00121.",
+      "sub_elements": [
+        "Setting",
+        "High Frame Rate Mode",
+        "Frame Rate"
+      ]
     },
     "21": {
       "name": "Timecode",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+      "flags": [
+        "00123",
+        "00124",
+        "00125",
+        "00126",
+        "00129"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Rounds 74 to 77 (2026-10-24): Timecode alone in slot 1 (code 0x06000015) with its five sub-elements on (v74) changed no flag (all were on already). Pattern files: A (1, 3, 5 off) switched 00123, 00125, 00129 to 0 (v75); B (2, 3 off) 00124, 00125 (v76); C (4, 5 off) 00126, 00129 (v77). So Mode = 00123, Run = 00124, Setting = 00125, Reset = 00126, TC Format = 00129 (the dialog order follows the flag numbers, with 00127 and 00128 left out).",
+      "sub_elements": [
+        "Mode",
+        "Run",
+        "Setting",
+        "Reset",
+        "TC Format"
+      ]
     },
     "39": {
       "name": "Format Media",
@@ -19,7 +43,15 @@
     "124": {
       "name": "VF Setting",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+      "flags": [
+        "00228",
+        "00229"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Rounds 78 and 79 (2026-10-24): VF Setting alone in slot 1 (code 0x0600007C) with both sub-elements on (v78) switched 00228 and 00229 from 0 to 1; with Brightness (1) off (v79) only 00228 went to 0. So Brightness = 00228, Color Mode = 00229. (The earlier note that the FS7 sample file has 00228 and 00229 for Color Bars is not consistent with this: they belong to VF Setting here; check against the Mk1 file.)",
+      "sub_elements": [
+        "Brightness",
+        "Color Mode"
+      ]
     },
     "364": {
       "name": "Base Setting",
@@ -51,7 +83,15 @@
     "559": {
       "name": "Rec Format",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras."
+      "flags": [
+        "00661",
+        "01063"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Rounds 92 to 94 (2026-10-24): Rec Format alone in slot 1 (code 0x0600022F) with both sub-elements on (v92) changed no flag (both were on already). With Video Format (1) off (v93) 00661 went to 0, with RAW Output Format (2) off (v94) 01063. So Video Format = 00661, RAW Output Format = 01063.",
+      "sub_elements": [
+        "Video Format",
+        "RAW Output Format"
+      ]
     },
     "700": {
       "name": "Codec",
@@ -211,32 +251,164 @@
     "520": {
       "name": "Audio Input",
       "status": "confirmed",
-      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+      "flags": [
+        "01017",
+        "01018",
+        "01019",
+        "01020",
+        "01302",
+        "00625",
+        "00626",
+        "00628",
+        "00629",
+        "01021",
+        "00630",
+        "01303",
+        "01304",
+        "01501",
+        "01502",
+        "01503",
+        "01504",
+        "01505",
+        "01506",
+        "01507",
+        "01508",
+        "01509",
+        "01510",
+        "01511"
+      ],
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places. Rounds 61 to 66 (2026-10-24): Audio Input alone in slot 1 (code 0x06000208) with all 24 sub-elements on (v61) switched 14 flags from 0 to 1 (01302 to 01304, 01501 to 01511); the other ten were on already. Five pattern files deselected the elements by the binary code of their number (1 to 24; the user first listed 22, CH3 and CH4 Input Level were missing): A (odd numbers off, v62), B (bit 2, v63), C (bit 4, v64), D (bit 8, v65), E (16 to 24, v66). Every one of the 24 flags has a unique code. The dialog order does not follow the flag numbers (CH1 to CH4 Input Select 01017 to 01020, INPUT1 MIC Reference 01302, INPUT2 MIC Reference 00625, Wind Filter CH1 to CH4 00626, 00628, 00629, 01021, ...).",
+      "sub_elements": [
+        "CH1 Input Select",
+        "CH2 Input Select",
+        "CH3 Input Select",
+        "CH4 Input Select",
+        "INPUT1 MIC Reference",
+        "INPUT2 MIC Reference",
+        "CH1 Wind Filter",
+        "CH2 Wind Filter",
+        "CH3 Wind Filter",
+        "CH4 Wind Filter",
+        "CH3 Level Control",
+        "CH4 Level Control",
+        "CH3 Input Level",
+        "CH4 Input Level",
+        "Audio Input Level",
+        "Limiter Mode",
+        "CH1&2 AGC Mode",
+        "CH3&4 AGC Mode",
+        "AGC Spec",
+        "1kHz Tone on Color Bars",
+        "CH1 Level",
+        "CH2 Level",
+        "CH3 Level",
+        "CH4 Level"
+      ]
     },
     "67": {
       "name": "Audio Output",
       "status": "confirmed",
-      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+      "flags": [
+        "00170",
+        "01306",
+        "00171",
+        "00174",
+        "01307",
+        "01512"
+      ],
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places. Rounds 67 to 70 (2026-10-24): Audio Output alone in slot 1 (code 0x06000043) with all six sub-elements on (v67) switched 01306, 01307 and 01512 from 0 to 1 (the other three were on already). Pattern files: A (1, 3, 5 off) switched 00170, 00171, 01307 to 0 (v68); B (2, 3, 6 off) 00171, 01306, 01512 (v69); C (4, 5, 6 off) 00174, 01307, 01512 (v70). So Monitor CH = 00170, Monitor Volume = 01306, Headphone Out = 00171, Alarm Volume = 00174, Output Limiter = 01307, HDMI Output CH = 01512.",
+      "sub_elements": [
+        "Monitor CH",
+        "Monitor Volume",
+        "Headphone Out",
+        "Alarm Volume",
+        "Output Limiter",
+        "HDMI Output CH"
+      ]
     },
     "739": {
       "name": "Clip",
       "status": "confirmed",
-      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+      "flags": [
+        "00836",
+        "01223",
+        "01224",
+        "01225",
+        "00838",
+        "00837"
+      ],
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places. Rounds 80 to 83 (2026-10-24): Clip alone in slot 1 (code 0x060002E3) with its six sub-elements on (v80) switched 01223, 01224 and 01225 from 0 to 1 (the other three were on already). Pattern files: A (1, 3, 5 off) switched 00836, 00838, 01224 to 0 (v81); B (2, 3, 6 off) 00837, 01223, 01224 (v82); C (4, 5, 6 off) 00837, 00838, 01225 (v83). So Auto Naming = 00836, Camera ID = 01223, Reel Number = 01224, Camera Position = 01225, Title Prefix = 00838, Number Set = 00837.",
+      "sub_elements": [
+        "Auto Naming",
+        "Camera ID",
+        "Reel Number",
+        "Camera Position",
+        "Title Prefix",
+        "Number Set"
+      ]
     },
     "500": {
       "name": "Assignable Button",
       "status": "confirmed",
-      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+      "flags": [
+        "00602",
+        "00603",
+        "00604",
+        "00605",
+        "00606",
+        "00607",
+        "00608",
+        "00691",
+        "00692",
+        "00693"
+      ],
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places. Rounds 84 to 88 (2026-10-24): Assignable Button alone in slot 1 (code 0x060001F4) with all ten sub-elements (the buttons <1> to <10>) on (v84) changed no flag (all were on already). Four pattern files by the binary code of the numbers 1 to 10: A (odd numbers off, v85) switched 00602, 00604, 00606, 00608, 00692 to 0; B (2, 3, 6, 7, 10 off, v86) 00603, 00604, 00607, 00608, 00693; C (4 to 7 off, v87) 00605 to 00608; D (8 to 10 off, v88) 00691 to 00693. So <1> to <7> = 00602 to 00608 and <8> to <10> = 00691 to 00693 (the dialog order follows the flag numbers).",
+      "sub_elements": [
+        "<1>",
+        "<2>",
+        "<3>",
+        "<4>",
+        "<5>",
+        "<6>",
+        "<7>",
+        "<8>",
+        "<9>",
+        "<10>"
+      ]
     },
     "1157": {
       "name": "Assignable Dial",
       "status": "confirmed",
-      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+      "flags": [
+        "01259",
+        "01261",
+        "01260",
+        "01262"
+      ],
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places. Rounds 89 to 91 (2026-10-24): Assignable Dial alone in slot 1 (code 0x06000485) with its four sub-elements on (v89) switched 01259 to 01262 from 0 to 1. Pattern files: A (1 and 3 off) switched 01259 and 01260 to 0 (v90); B (2 and 3 off) 01260 and 01261 (v91). So Assignable Dial = 01259, IRIS Dial = 01261, Assignable Dial Direction = 01260; IRIS Dial Direction = 01262 by elimination.",
+      "sub_elements": [
+        "Assignable Dial",
+        "IRIS Dial",
+        "Assignable Dial Direction",
+        "IRIS Dial Direction"
+      ]
     },
     "1116": {
       "name": "Lens",
       "status": "confirmed",
-      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places."
+      "flags": [
+        "01218",
+        "01308",
+        "01311",
+        "01219"
+      ],
+      "evidence": "FS7 (Mk1) camera, 2026-10-23: the user loaded the user menu file of sample set A into the camera and read the entries in slot order: Zebra, Audio Input, Audio Output, Clip, S&Q Motion, Base Setting, Codec, Rec Format, Assignable Button, Assignable Dial, Color Bars, Picture Cache Rec, Lens, Timecode (slots 1 to 14). The seven numbers that were already known (17, 364, 700, 559, 130, 763, 21) stand at the same slots, so the other seven follow from their places. Rounds 71 to 73 (2026-10-24): Lens alone in slot 1 (code 0x0600045C) with its four sub-elements on (v71) switched 01218, 01219, 01308 and 01311 from 0 to 1. Pattern files: A (1 and 3 off) switched 01218 and 01311 to 0 (v72); B (2 and 3 off) 01308 and 01311 (v73). So Zoom Ring Direction = 01218, Shading Compensation = 01308, Chroma Aberration Comp. = 01311; Distortion Comp. = 01219 by elimination (the only flag that went on and never off).",
+      "sub_elements": [
+        "Zoom Ring Direction",
+        "Shading Compensation",
+        "Chroma Aberration Comp.",
+        "Distortion Comp."
+      ]
     },
     "1109": {
       "name": "AF Micro Adjustment",
@@ -390,6 +562,21 @@
         "User Matrix G-B",
         "User Matrix B-R",
         "User Matrix B-G"
+      ]
+    },
+    "750": {
+      "name": "Black Gamma",
+      "status": "likely",
+      "flags": [
+        "00852",
+        "00853",
+        "00854"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 58): an item alone in slot 1 (code 0x06000000 + 750) with its three sub-elements all switched on in the camera dialog, in this order: Setting, Range, Master Black Gamma (the user called the item Black; the sub-elements are those of the Black Gamma menu, so the name is assumed). No flag changed against the file before (all three flags were already 1), so the flag IDs follow from the files with deselected sub-elements. Rounds 58 to 60: file A (1 and 3 off) switched 00852 and 00854 to 0 (v59), file B (2 and 3 off) 00853 and 00854 (v60). So Setting = 00852, Range = 00853, Master Black Gamma = 00854 (the dialog order follows the flag numbers).",
+      "sub_elements": [
+        "Setting",
+        "Range",
+        "Master Black Gamma"
       ]
     }
   }

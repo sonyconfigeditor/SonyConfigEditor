@@ -38,7 +38,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.3.0"
-_date = "2026-10-23"
+_date = "2026-10-24"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -3455,6 +3455,7 @@ class App(ctk.CTk):
         self.lbl_status.pack(side="right", padx=(6, 0))
         self.lbl_sum = ctk.CTkLabel(info, text="")
         self.lbl_sum.pack(side="right", padx=(6, 10))
+        Tooltip(self.lbl_sum, tr("The first line of the file holds a checksum (MD5) of the rest. It is checked when a file is opened and calculated again when you save."), delay=HELP_DELAY)
         self._head_flow = FlowRow(head, [self.lbl_kind, self.seg_kind, lbl_id, entry_name, lbl_no, self.entry_number, self.lbl_model, self.menu_model], right=(info,))
         # explanations of the header controls; the ones with a lock mark (type, model) get the reason in front of the text, see _update_lock_marks
         buttons = self.seg_kind._buttons_dict
@@ -4269,9 +4270,30 @@ class App(ctk.CTk):
         self.jump_buttons = {group: self.seg_tabs._buttons_dict[label] for group, label in labels.items()}
         for group, button in self.jump_buttons.items():       # SCENE files have no Audio / Miscellaneous parameters: their tabs are greyed out
             button.configure(state="normal" if group in self._groups else "disabled")
+            if not hasattr(button, "_help_tip"):      # (a button is new whenever the labels change)
+                button._help_tip = Tooltip(button, self._tab_help(group), delay=HELP_DELAY)
         tab = self._current_tab()
         if tab:
             self.seg_tabs.set(labels[tab])
+
+    @staticmethod
+    def _tab_help(group: str) -> str:
+        """What a tab of the main menus holds (explanation as a tooltip)."""
+        texts = {
+            "system": tr("System menu of the camera: country (NTSC/PAL), base setting and recording format, assignable buttons and dial, lens, clock, language, alarms and the other basic setup."),
+            "camera": tr("Camera menu: ISO/gain, ND filter, auto exposure, focus, shutter, color bars, noise suppression, flicker reduce and SteadyShot."),
+            "paint": tr("Paint menu: the picture look (white balance, black, gamma, knee, detail, skin detail, matrix). These settings are also stored in SCENE files; they are greyed out while the camera is in Cine EI mode."),
+            "audio": tr("Audio menu: the audio inputs (channel select, wind filter, levels, limiter, AGC) and outputs (monitor, headphones, alarm)."),
+            "video": tr("Video menu: the video outputs (SDI, HDMI), their settings and display, and the monitor LUT."),
+            "vf": tr("VF menu: viewfinder markers, zebra, peaking and the viewfinder setting, with a picture of the camera monitor that shows the display elements."),
+            "tcub": tr("TC/UB menu: timecode, its display, user bits and the timecode output on HDMI."),
+            "recording": tr("Recording menu: slow and quick motion, interval recording and simultaneous recording."),
+            "media": tr("Media menu: how clips are named (auto naming, camera ID, reel number, title prefix, number set)."),
+            "file": tr("File menu: the clip and scene file settings of the camera."),
+            "user": tr("The 20 slots of the camera's user menu with the menu items you put there and the sub-elements chosen for each item."),
+            "unknown": tr("Parameters whose meaning is not known yet. They show raw values and are written back unchanged."),
+        }
+        return texts.get(group, "")
 
     def _on_tab(self, value: str):
         group = next((g for g, label in self._tab_labels().items() if label == value), None)

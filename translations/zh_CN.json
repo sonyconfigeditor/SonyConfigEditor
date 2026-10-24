@@ -602,5 +602,18 @@
   "Open all blocks of the current tab.": "展开当前标签页的所有区块。",
   "Close all blocks of the current tab.": "折叠当前标签页的所有区块。",
   "Number from 000 to 999. Type and number make the file name on the card, and the camera finds the file by this name. Right now: {name}": "000 至 999 的编号。类型加编号构成存储卡上的文件名，相机按此文件名查找文件。当前为：{name}",
-  "Clip name: the text every new clip name starts with (the title prefix). The running clip number (Number Set) is not stored in the ALL file: the camera counts it itself.": "片段名称：每个新片段名称开头的文字（标题前缀）。连续的片段编号（Number Set）不保存在 ALL 文件中：由相机自己计数。"
+  "Clip name: the text every new clip name starts with (the title prefix). The running clip number (Number Set) is not stored in the ALL file: the camera counts it itself.": "片段名称：每个新片段名称开头的文字（标题前缀）。连续的片段编号（Number Set）不保存在 ALL 文件中：由相机自己计数。",
+  "The first line of the file holds a checksum (MD5) of the rest. It is checked when a file is opened and calculated again when you save.": "文件第一行包含其余内容的校验和（MD5）。打开文件时会检查，保存时会重新计算。",
+  "System menu of the camera: country (NTSC/PAL), base setting and recording format, assignable buttons and dial, lens, clock, language, alarms and the other basic setup.": "相机的 System 菜单：国家/制式（NTSC/PAL）、基本设置和录制格式、可指定的按钮和拨轮、镜头、时钟、语言、警报及其他基础设置。",
+  "Camera menu: ISO/gain, ND filter, auto exposure, focus, shutter, color bars, noise suppression, flicker reduce and SteadyShot.": "Camera 菜单：ISO/增益、ND 滤镜、自动曝光、对焦、快门、彩条、降噪、闪烁抑制和 SteadyShot。",
+  "Paint menu: the picture look (white balance, black, gamma, knee, detail, skin detail, matrix). These settings are also stored in SCENE files; they are greyed out while the camera is in Cine EI mode.": "Paint 菜单：画面风格（白平衡、黑电平、伽玛、拐点、细节、肤色细节、矩阵）。这些设置也保存在 SCENE 文件中；相机处于 Cine EI 模式时呈灰色。",
+  "Audio menu: the audio inputs (channel select, wind filter, levels, limiter, AGC) and outputs (monitor, headphones, alarm).": "Audio 菜单：音频输入（通道选择、防风滤波、电平、限幅器、AGC）和输出（监听、耳机、警报）。",
+  "Video menu: the video outputs (SDI, HDMI), their settings and display, and the monitor LUT.": "Video 菜单：视频输出（SDI、HDMI）、其设置和显示，以及监视器 LUT。",
+  "VF menu: viewfinder markers, zebra, peaking and the viewfinder setting, with a picture of the camera monitor that shows the display elements.": "VF 菜单：取景器标记、斑马纹、峰值和取景器设置，并配有显示相机监视器上各显示元素的图示。",
+  "TC/UB menu: timecode, its display, user bits and the timecode output on HDMI.": "TC/UB 菜单：时间码、其显示、用户位以及通过 HDMI 输出的时间码。",
+  "Recording menu: slow and quick motion, interval recording and simultaneous recording.": "Recording 菜单：慢动作和快动作（S&Q Motion）、间隔录制和同步录制。",
+  "Media menu: how clips are named (auto naming, camera ID, reel number, title prefix, number set).": "Media 菜单：片段的命名方式（自动命名、相机 ID、卷号、标题前缀、起始编号）。",
+  "File menu: the clip and scene file settings of the camera.": "File 菜单：相机的片段和场景文件设置。",
+  "The 20 slots of the camera's user menu with the menu items you put there and the sub-elements chosen for each item.": "相机用户菜单的 20 个位置，以及您放入的菜单项和为每个菜单项选定的子项。",
+  "Parameters whose meaning is not known yet. They show raw values and are written back unchanged.": "含义尚未明确的参数。它们显示原始值，并原样写回。"
 }
