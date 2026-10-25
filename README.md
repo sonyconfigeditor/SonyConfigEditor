@@ -70,7 +70,7 @@ IDs are decoded by comparing files and the manuals. Decoded so far for the FS7M2
 |---|---|---|---|
 | ALL | 321 | 249 | 143 / 88 / 18 |
 | SCENE | 136 | 98 | 56 / 37 / 5 |
-| USER (user menu) | 444 | 273 (20 slots + 253 flags) | – |
+| USER (user menu) | 444 | 354 (20 slots + 334 flags) | – |
 
 ALL: the Paint menu, most of Camera, Audio, VF (Display On/Off, Zebra, Peaking, Marker, parts of VF Setting), the first items of TC/UB, System (base setting, codec / rec format, country, clock) and S&Q Motion; many of the remaining menus are still raw values. USER: 77 menu items are known by name, 55 of them with all their sub-elements and flags (the sub-elements of the other 22 follow; a menu item can be in the user menu only once); the flags of the remaining items and the whole Mk1 file (414 IDs; only its slots are known) are still open. Each entry in `scene_parameters.json` / `all_parameters.json` carries a status (`confirmed`, `likely`, `hypothesis`); dropdown entries taken only from the manuals are marked "assumption". What is known and how it was found: [docs/FINDINGS.md](docs/FINDINGS.md); menu dependencies from the manuals: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md). Camera test reports and sample files are welcome.
 

@@ -1,11 +1,19 @@
 # Changelog
 
-Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
-Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen in einen neuen obersten Eintrag (`## [Unreleased] - <Datum>`), die Version wird nur auf Anweisung erhöht.
+Newest first. `_version` / `_date` in `SonyConfigEditor.py` match the top entry.
+The version number is only raised for a release.
 
-## [Unreleased] - 2026-10-25
+## [0.9.0] - 2026-10-25
 
 ### Added
+- **User menu:** the last eight menu items with sub-elements are decoded (Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm, Ext. Unit DC IN Alarm, two each); all 77 menu items now show their sub-elements as check boxes.
+- **User menu:** Clock Set (5), Shutter (4), Interval Rec (4), Output Setting (3), Hours Meter (3), Aperture (2), Handle Zoom (2) and White Clip (2) show their sub-elements as check boxes.
+- **User menu:** Version shows its six sub-elements (Number, Version Up, Lens Version Number, Lens Version Up, Ext. Unit Version Number, Ext. Unit Version Up) as check boxes.
+- **User menu:** Ext. Unit Battery Alarm shows its seven sub-elements (Near End Info Battery, End Info Battery, Near End Sony Battery, End Sony Battery, Near End Other Battery, End Other Battery, Detected Battery) as check boxes.
+- **User menu:** Peaking shows its six sub-elements (Setting, Peaking Type, Frequency, Normal Peaking Level, Color, Color Peaking Level) as check boxes.
+- **User menu:** Wi-Fi shows its eight sub-elements (Wi-Fi, SSID & Password, Wi-Fi Direct Connection, Client, IP Address, Subnet Mask, MAC Address, Regenerate Password) as check boxes.
+- **User menu:** Skin Detail shows its seven sub-elements (Setting, Area Detection, Area Indication, Level, Saturation, Hue, Width) as check boxes.
+- **User menu:** Multi Matrix shows its six sub-elements (Setting, Area Indication, Color Detection, Axis, Hue, Saturation) as check boxes.
 - **Tooltips on parameter names:** 331 parameters of the ALL and SCENE files (matrix, black, gamma, knee, white clip, detail, skin detail, aperture, white balance, offset white, gain/ISO/EI, ND filter, auto exposure, focus, shutter, noise suppression, flicker reduce, audio input/output, monitor LUT, output, viewfinder, peaking, zebra, markers, timecode, S&Q, interval rec, shooting mode, imager scan mode, clip naming, clock, battery and voltage alarms, assignable buttons and dials, fan, GPS, lens) explain in a few words what they do and how they depend on other settings; the text appears after a short delay when the mouse rests on the name, in all ten languages.
 - **User menu:** Display On/Off shows its 42 sub-elements (Setting, Shutter Setting, ND Filter Value, Gain Setting, Rec/Play Status, Color Temp, Frame Rate / Interval, Battery Remain, Timecode, Audio Manual, Audio Level Meter, Media Status, the focus, iris and zoom positions, Steady Shot, the focus and auto exposure indicators, White Balance Mode, Rec Format, Gamma, Wi-Fi Condition, Clip Name, Clip Number, GPS, Level Gauge, Lens Info, Notice Message and more) as check boxes.
 - **User menu:** Knee shows its six sub-elements (Setting, Auto Knee, Point, Slope, Knee Saturation, Knee Saturation Level) as check boxes.

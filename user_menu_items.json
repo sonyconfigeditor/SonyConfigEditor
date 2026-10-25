@@ -663,7 +663,19 @@
     "307": {
       "name": "Shutter",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 2 (code 0x06000000 + 307). The sub-elements are not decoded yet."
+      "flags": [
+        "00410",
+        "00785",
+        "00782",
+        "00783"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 2 (code 0x06000000 + 307). Rounds 170 to 175 (2026-10-25, eight items at once): Clock Set, Shutter, Interval Rec, Output Setting, Hours Meter, Aperture, Handle Zoom and White Clip in slots 1 to 8 with all sub-elements on (v170) changed no flag (all were on already). Five pattern files (v171 to v175) with a unique 5-bit code per sub-element over all 25 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Mode 00410, Shutter Speed 00785, Shutter Angle 00782, ECS Frequency 00783.",
+      "sub_elements": [
+        "Mode",
+        "Shutter Speed",
+        "Shutter Angle",
+        "ECS Frequency"
+      ]
     },
     "550": {
       "name": "SteadyShot",
@@ -674,7 +686,15 @@
     "531": {
       "name": "Handle Zoom",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 4 (code 0x06000000 + 531). The sub-elements are not decoded yet."
+      "flags": [
+        "00987",
+        "00986"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 4 (code 0x06000000 + 531). Rounds 170 to 175 (2026-10-25, eight items at once): Clock Set, Shutter, Interval Rec, Output Setting, Hours Meter, Aperture, Handle Zoom and White Clip in slots 1 to 8 with all sub-elements on (v170) changed no flag (all were on already). Five pattern files (v171 to v175) with a unique 5-bit code per sub-element over all 25 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Zoom Speed Type 00987, Zoom Speed 00986.",
+      "sub_elements": [
+        "Zoom Speed Type",
+        "Zoom Speed"
+      ]
     },
     "714": {
       "name": "Video Light Set",
@@ -706,7 +726,15 @@
     "260": {
       "name": "White Clip",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 7 (code 0x06000000 + 260). The sub-elements are not decoded yet."
+      "flags": [
+        "00362",
+        "00363"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 7 (code 0x06000000 + 260). Rounds 170 to 175 (2026-10-25, eight items at once): Clock Set, Shutter, Interval Rec, Output Setting, Hours Meter, Aperture, Handle Zoom and White Clip in slots 1 to 8 with all sub-elements on (v170) changed no flag (all were on already). Five pattern files (v171 to v175) with a unique 5-bit code per sub-element over all 25 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Setting 00362, Level 00363.",
+      "sub_elements": [
+        "Setting",
+        "Level"
+      ]
     },
     "346": {
       "name": "Detail",
@@ -748,17 +776,59 @@
     "323": {
       "name": "Skin Detail",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 9 (code 0x06000000 + 323). The sub-elements are not decoded yet."
+      "flags": [
+        "00426",
+        "00427",
+        "00428",
+        "00425",
+        "00429",
+        "00430",
+        "00431"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 9 (code 0x06000000 + 323). Rounds 149 to 152 (2026-10-25): Skin Detail alone in slot 1 with all seven sub-elements on (v149) changed no flag (all were on already). Three pattern files (A 1, 3, 5, 7 off, v150: 00426, 00428, 00429, 00431; B 2, 3, 6, 7 off, v151: 00427, 00428, 00430, 00431; C 4, 5, 6, 7 off, v152: 00425, 00429, 00430, 00431). Dialog order: Setting 00426, Area Detection 00427, Area Indication 00428, Level 00425, Saturation 00429, Hue 00430, Width 00431.",
+      "sub_elements": [
+        "Setting",
+        "Area Detection",
+        "Area Indication",
+        "Level",
+        "Saturation",
+        "Hue",
+        "Width"
+      ]
     },
     "253": {
       "name": "Aperture",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 10 (code 0x06000000 + 253). The sub-elements are not decoded yet."
+      "flags": [
+        "00355",
+        "00356"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 10 (code 0x06000000 + 253). Rounds 170 to 175 (2026-10-25, eight items at once): Clock Set, Shutter, Interval Rec, Output Setting, Hours Meter, Aperture, Handle Zoom and White Clip in slots 1 to 8 with all sub-elements on (v170) changed no flag (all were on already). Five pattern files (v171 to v175) with a unique 5-bit code per sub-element over all 25 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Setting 00355, Level 00356.",
+      "sub_elements": [
+        "Setting",
+        "Level"
+      ]
     },
     "231": {
       "name": "Multi Matrix",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 11 (code 0x06000000 + 231). The sub-elements are not decoded yet."
+      "flags": [
+        "00333",
+        "00334",
+        "00335",
+        "00336",
+        "00337",
+        "00338"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 11 (code 0x06000000 + 231). Rounds 145 to 148 (2026-10-25): Multi Matrix alone in slot 1 with all six sub-elements on (v145) changed no flag (all were on already). Three pattern files (A 1, 3, 5 off, v146: 00333, 00335, 00337; B 2, 3, 6 off, v147: 00334, 00335, 00338; C 4, 5, 6 off, v148: 00336, 00337, 00338). The sub-elements in dialog order are the flags 00333 to 00338.",
+      "sub_elements": [
+        "Setting",
+        "Area Indication",
+        "Color Detection",
+        "Axis",
+        "Hue",
+        "Saturation"
+      ]
     },
     "119": {
       "name": "Maintenance",
@@ -769,7 +839,17 @@
     "411": {
       "name": "Output Setting",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 13 (code 0x06000000 + 411). The sub-elements are not decoded yet."
+      "flags": [
+        "01361",
+        "01385",
+        "00515"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 13 (code 0x06000000 + 411). Rounds 170 to 175 (2026-10-25, eight items at once): Clock Set, Shutter, Interval Rec, Output Setting, Hours Meter, Aperture, Handle Zoom and White Clip in slots 1 to 8 with all sub-elements on (v170) changed no flag (all were on already). Five pattern files (v171 to v175) with a unique 5-bit code per sub-element over all 25 sub-elements (no item lost all of its sub-elements in any file). Dialog order: HDMI Target Device 01361, Output Color Space 01385, 4K/2K to HD Conv. 00515.",
+      "sub_elements": [
+        "HDMI Target Device",
+        "Output Color Space",
+        "4K/2K to HD Conv."
+      ]
     },
     "513": {
       "name": "Output Display",
@@ -780,7 +860,23 @@
     "4": {
       "name": "Peaking",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 15 (code 0x06000000 + 4). The sub-elements are not decoded yet."
+      "flags": [
+        "00106",
+        "00107",
+        "00111",
+        "00109",
+        "00108",
+        "00110"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 15 (code 0x06000000 + 4). Rounds 158 to 161 (2026-10-25): Peaking alone in slot 1 with all six sub-elements on (v158) changed no flag (all were on already). Three pattern files (A 1, 3, 5 off, v159: 00106, 00108, 00111; B 2, 3, 6 off, v160: 00107, 00110, 00111; C 4, 5, 6 off, v161: 00108, 00109, 00110). Dialog order: Setting 00106, Peaking Type 00107, Frequency 00111, Normal Peaking Level 00109, Color 00108, Color Peaking Level 00110 (not consecutive).",
+      "sub_elements": [
+        "Setting",
+        "Peaking Type",
+        "Frequency",
+        "Normal Peaking Level",
+        "Color",
+        "Color Peaking Level"
+      ]
     },
     "172": {
       "name": "Marker",
@@ -921,7 +1017,15 @@
     "1420": {
       "name": "Video Signal Monitor",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 18 (code 0x06000000 + 1420). The sub-elements are not decoded yet."
+      "flags": [
+        "01522",
+        "01523"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 18 (code 0x06000000 + 1420). Rounds 176 to 181 (2026-10-25, eight items at once): Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm and Ext. Unit DC IN Alarm in slots 1 to 8 with all sub-elements on (v176) changed no flag (all were on already). Five pattern files (v177 to v181) with a unique 5-bit code per sub-element over all 16 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Setting 01522, Source 01523.",
+      "sub_elements": [
+        "Setting",
+        "Source"
+      ]
     },
     "377": {
       "name": "TC Display",
@@ -932,7 +1036,15 @@
     "727": {
       "name": "Users Bit",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 20 (code 0x06000000 + 727). The sub-elements are not decoded yet."
+      "flags": [
+        "00829",
+        "00830"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 20 (code 0x06000000 + 727). Rounds 176 to 181 (2026-10-25, eight items at once): Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm and Ext. Unit DC IN Alarm in slots 1 to 8 with all sub-elements on (v176) changed no flag (all were on already). Five pattern files (v177 to v181) with a unique 5-bit code per sub-element over all 16 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Mode 00829, Setting 00830.",
+      "sub_elements": [
+        "Mode",
+        "Setting"
+      ]
     },
     "570": {
       "name": "HDMI TC Out",
@@ -943,7 +1055,19 @@
     "871": {
       "name": "Interval Rec",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 2 (code 0x06000000 + 871). The sub-elements are not decoded yet."
+      "flags": [
+        "01080",
+        "01081",
+        "01082",
+        "01083"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 2 (code 0x06000000 + 871). Rounds 170 to 175 (2026-10-25, eight items at once): Clock Set, Shutter, Interval Rec, Output Setting, Hours Meter, Aperture, Handle Zoom and White Clip in slots 1 to 8 with all sub-elements on (v170) changed no flag (all were on already). Five pattern files (v171 to v175) with a unique 5-bit code per sub-element over all 25 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Setting 01080, Interval Time 01081, Number of Frames 01082, Pre-Lighting 01083.",
+      "sub_elements": [
+        "Setting",
+        "Interval Time",
+        "Number of Frames",
+        "Pre-Lighting"
+      ]
     },
     "144": {
       "name": "SDI/HDMI Rec Control",
@@ -954,7 +1078,15 @@
     "44": {
       "name": "Update Media",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 4 (code 0x06000000 + 44). The sub-elements are not decoded yet."
+      "flags": [
+        "00146",
+        "00147"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 4 (code 0x06000000 + 44). Rounds 176 to 181 (2026-10-25, eight items at once): Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm and Ext. Unit DC IN Alarm in slots 1 to 8 with all sub-elements on (v176) changed no flag (all were on already). Five pattern files (v177 to v181) with a unique 5-bit code per sub-element over all 16 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Media (A) 00146, Media (B) 00147.",
+      "sub_elements": [
+        "Media (A)",
+        "Media (B)"
+      ]
     },
     "572": {
       "name": "Genlock",
@@ -983,7 +1115,15 @@
     "1113": {
       "name": "HOLD Switch Setting",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 9 (code 0x06000000 + 1113). The sub-elements are not decoded yet."
+      "flags": [
+        "01215",
+        "01216"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 9 (code 0x06000000 + 1113). Rounds 176 to 181 (2026-10-25, eight items at once): Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm and Ext. Unit DC IN Alarm in slots 1 to 8 with all sub-elements on (v176) changed no flag (all were on already). Five pattern files (v177 to v181) with a unique 5-bit code per sub-element over all 16 sub-elements (no item lost all of its sub-elements in any file). Dialog order: with Rec Button 01215, with Hand Grip Remote 01216.",
+      "sub_elements": [
+        "with Rec Button",
+        "with Hand Grip Remote"
+      ]
     },
     "511": {
       "name": "Language",
@@ -994,7 +1134,21 @@
     "217": {
       "name": "Clock Set",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 11 (code 0x06000000 + 217). The sub-elements are not decoded yet."
+      "flags": [
+        "00323",
+        "00322",
+        "00321",
+        "00319",
+        "00320"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 11 (code 0x06000000 + 217). Rounds 170 to 175 (2026-10-25, eight items at once): Clock Set, Shutter, Interval Rec, Output Setting, Hours Meter, Aperture, Handle Zoom and White Clip in slots 1 to 8 with all sub-elements on (v170) changed no flag (all were on already). Five pattern files (v171 to v175) with a unique 5-bit code per sub-element over all 25 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Time Zone 00323, Date Mode 00322, 12H/24H 00321, Date 00319, Time 00320.",
+      "sub_elements": [
+        "Time Zone",
+        "Date Mode",
+        "12H/24H",
+        "Date",
+        "Time"
+      ]
     },
     "476": {
       "name": "Country",
@@ -1005,17 +1159,55 @@
     "340": {
       "name": "Hours Meter",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 13 (code 0x06000000 + 340). The sub-elements are not decoded yet."
+      "flags": [
+        "01068",
+        "01069",
+        "00442"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 13 (code 0x06000000 + 340). Rounds 170 to 175 (2026-10-25, eight items at once): Clock Set, Shutter, Interval Rec, Output Setting, Hours Meter, Aperture, Handle Zoom and White Clip in slots 1 to 8 with all sub-elements on (v170) changed no flag (all were on already). Five pattern files (v171 to v175) with a unique 5-bit code per sub-element over all 25 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Hours (System) 01068, Hours (Reset) 01069, Reset 00442.",
+      "sub_elements": [
+        "Hours (System)",
+        "Hours (Reset)",
+        "Reset"
+      ]
     },
     "78": {
       "name": "Basic Authentication",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 14 (code 0x06000000 + 78). The sub-elements are not decoded yet."
+      "flags": [
+        "01902",
+        "01903"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 14 (code 0x06000000 + 78). Rounds 176 to 181 (2026-10-25, eight items at once): Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm and Ext. Unit DC IN Alarm in slots 1 to 8 with all sub-elements on (v176) changed no flag (all were on already). Five pattern files (v177 to v181) with a unique 5-bit code per sub-element over all 16 sub-elements (no item lost all of its sub-elements in any file). Dialog order: User Name 01902, Password 01903.",
+      "sub_elements": [
+        "User Name",
+        "Password"
+      ]
     },
     "561": {
       "name": "Wi-Fi",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 15 (code 0x06000000 + 561). The sub-elements are not decoded yet."
+      "flags": [
+        "00663",
+        "00664",
+        "00666",
+        "01070",
+        "01071",
+        "01072",
+        "01073",
+        "00665"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 15 (code 0x06000000 + 561). Rounds 153 to 157 (2026-10-25): Wi-Fi alone in slot 1 with all eight sub-elements on (v153) changed no flag (all were on already). Four pattern files (A 1, 3, 5, 7 off, v154: 00663, 00666, 01071, 01073; B 2, 3, 6, 7 off, v155: 00664, 00666, 01072, 01073; C 4, 5, 6, 7 off, v156: 01070, 01071, 01072, 01073; D 8 off, v157: 00665). Dialog order: Wi-Fi 00663, SSID & Password 00664, Wi-Fi Direct Connection 00666, Client 01070, IP Address 01071, Subnet Mask 01072, MAC Address 01073, Regenerate Password 00665 (the flags are not consecutive).",
+      "sub_elements": [
+        "Wi-Fi",
+        "SSID & Password",
+        "Wi-Fi Direct Connection",
+        "Client",
+        "IP Address",
+        "Subnet Mask",
+        "MAC Address",
+        "Regenerate Password"
+      ]
     },
     "659": {
       "name": "GPS",
@@ -1032,22 +1224,64 @@
     "137": {
       "name": "Camera Battery Alarm",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 18 (code 0x06000000 + 137). The sub-elements are not decoded yet."
+      "flags": [
+        "01074",
+        "01075"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 18 (code 0x06000000 + 137). Rounds 176 to 181 (2026-10-25, eight items at once): Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm and Ext. Unit DC IN Alarm in slots 1 to 8 with all sub-elements on (v176) changed no flag (all were on already). Five pattern files (v177 to v181) with a unique 5-bit code per sub-element over all 16 sub-elements (no item lost all of its sub-elements in any file). Dialog order: Low BATT 01074, BATT Empty 01075.",
+      "sub_elements": [
+        "Low BATT",
+        "BATT Empty"
+      ]
     },
     "1148": {
       "name": "Camera DC IN Alarm",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 19 (code 0x06000000 + 1148). The sub-elements are not decoded yet."
+      "flags": [
+        "01250",
+        "01291"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 19 (code 0x06000000 + 1148). Rounds 176 to 181 (2026-10-25, eight items at once): Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm and Ext. Unit DC IN Alarm in slots 1 to 8 with all sub-elements on (v176) changed no flag (all were on already). Five pattern files (v177 to v181) with a unique 5-bit code per sub-element over all 16 sub-elements (no item lost all of its sub-elements in any file). Dialog order: DC Low Voltage1 01250, DC Low Voltage2 01291.",
+      "sub_elements": [
+        "DC Low Voltage1",
+        "DC Low Voltage2"
+      ]
     },
     "1191": {
       "name": "Ext. Unit Battery Alarm",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 20 (code 0x06000000 + 1191). The sub-elements are not decoded yet."
+      "flags": [
+        "01293",
+        "01263",
+        "01264",
+        "01265",
+        "01266",
+        "01267",
+        "01274"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 20 (code 0x06000000 + 1191). Rounds 162 to 165 (2026-10-25): Ext. Unit Battery Alarm alone in slot 1 with all seven sub-elements on (v162) changed no flag (all were on already). Three pattern files (A 1, 3, 5, 7 off, v163: 01264, 01266, 01274, 01293; B 2, 3, 6, 7 off, v164: 01263, 01264, 01267, 01274; C 4, 5, 6, 7 off, v165: 01265, 01266, 01267, 01274). Dialog order: Near End Info Battery 01293, End Info Battery 01263, Near End Sony Battery 01264, End Sony Battery 01265, Near End Other Battery 01266, End Other Battery 01267, Detected Battery 01274 (not consecutive).",
+      "sub_elements": [
+        "Near End Info Battery",
+        "End Info Battery",
+        "Near End Sony Battery",
+        "End Sony Battery",
+        "Near End Other Battery",
+        "End Other Battery",
+        "Detected Battery"
+      ]
     },
     "1167": {
       "name": "Ext. Unit DC IN Alarm",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 117): the user filled slots 1 to 4 with the last four menu items that were not known yet and told the names in slot order; this one is in slot 1 (code 0x06000000 + 1167). The sub-elements are not decoded yet."
+      "flags": [
+        "01269",
+        "01270"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 117): the user filled slots 1 to 4 with the last four menu items that were not known yet and told the names in slot order; this one is in slot 1 (code 0x06000000 + 1167). Rounds 176 to 181 (2026-10-25, eight items at once): Update Media, Video Signal Monitor, Users Bit, HOLD Switch Setting, Basic Authentication, Camera Battery Alarm, Camera DC IN Alarm and Ext. Unit DC IN Alarm in slots 1 to 8 with all sub-elements on (v176) changed no flag (all were on already). Five pattern files (v177 to v181) with a unique 5-bit code per sub-element over all 16 sub-elements (no item lost all of its sub-elements in any file). Dialog order: DC Low Voltage1 01269, DC Low Voltage2 01270.",
+      "sub_elements": [
+        "DC Low Voltage1",
+        "DC Low Voltage2"
+      ]
     },
     "367": {
       "name": "All Reset",
@@ -1064,7 +1298,23 @@
     "302": {
       "name": "Version",
       "status": "confirmed",
-      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 117): the user filled slots 1 to 4 with the last four menu items that were not known yet and told the names in slot order; this one is in slot 4 (code 0x06000000 + 302). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that Version has several sub-elements (second slot value 0)."
+      "flags": [
+        "01078",
+        "00404",
+        "00778",
+        "01357",
+        "01386",
+        "01387"
+      ],
+      "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 117): the user filled slots 1 to 4 with the last four menu items that were not known yet and told the names in slot order; this one is in slot 4 (code 0x06000000 + 302).  The user confirmed on the camera (2026-10-24) that Version has several sub-elements (second slot value 0). Rounds 166 to 169 (2026-10-25): Version alone in slot 1 with all six sub-elements on (v166) changed no flag (all were on already). Three pattern files (A 1, 3, 5 off, v167: 00778, 01078, 01386; B 2, 3, 6 off, v168: 00404, 00778, 01387; C 4, 5, 6 off, v169: 01357, 01386, 01387). Dialog order: Number 01078, Version Up 00404, Lens Version Number 00778, Lens Version Up 01357, Ext. Unit Version Number 01386, Ext. Unit Version Up 01387 (not consecutive).",
+      "sub_elements": [
+        "Number",
+        "Version Up",
+        "Lens Version Number",
+        "Lens Version Up",
+        "Ext. Unit Version Number",
+        "Ext. Unit Version Up"
+      ]
     }
   }
 }
