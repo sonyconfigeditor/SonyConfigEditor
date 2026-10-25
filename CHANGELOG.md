@@ -3,9 +3,10 @@
 Format: `_date` in `SonyConfigEditor.py` ist das Datum des obersten Eintrags und wird bei jeder Änderung an der Datei angepasst; `_version` ist die letzte veröffentlichte Version.
 Version 0.3.0 ist am 2026-10-18 veröffentlicht worden; neue Änderungen kommen in einen neuen obersten Eintrag (`## [Unreleased] - <Datum>`), die Version wird nur auf Anweisung erhöht.
 
-## [Unreleased] - 2026-10-24
+## [Unreleased] - 2026-10-25
 
 ### Added
+- **Tooltips on parameter names:** 331 parameters of the ALL and SCENE files (matrix, black, gamma, knee, white clip, detail, skin detail, aperture, white balance, offset white, gain/ISO/EI, ND filter, auto exposure, focus, shutter, noise suppression, flicker reduce, audio input/output, monitor LUT, output, viewfinder, peaking, zebra, markers, timecode, S&Q, interval rec, shooting mode, imager scan mode, clip naming, clock, battery and voltage alarms, assignable buttons and dials, fan, GPS, lens) explain in a few words what they do and how they depend on other settings; the text appears after a short delay when the mouse rests on the name, in all ten languages.
 - **User menu:** Display On/Off shows its 42 sub-elements (Setting, Shutter Setting, ND Filter Value, Gain Setting, Rec/Play Status, Color Temp, Frame Rate / Interval, Battery Remain, Timecode, Audio Manual, Audio Level Meter, Media Status, the focus, iris and zoom positions, Steady Shot, the focus and auto exposure indicators, White Balance Mode, Rec Format, Gamma, Wi-Fi Condition, Clip Name, Clip Number, GPS, Level Gauge, Lens Info, Notice Message and more) as check boxes.
 - **User menu:** Knee shows its six sub-elements (Setting, Auto Knee, Point, Slope, Knee Saturation, Knee Saturation Level) as check boxes.
 - **User menu:** Auto Exposure shows its eleven sub-elements (Level, Mode, Speed, AGC, AGC Limit, Auto ND Filter, Auto Shutter, A.SHT Limit, Clip High light, Detect Window, Detect Window Indication) as check boxes.

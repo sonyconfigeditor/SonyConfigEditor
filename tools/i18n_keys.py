@@ -36,7 +36,7 @@ def db_keys(translated: set[str]) -> list[str]:
     def walk(node):
         if isinstance(node, dict):
             for k, v in node.items():
-                if k in ("note", "reason", "message", "message_4k", "message_2k") and isinstance(v, str):
+                if k in ("note", "reason", "message", "message_4k", "message_2k", "help") and isinstance(v, str):
                     out.append(v)
                 elif k in ("text", "label") and isinstance(v, str):
                     if v in translated or (k == "text" and v.endswith("active")):

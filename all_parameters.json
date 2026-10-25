@@ -2,6 +2,7 @@
   "_comment": "Parameter database for Sony ALL files (same container as SCENE files, different IDs). Mapping derived by aligning the user's FS7 ALL files with the known sample set A/B SCENE files (identical values) and by sample set A descriptions. status: confirmed / likely / hypothesis as in scene_parameters.json. scene_equivalent = ID of the same parameter in SCENE files.",
   "00024": {
     "name": "Preset Matrix",
+    "help": "Chooses a ready-made colour matrix (for example Standard, High Saturation or Cinema). Which presets exist depends on the camera: BT.2020 is only offered by the Mk2.",
     "status": "confirmed",
     "evidence": "Values 1,3 / 1,4 equal the SCENE file values (Universal/sample look = Cinema, sample look = F55 709 Like); same coding as scene 00006 FS7M2 round 10 (2026-10-09): Preset Matrix Off + Preset Select F55 709 Like changes only this value '1,0' -> '0,4' (first field On/Off, second field the preset); with Off the preset select is not selectable on the camera. Manual (FS7M2): BT.2020 can only be selected when the recording format is 4K or QFHD (greyed out with the HD formats of the test files). FS7M2 round 138 (2026-10-20, ALL + SCENE): Paint > Matrix > Preset Select BT.2020 (with the recording format changed to 3840x2160 59.94p) changed the second value from 0 to 12: BT.2020 (chosen by the user, confirmed) is stored as 12 (the earlier assumption 5 = order of the manual list was wrong; 0 to 4 are verified).",
     "scene_equivalent": "00006",
@@ -63,6 +64,7 @@
   },
   "00025": {
     "name": "User Matrix",
+    "help": "Your own matrix colour correction: the overall saturation (Level), the overall hue shift (Phase) and six cross-channel values (R-G, R-B, G-R, G-B, B-R, B-G).",
     "status": "confirmed",
     "evidence": "1,-2635,0,... (Level -8) and 1,-6586,... (Level -20) equal the sample set A SCENE files; same coding as scene 00007 FS7M2 round 9 (2026-10-09): Level -8 -> +8, Phase +5, R-G -5, R-B +10, G-R -10, G-B -3, B-R +3, B-G -7 give '1,2635,1647,-1647,3293,-3293,-988,988,-2305' (field order Level, Phase, R-G, R-B, G-R, G-B, B-R, B-G, scale 329.33 per step), Preset Cinema (3) -> Standard (0).",
     "scene_equivalent": "00007",
@@ -134,6 +136,7 @@
   },
   "00028": {
     "name": "Master Black",
+    "help": "Raises or lowers the black level of the whole picture.",
     "status": "likely",
     "evidence": "FS7M2 rounds 17-23 (2026-10-13), clicked one wheel click at a time: every stored value is a whole multiple of 41.351 (one wheel click; 8 clicks = 330.8, about one menu step). The camera shows the click count divided by 8, cut towards zero: 0 for -7..+7 clicks (-289..+289), -1 from -8 (-331) to -15 (-620), -2 from -16 (-662), -3 from -24 (-992), -4 up to -39 (-1613), -5 from -40 (-1654 .. -1778 at -43); +1 starts at +8 (+331). Measured: -827 (-20), -662 (-16), -620 (-15), -331 (-8), -289 (-7), +289 (+7), +331 (+8), -992, -1613, -1778. The Mk1 values (-1075, -1158, -1654) are multiples of the same unit (26, 28, 40 clicks) but do not fit the 8-click menu raster of the Mk2: the Mk1 menu step width is not measured. The range of 99 menu steps = 792 clicks is an assumption (32767 / 41.351 = 792.4).",
     "scene_equivalent": "00008",
@@ -166,6 +169,7 @@
   },
   "00042": {
     "name": "Gamma Select: HG (index HG1-HG8)",
+    "help": "Picks the exact gamma curve inside the chosen category, for example STD1 to STD6 or HG1 to HG8. The HG curves differ in dynamic range (325 to 800 %) and in the picture level of an 18 % grey card.",
     "status": "likely",
     "evidence": "4 in S-Log3 files, 5 in the HG8 file (sample look); same coding as scene 00085. No dropdown: the category (HG/STD/S-Log) is a separate ID User: HG1-HG8 / STD1-STD6 are sub-options of the categories HG / STD (menu: STD, HG, User, S-Log2, S-Log3). FS7M2 (003-006): stays 1 (HG2) although the category changes, because the STD select has its own ID (00040, FS7M2 006.ALL).",
     "scene_equivalent": "00085",
@@ -187,6 +191,7 @@
   },
   "00068": {
     "name": "Aperture Level",
+    "help": "Strength of the aperture correction.",
     "status": "confirmed",
     "evidence": "2964 (+9) and 6586 (+20) equal sample set A sample look / sample look; same coding as scene 00036",
     "scene_equivalent": "00036",
@@ -211,6 +216,7 @@
   },
   "00069": {
     "name": "Aperture Setting (On/Off)",
+    "help": "Switches the aperture correction on or off. It adds high frequency enhancement to make up for resolution lost on the way.",
     "status": "confirmed",
     "evidence": "1 in the custom files (Aperture ON), 0 in the Cine EI files; same coding as scene 00037. Cine EI switch sets it to 0 FS7M2 round 5 (2026-10-09): Aperture Off changes only 00069 1 -> 0 (Level 9 -> 12 = 2964 -> 3952 in 00068). Equals scene 00037 (id_map).",
     "scene_equivalent": "00037",
@@ -228,6 +234,7 @@
   },
   "00126": {
     "name": "White Clip Level (90.0 to 109.0 %, file value x 10)",
+    "help": "Upper limit of the video signal, 90 to 109 %. 109 % practically turns the clip off. Not available with S-Log2 or S-Log3.",
     "status": "likely",
     "evidence": "1080 in most files, 1090 in an own scene name; same as scene 00069 (hypothesis there); manual range 90.0-109.0 % Equals scene 00069 (id_map).",
     "scene_equivalent": "00069",
@@ -249,6 +256,7 @@
   },
   "00132": {
     "name": "Zebra 1",
+    "help": "Zebra stripes mark the image areas at a chosen brightness to check exposure. Zebra 1 works on a level (default 70 %) with an aperture band (1 to 20 %) around it.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Zebra",
@@ -295,6 +303,7 @@
   },
   "00133": {
     "name": "Zebra 2",
+    "help": "Zebra stripes mark the image areas at a chosen brightness to check exposure. Zebra 2 is usually set to a high level (default 100 %) to warn before clipping.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Zebra",
@@ -333,6 +342,7 @@
   },
   "00150": {
     "name": "Video format: width, height, rate denominator, rate numerator, ...",
+    "help": "The recording format: resolution, frame rate and scan type. The list depends on the codec and on the NTSC/PAL area; pick the codec first, then the format.",
     "status": "confirmed",
     "evidence": "Fields 0-3 in all ALL files: 3840,2160,1,25 (UHD 25p) / 1920,1080,1,25 (HD 25p) / 3840,2160,1001,30000 (UHD 29.97p) / 4096,2160,1001,30000 (4K DCI 29.97p) / 4096,2160,1001,60000 (4K DCI 59.94p); frame rate = numerator / denominator. Field 14 changes with the format (UHD 25p 5, HD 25p 8, UHD 29.97p 6, DCI 29.97p 4, DCI 59.94p 3) - probably the recording format/codec entry; fields 16 and 18 differ only in the HD file (7 and 1); the remaining fields are constant (1,1,0,8,0,0,0,1,1,1 ... 60) | Test files: 013.ALL = 012.ALL with 1080p/59.94 -> 1920,1080,1001,60000 and field 14 = 9; 014.ALL = 013.ALL switched XAVC-I -> XAVC-L -> 3840,2160,1001,60000 with fields 7 (8->4), 9 (0->11), 11 (1->5), 12 and 13 (1->0), 14 (9->13), 16 (0->1) changed, i.e. fields 7, 9, 11-13, 14 and 16 carry the codec/format entry | 014.ALL: the camera itself switched to 3840x2160 59.94p when the codec was changed to XAVC-L (confirmed by the user) | 015.ALL (014 switched to MPEG HD422, 1920x1080 60i): 1920,1080,1001,60000 (rate stays 59.94 = field rate) with field 4 = 0 (interlaced; 1 in all progressive files), field 7 = 8, field 9 = 3, fields 11/12/13 = 0,0,1, field 14 = 0, field 16 = 2. Codec pattern in field 16: 0 = XAVC-I (013), 1 = XAVC-L (014), 2 = MPEG HD422 (015); field 9: 0 / 11 / 3; field 11: 1 / 5 / 0; field 7: 8 / 4 / 8 | 016.ALL (RAW, 4096x2160 59.94p external) and 017.ALL (RAW & XAVC-I): 00150 describes only the internally recorded format (1920x1080 59.94p, XAVC-I fields 7/9/11-13, index 9); field 16 = 6 for RAW and 7 for RAW & XAVC-I (also in 002.ALL, whose field 18 = 1 is probably a RAW output variant). The RAW output format itself is not in 00150 (constant 4096x2160 59.94p in 016/017, the user's setting). | 018.ALL (RAW & XAVC-L) = codec index 8, internal 1920x1080 59.94p with XAVC-L fields 7=4, 9=11, 11=5, 12=1, 13=1, 14=0; 019.ALL (RAW & MPEG HD422) = codec index 9, internal 1280x720 59.94p with the MPEG fields 7=8, 9=3, 11=0, 12=0, 13=1, 14=0. Codec indices confirmed: 0 XAVC-I, 1 XAVC-L, 2 MPEG HD422, 6 RAW, 7 RAW & XAVC-I, 8 RAW & XAVC-L, 9 RAW & MPEG HD422 | 020.ALL (ProRes 422 HQ) = codec index 10, 021.ALL (ProRes 422) = codec index 11; both 1920x1080 29.97p with fields 7=8, 9=14, 10=4, 11=6, 12=1, 13=1 and format index 18 (HQ) / 19; additional changes when switching from RAW & MPEG HD422: 00173 field 1 (0 -> 1), 00283 (1 -> 0), 00407 (0 -> 1), 00426 (1 -> 0), 00454 (frame rate class 2 -> 1) | Files 022/023/024 (RAW only): field 17 = RAW output format index (0 = 4096x2160 59.94p, 1 = 4096x2160 29.97p, 3 = 2048x1080 59.94p; 2, 4, 5 inferred from the manual's list order 4096: 59.94/29.97/23.98, 2048: 59.94/29.97/23.98); field 22 = frame rate limit of the imager mode (60 Normal, 120 2K Center; copy of 00151 first field; not the S&Q default, see 00151); with RAW output 29.97p the internal rate follows (29.97p, format index 8) | 002.ALL (PAL-typisch 25p, field 17 = 0): the index is a list position, in the PAL list presumably 0 = 4096x2160 50p, so the NTSC labels are only valid for NTSC rates | Block 1 (025-027): with S&Q Motion switched on the camera forces field 17 to 3 (RAW output 2048x1080 59.94p) even for XAVC-I; field 22 is the default S&Q frame rate of the current format (60, or 120 with RAW 2K), 00151 first field is the chosen S&Q frame rate | 029.ALL (014 with Video Format 1920x1080 59.94P 50, XAVC-L; the 50 is the bit rate in Mbps, not 50 Hz; the camera was in NTSC mode, PAL needs a reboot): 1920,1080,1001,60000 with the XAVC-L fields 7=4, 9=11, 11=5 and 12/13 = 1 (UHD XAVC-L 014 has 0), index 14 = 0 (as in 018); side effects: ALL 00158 4 -> 2 (also seen when S&Q was switched on, 025), 00282 second field 0 -> 3",
     "fields": [
@@ -2918,6 +2928,7 @@
   },
   "00285": {
     "name": "Clipname (Title Prefix)",
+    "help": "The title part of the clip name when Auto Naming is set to Title; the clip number follows it. By default it is a camera specific ID made of the last three digits of the serial number.",
     "status": "confirmed",
     "group": "misc",
     "subgroup": "Media › Clip",
@@ -2926,6 +2937,7 @@
   },
   "00192": {
     "name": "White Memory <A> (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored in memory A: R gain, B gain and the resulting colour temperature. The camera sets it when you run an auto white balance.",
     "status": "confirmed",
     "scene_equivalent": "00164",
     "evidence": "FS7M2 round 133 (2026-10-20, ALL + SCENE, WHT BAL switch on A): R Gain <A> 0 -> +15, B Gain <A> 0 -> -26, Color Temp Balance <A> 0 -> -5 and Color Temp <A> 3200 -> 4042 K (the menu values depend on each other) changed 00192 from 0,0,3200 to 5117,-8584,4042; scene 00164 and the pair 00144 the same. The gains are stored in steps of 330.16: 5117 = +15.5 (shown +15), -8584 = -26.0. Color Temp Balance is the mean of both gains (-5.26 -> -5). The colour temperature (third value) is worked out by the camera from the gains (fits the older files within a few percent: 591,2394,3112 / 6198,-20281,4985), it is not edited here.",
@@ -2956,6 +2968,7 @@
   },
   "00020": {
     "name": "Multi Matrix Setting (On/Off)",
+    "help": "Switches the multi matrix on or off. It shifts hue and saturation of single colour axes without touching the other colours.",
     "status": "confirmed",
     "scene_equivalent": "00002",
     "evidence": "Aligned with scene 00002 (monotone alignment, 78/90 votes) FS7M2 round 7 (2026-10-09): Multi Matrix Off changes only 00020 1 -> 0 (round 8: On again). Matrix Off blocks changes of the multi matrix on the camera. Equals scene 00002 (id_map).",
@@ -2973,6 +2986,7 @@
   },
   "00043": {
     "name": "Step Gamma (0.35 to 0.90, file value x 100)",
+    "help": "Sets the gamma value directly, from 0.35 to 0.90 in steps of 0.05.",
     "status": "likely",
     "scene_equivalent": "00021",
     "evidence": "45 = Step Gamma 0.45 (manual default); aligned with scene 00021 Constant 45 in all files, also with User gamma (FS7M2 007.ALL): not the user gamma number. User (2026-10-08): the camera menu 'Step Gamma' stands at 0.45 -> 45 in the file. User (2026-10-08): interpreted as 0.45, range 0.35-0.90 (manual: steps of 0.05).",
@@ -2994,6 +3008,7 @@
   },
   "00015": {
     "name": "INPUT1 MIC Reference",
+    "help": "Reference recording level for a microphone on this XLR input: -60, -50 or -40 dB.",
     "status": "confirmed",
     "evidence": "FS7M2 round 67 (2026-10-16): Audio > Audio Input > INPUT1 MIC Reference -50 -> -60 dB and INPUT2 MIC Reference -50 -> -40 dB change exactly ALL 00015 (-50 -> -60) and 00016 (-50 -> -40); the SCENE file stays identical (the manual's table of saved menu items lists the Audio menu for the All File only). The manual offers -60 dB / -50 dB / -40 dB; -50 dB is the factory value.",
     "group": "audio",
@@ -3010,6 +3025,7 @@
   },
   "00016": {
     "name": "INPUT2 MIC Reference",
+    "help": "Reference recording level for a microphone on this XLR input: -60, -50 or -40 dB.",
     "status": "confirmed",
     "evidence": "FS7M2 round 67 (2026-10-16): Audio > Audio Input > INPUT1 MIC Reference -50 -> -60 dB and INPUT2 MIC Reference -50 -> -40 dB change exactly ALL 00015 (-50 -> -60) and 00016 (-50 -> -40); the SCENE file stays identical (the manual's table of saved menu items lists the Audio menu for the All File only). The manual offers -60 dB / -50 dB / -40 dB; -50 dB is the factory value.",
     "group": "audio",
@@ -3026,6 +3042,7 @@
   },
   "00079": {
     "name": "Safety Area",
+    "help": "Size of the safety zone as a percentage of the picture: 80, 90, 92.5 or 95 %.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -3043,6 +3060,7 @@
   },
   "00085": {
     "name": "Aspect Safety Area",
+    "help": "Size of the aspect ratio safety frame as a percentage of the picture.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -3060,6 +3078,7 @@
   },
   "00105": {
     "name": "Knee Point",
+    "help": "Brightness (75 to 109 %) from which the highlights start to be compressed.",
     "status": "confirmed",
     "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): 90000 -> 80000 (= 80.0 %, file value x 1000). Manual: 75 to 109 %, default 90 %. The button steps (1 %) are an assumption.",
     "group": "video",
@@ -3081,6 +3100,7 @@
   },
   "00097": {
     "name": "Detail Frequency (menu step -99..+99)",
+    "help": "Centre frequency of the sharpening. A higher setting moves it to finer structures and reduces the visible detail.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -3105,6 +3125,7 @@
   },
   "00225": {
     "name": "Auto Exposure A.SHT Limit",
+    "help": "Limit of the shutter speeds the automatic shutter may use (1/100 to 1/2000).",
     "status": "likely",
     "evidence": "FS7M2 round 48 (2026-10-13): Auto Exposure A.SHT Limit 1/2000 -> 1/250 changes exactly this ID (scene 00084 / ALL 00225): 2000 -> 250 (the value is the denominator). It was 2000 in every earlier file, so the old reading 'ISO / EI value (FS7 base sensitivity)' was wrong. The manual lists 1/100, 1/150, 1/200, 1/250 and 1/2000; other values may exist.",
     "group": "video",
@@ -3125,6 +3146,7 @@
   },
   "00362": {
     "name": "Near End: Sony Battery",
+    "help": "Voltage (11.5 to 17 V) of a Sony battery on the extension unit XDCA-FS7 at which the low charge warning appears.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Ext. Unit Battery Alarm",
@@ -3145,6 +3167,7 @@
   },
   "00324": {
     "name": "User Box Width",
+    "help": "Width of the user box, measured from the centre to the left or right edge.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -3162,6 +3185,7 @@
   },
   "00325": {
     "name": "User Box Height",
+    "help": "Height of the user box, measured from the centre to the top or bottom edge.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -3179,6 +3203,7 @@
   },
   "00031": {
     "name": "Black Setting (On/Off)",
+    "help": "Switches the black level correction on or off.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Black",
@@ -3195,6 +3220,7 @@
   },
   "00418": {
     "name": "Shooting Mode (Custom / Cine EI)",
+    "help": "Custom: scene files and all menus are available. Cine EI: exposure index workflow with monitor LUTs, the Paint menu is locked; RAW is recorded only in this mode.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Base Setting",
@@ -3277,6 +3303,7 @@
   },
   "00423": {
     "name": "Color Space",
+    "help": "Combination of colour gamut and log curve used in Cine EI mode (S-Gamut/S-Log2, S-Gamut3.Cine/S-Log3 or S-Gamut3/S-Log3).",
     "status": "confirmed",
     "evidence": "Mode switch Custom -> Cine EI on the same camera state (004.ALL -> 010.ALL, 14 differing IDs); same direction in all Cine EI files (002, 005, 006, 010): 0 -> 4 (manual: in Custom Color Space is Matrix, in Cine EI S-Gamut/SLog2, S-Gamut3.Cine/SLog3, S-Gamut3/SLog3). Next to 00418 in the System > Base Setting block. Test files in Cine EI: 011.ALL (S-Gamut/SLog2) = 2, 012.ALL (S-Gamut3/SLog3) = 5, 010.ALL = 4 (confirmed by the user: S-Gamut3.Cine/SLog3); 0 = Matrix in Custom mode; 1 and 3 unknown | Custom mode: Color Space is Matrix (0); Cine EI mode: S-Gamut variants (manual).",
     "widget": {
@@ -3336,6 +3363,7 @@
   },
   "00023": {
     "name": "Matrix Setting (On/Off)",
+    "help": "Master switch of the matrix colour correction. When it is off, the matrix settings have no effect.",
     "status": "confirmed",
     "scene_equivalent": "00005",
     "evidence": "FS7M2 round 6 (2026-10-09): Matrix Off changes only ALL 00023 1 -> 0 (the other file type: scene 00005). Cine EI also sets it to 0. Mode switch Custom -> Cine EI on the same camera state (004.ALL -> 010.ALL, 14 differing IDs); same direction in all Cine EI files (002, 005, 006, 010): 1 -> 0 (matrix correction is not available in Cine EI); aligned with scene 00005",
@@ -3353,6 +3381,7 @@
   },
   "00499": {
     "name": "Shockless White",
+    "help": "How smoothly the white balance changes when you switch between white balance modes. Off switches at once, 1 to 3 get slower.",
     "status": "confirmed",
     "evidence": "FS7M2 round 136 (2026-10-20): Shockless White -> 3 changed 00499 from 1 to 3 (scene 00147 the same); factory state 1; in Cine EI mode the camera sets 0 (the old 'Cine EI related 2 -> 0' observation of the Mk1 files, where 2 was the then current Shockless White); the options are Off / 1 / 2 / 3 (0 to 3).",
     "group": "video",
@@ -3390,6 +3419,7 @@
   },
   "00454": {
     "name": "Interval Rec: Interval Time / Number of Frames",
+    "help": "Interval recording: the time between two recordings and the number of frames recorded each time.",
     "status": "likely",
     "group": "video",
     "subgroup": "Recording › Interval Rec",
@@ -3448,6 +3478,7 @@
   },
   "00170": {
     "name": "Video output: SDI / HDMI",
+    "help": "Switches the SDI and the HDMI video output on or off.",
     "status": "likely",
     "group": "video",
     "subgroup": "Video › Output",
@@ -3513,6 +3544,7 @@
   ],
   "00426": {
     "name": "Distortion Comp.",
+    "help": "Automatic correction of lens distortion: Auto or Off. Not available while recording or in Picture Cache Rec, and not applied to 4K or QFHD recording.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Lens",
@@ -3528,6 +3560,7 @@
   },
   "00407": {
     "name": "HDMI Target Device",
+    "help": "What is connected to HDMI: a Recorder (HDMI carries the same picture as SDI1 in Cine EI mode) or a Monitor (the same as SDI2).",
     "status": "likely",
     "evidence": "0 in all files except 020.ALL and 021.ALL (ProRes 422 HQ / 422): 1 FS7M2 round 131 (2026-10-18, ALL only, Cine EI): Video > Output Setting > HDMI Target Device Monitor -> Recorder changed ALL 00407 from 1 to 0 and the second value of 00173 from 1 to 0: 00407 = HDMI Target Device (1 Monitor, 0 Recorder), 00173 second value = Output Display of HDMI (the camera switches it off for a recorder). Earlier observation: the format choice sets 00407 to 1 or 0 as a companion (it was listed as a ProRes flag). FS7M2 round 132 (2026-10-18, ALL + SCENE): HDMI Target Device Recorder -> Monitor changed 00407 from 0 to 1 and the second value of 00173 from 0 to 1 again (the HDMI Output Display came back; the menu showed entry 1: SDI2 on + HDMI on): confirmed both ways.",
     "group": "video",
@@ -3544,6 +3577,7 @@
   },
   "00283": {
     "name": "Users Bit Mode",
+    "help": "Users Bit contains a fixed value (Fix) or the current time (Time).",
     "status": "confirmed",
     "group": "video",
     "subgroup": "TC/UB › Users Bit",
@@ -3559,6 +3593,7 @@
   },
   "00173": {
     "name": "Output Display HDMI",
+    "help": "Whether menus and status information are overlaid on this output.",
     "status": "likely",
     "fields": [
       "?",
@@ -3585,6 +3620,7 @@
   },
   "00151": {
     "name": "S&Q Motion: frame rate / Picture Cache Rec: Cache Rec Time",
+    "help": "Slow & Quick Motion: records at a different frame rate than the playback rate, for slow motion or time lapse. The frame rate is set here (up to 240 fps, depending on codec and format).",
     "status": "confirmed",
     "group": "video",
     "fields": [
@@ -3632,6 +3668,7 @@
   },
   "00338": {
     "name": "Imager Scan Mode (0 Normal, 1 2K Full, 2 2K Center)",
+    "help": "Which part of the sensor is used: Normal (full), 2K Full or 2K Center (a crop of the middle).",
     "status": "confirmed",
     "group": "video",
     "evidence": "024.ALL: 0 -> 2 (2K Center, user); 028.ALL: 0 -> 1 (2K Full). Changes by itself nothing else except the S&Q default frame rate and 00175 position 43/00150 field 17 (RAW output). | Editable with availability rules: 2K modes only for formats up to 2K width (manual: recording resolution limited to 2K; 028.ALL), RAW 4096 only with Normal, RAW 2048 only with 2K Full/Center (manual); companions from 013 (Normal), 028 (2K Full), 024 (2K Center). Round 127 (2026-10-18): Recording > S&Q Motion > Setting On with High Frame Rate Mode Off -> Center Scan changed 00152 (Setting) and 00338 from 0 to 2 (and the S&Q frame rate 00151 from 60 to 72 by itself), but not 00446: the High Frame Rate Mode of the Recording menu is the same value as Imager Scan Mode (Off = 0, Full Scan = 1 assumed, Center Scan = 2); only the Imager Scan Mode choice in the System menu also sets 00446. FS7M2 round 137 (2026-10-20): Recording > S&Q Motion > High Frame Rate Mode Center Scan -> Full Scan changed 00338 from 2 to 1 (nothing else but the area flag 00159 changed in that file): High Frame Rate Mode is this value.",
@@ -3784,6 +3821,7 @@
   },
   "00152": {
     "name": "S&Q Motion Setting (On/Off); second field unknown (0 in all files)",
+    "help": "Switches Slow & Quick Motion on or off. While it is on, auto iris and autofocus do not work.",
     "status": "confirmed",
     "group": "video",
     "fields": [
@@ -4448,6 +4486,7 @@
   "_locks_comment": "Sub-groups whose widgets are greyed out (not editable, values stay visible) while the condition holds. Source: user (Cine EI mode: the whole Paint menu is greyed out).",
   "00181": {
     "name": "Camera ID",
+    "help": "One letter, A to Z, that identifies the camera in the clip name when Auto Naming is Cam ID + Reel#.",
     "status": "confirmed",
     "group": "misc",
     "subgroup": "Media › Clip",
@@ -4488,6 +4527,7 @@
   },
   "00182": {
     "name": "Reel Number",
+    "help": "The number part (001 to 999) of the reel number in the clip name when Auto Naming is Cam ID + Reel#.",
     "status": "confirmed",
     "group": "misc",
     "subgroup": "Media › Clip",
@@ -4505,6 +4545,7 @@
   },
   "00183": {
     "name": "Camera Position",
+    "help": "First character of the shot number in the clip name: C, L or R (for example centre, left or right camera). Used when Auto Naming is Cam ID + Reel#.",
     "status": "confirmed",
     "group": "misc",
     "subgroup": "Media › Clip",
@@ -4525,6 +4566,7 @@
     "subgroup": "Paint › Gamma",
     "order": 19,
     "name": "Gamma Category (STD / HG / User / S-Log2 / S-Log3)",
+    "help": "Chooses the family of gamma curves: STD (standard), HG (HyperGamma), User, S-Log2 or S-Log3. \"Gamma Select\" then picks the exact curve.",
     "status": "likely",
     "evidence": "FS7M2 005.ALL (gamma category STD, STD5) vs 004.ALL (S-Log2): 0 -> 1, 00044 1 -> 0; 0 in all Mk1 files (none was in category STD). The dropdown combines the flags 00039 (STD), 00041 (HG), 00044 (S-Log2) (all 0 = S-Log3); picking also sets 00125 (FS7M2: 1 with STD/HG) and 00494 (1 with S-Log3 in Custom mode). The User category is not decoded yet. User: 00190 = 1 (FS7M2 007.ALL, User/User4). FS7M2 rounds 25-30 (2026-10-13): leaving STD switches Knee Setting and Black Gamma Setting off by themselves (HG, S-Log3: both 0); back in STD the camera restores the state STD had (round 27: both On again, because they were On before; round 30: both stay Off, because they were Off before the detour).",
     "widget": {
@@ -4783,6 +4825,7 @@
   },
   "00125": {
     "name": "White Clip Setting (On/Off)",
+    "help": "Switches the white clip on or off. It limits how bright the video signal may get. The camera switches it on again at every power-up.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › White Clip",
@@ -4809,6 +4852,7 @@
   },
   "00040": {
     "name": "Gamma Select: STD (index STD1-STD6)",
+    "help": "Picks the exact gamma curve inside the chosen category, for example STD1 to STD6 or HG1 to HG8. The HG curves differ in dynamic range (325 to 800 %) and in the picture level of an 18 % grey card.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Gamma",
@@ -4839,6 +4883,7 @@
   },
   "00191": {
     "name": "Gamma Select: User (index User1-...)",
+    "help": "Picks the exact gamma curve inside the chosen category, for example STD1 to STD6 or HG1 to HG8. The HG curves differ in dynamic range (325 to 800 %) and in the picture level of an 18 % grey card.",
     "status": "likely",
     "group": "video",
     "subgroup": "Paint › Gamma",
@@ -4860,6 +4905,7 @@
   },
   "00045": {
     "name": "Gamma (On/Off)",
+    "help": "Switches the gamma correction on or off.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Gamma",
@@ -4876,6 +4922,7 @@
   },
   "00046": {
     "name": "Master Gamma (menu step -99..+99)",
+    "help": "Overall gamma level of all three colour channels. It makes the mid tones brighter or darker.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Gamma",
@@ -4899,6 +4946,7 @@
   },
   "00491": {
     "name": "R Gamma (menu step -99..+99)",
+    "help": "Gamma of the red channel only. Differences between R, G and B tint the mid tones.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Gamma",
@@ -4923,6 +4971,7 @@
   },
   "00492": {
     "name": "G Gamma (menu step -99..+99)",
+    "help": "Gamma of the green channel only. Differences between R, G and B tint the mid tones.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Gamma",
@@ -4947,6 +4996,7 @@
   },
   "00493": {
     "name": "B Gamma (menu step -99..+99)",
+    "help": "Gamma of the blue channel only. Differences between R, G and B tint the mid tones.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Gamma",
@@ -4971,6 +5021,7 @@
   },
   "00029": {
     "name": "R Black (menu step -99..+99)",
+    "help": "Black level of the red channel only. Use it to remove a colour cast in the shadows.",
     "status": "likely",
     "group": "video",
     "subgroup": "Paint › Black",
@@ -4995,6 +5046,7 @@
   },
   "00030": {
     "name": "B Black (menu step -99..+99)",
+    "help": "Black level of the blue channel only. Use it to remove a colour cast in the shadows.",
     "status": "likely",
     "group": "video",
     "subgroup": "Paint › Black",
@@ -5019,6 +5071,7 @@
   },
   "00178": {
     "name": "Multi Matrix (hue and saturation per axis)",
+    "help": "Hue and saturation change for each of the 16 colour axes (B, B+, MG-, MG, MG+, R, R+, YL-, YL, YL+, G-, G, G+, CY, CY+, B-). An axis only affects the colours around it.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Matrix",
@@ -5058,6 +5111,7 @@
   },
   "00108": {
     "name": "Knee Setting (On/Off)",
+    "help": "Switches the knee on or off. The knee compresses bright highlights so that they do not clip. Only possible with the STD gamma category.",
     "status": "confirmed",
     "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): only this ID changes 0 -> 1 for Knee Setting On. (An earlier reading as one of three STD flags was wrong: STD is the category flag, the third one the White Clip setting.)",
     "group": "video",
@@ -5075,6 +5129,7 @@
   },
   "00087": {
     "name": "Detail Level Depend (On/Off)",
+    "help": "Switches the level dependent detail on or off: the strength of the sharpening then follows the brightness of the image area.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5091,6 +5146,7 @@
   },
   "00088": {
     "name": "Detail Setting (On/Off)",
+    "help": "Switches the detail correction (edge sharpening) on or off.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5107,6 +5163,7 @@
   },
   "00089": {
     "name": "Detail Level (menu step -99..+99)",
+    "help": "Overall strength of the edge sharpening.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5131,6 +5188,7 @@
   },
   "00058": {
     "name": "Detail Level (second copy) (?)",
+    "help": "Overall strength of the edge sharpening.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5139,6 +5197,7 @@
   },
   "00090": {
     "name": "Detail H/V Ratio (menu step -99..+99)",
+    "help": "Mix between the horizontal and the vertical detail.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5163,6 +5222,7 @@
   },
   "00059": {
     "name": "Detail H/V Ratio (second copy) (?)",
+    "help": "Mix between the horizontal and the vertical detail.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5171,6 +5231,7 @@
   },
   "00091": {
     "name": "Detail Crispening (menu step -99..+99)",
+    "help": "Crispening level: detail below this threshold is suppressed, so noise is not sharpened together with real edges.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5195,6 +5256,7 @@
   },
   "00060": {
     "name": "Detail Crispening (second copy) (?)",
+    "help": "Crispening level: detail below this threshold is suppressed, so noise is not sharpened together with real edges.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5203,6 +5265,7 @@
   },
   "00086": {
     "name": "Detail Level Depend Level (menu step -99..+99)",
+    "help": "How strongly the sharpening depends on the brightness of the image area. Used when Level Depend is on.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5227,6 +5290,7 @@
   },
   "00055": {
     "name": "Detail Level Depend Level (second copy) (?)",
+    "help": "How strongly the sharpening depends on the brightness of the image area. Used when Level Depend is on.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5235,6 +5299,7 @@
   },
   "00070": {
     "name": "Detail Frequency (second copy) (?)",
+    "help": "Centre frequency of the sharpening. A higher setting moves it to finer structures and reduces the visible detail.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5243,6 +5308,7 @@
   },
   "00093": {
     "name": "Detail Knee Aperture (On/Off)",
+    "help": "Switches the detail correction for the area above the knee point on or off.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5259,6 +5325,7 @@
   },
   "00062": {
     "name": "Detail Knee Aperture (On/Off) (second copy) (?)",
+    "help": "Switches the detail correction for the area above the knee point on or off.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5267,6 +5334,7 @@
   },
   "00092": {
     "name": "Detail Knee Aperture Level",
+    "help": "Strength of the detail correction for the area above the knee point.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5291,6 +5359,7 @@
   },
   "00061": {
     "name": "Detail Knee Aperture Level (second copy) (?)",
+    "help": "Strength of the detail correction for the area above the knee point.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5299,6 +5368,7 @@
   },
   "00096": {
     "name": "Detail Limit",
+    "help": "Limits the detail signal in the white and in the black direction.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5323,6 +5393,7 @@
   },
   "00072": {
     "name": "Detail Limit (second copy) (?)",
+    "help": "Limits the detail signal in the white and in the black direction.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5331,6 +5402,7 @@
   },
   "00094": {
     "name": "Detail White Limit",
+    "help": "Limits the detail signal in the white direction (overshoot at bright edges).",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5355,6 +5427,7 @@
   },
   "00063": {
     "name": "Detail White Limit (second copy) (?)",
+    "help": "Limits the detail signal in the white direction (overshoot at bright edges).",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5363,6 +5436,7 @@
   },
   "00095": {
     "name": "Detail Black Limit",
+    "help": "Limits the detail signal in the black direction (overshoot at dark edges).",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5387,6 +5461,7 @@
   },
   "00064": {
     "name": "Detail Black Limit (second copy) (?)",
+    "help": "Limits the detail signal in the black direction (overshoot at dark edges).",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5395,6 +5470,7 @@
   },
   "00098": {
     "name": "Detail V Black Limit",
+    "help": "Limits the vertical detail signal in the black direction.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5419,6 +5495,7 @@
   },
   "00073": {
     "name": "Detail V Black Limit (second copy) (?)",
+    "help": "Limits the vertical detail signal in the black direction.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5427,6 +5504,7 @@
   },
   "00099": {
     "name": "Detail V Detail Creation",
+    "help": "The signal the vertical detail is made from: NAM (the strongest of the colour signals), Y, G or G+R.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5445,6 +5523,7 @@
   },
   "00071": {
     "name": "Detail V Detail Creation (second copy) (?)",
+    "help": "The signal the vertical detail is made from: NAM (the strongest of the colour signals), Y, G or G+R.",
     "status": "hypothesis",
     "group": "video",
     "subgroup": "Paint › Detail",
@@ -5453,6 +5532,7 @@
   },
   "00054": {
     "name": "Skin Detail (Setting, Level, Saturation, Hue, Width)",
+    "help": "Softens or sharpens one colour range only, usually skin tones. Area Detection samples the colour from the picture; Saturation, Hue and Width describe the target colour range, Level sets the effect.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Skin Detail",
@@ -5512,6 +5592,7 @@
   },
   "00307": {
     "name": "Adaptive Matrix (On/Off)",
+    "help": "Switches the adaptive matrix correction on or off. It is a separate switch, next to the preset and the user matrix.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "Paint › Matrix",
@@ -5528,6 +5609,7 @@
   },
   "00422": {
     "name": "Preset White (K) per ND slot",
+    "help": "The fixed colour temperature (2100 to 10000 K) used by the preset white balance.",
     "status": "confirmed",
     "evidence": "Equals scene 00158 (id_map). FS7M2 round 136b (2026-10-20, interim round): Paint > White > Preset White 3200 K -> 10000 K (menu: 100 K steps up to 10000 K; the program offers an input field with -1000 / -100 / +100 / +1000 K buttons, typed values snap to 100 K) changed the fifth of the six values: 3200,3200,3200,3200,3200,3200 -> 3200,3200,3200,3200,10000,3200. The ND filter of the camera was on 3: the fifth value is the preset of ND 3. FS7M2 round 139 (2026-10-20, WHT BAL on Preset): Preset White typed at CLEAR 4000, ND 1 5000, ND 2 6000 (ND switch on Preset), then Variable-CLEAR 7000 and Variable-ND On 8000 changed 3200,3200,3200,3200,10000,3200 to 3200,7000,5000,6000,10000,8000: value 2 = CLEAR (the 4000 of the Preset CLEAR was overwritten by the 7000 of the Variable CLEAR: they share the slot), 3 = ND 1, 4 = ND 2, 5 = ND 3 (round 136b), 6 = Variable ND On; value 1 did not move and is not assigned. The scene pair 00144 / 00145 follows the active ND position (3632,0 / 3962,0 = the CLEAR memories A / B).",
     "group": "video",
@@ -5595,6 +5677,7 @@
   },
   "00193": {
     "name": "White Memory <B> (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored in memory B: R gain, B gain and the resulting colour temperature. The camera sets it when you run an auto white balance.",
     "status": "confirmed",
     "scene_equivalent": "00165",
     "evidence": "FS7M2 round 133 (2026-10-20, ALL + SCENE, WHT BAL switch on B): R Gain <B> 0 -> -6, B Gain <B> 0 -> +16, Color Temp Balance <B> 0 -> +5 and Color Temp <B> 3200 -> 2840 K changed 00193 from 0,0,3200 to -2146,5447,2840; scene 00165 and the pair 00145 the same (-2146 = -6.5 shown -6, 5447 = +16.5; Balance (-6.5+16.5)/2 = +5). Same scale and dependencies as memory A (00192).",
@@ -5625,6 +5708,7 @@
   },
   "00104": {
     "name": "Auto Knee",
+    "help": "Lets the camera set the knee automatically instead of using the manual knee point and slope.",
     "status": "likely",
     "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): 1,0 -> 1,1, so field 1 is Auto Knee (0 = On, 1 = Off). Field 0 (1 in all files) is unknown. FS7M2 rounds 31-33 (2026-10-13): ALL 00232 field 6 mirrors Auto Knee (1 = Off, 0 = On, no exception in 50 files) and is written with it. Field 0 of 00104 was 0 once (round 32: Knee Setting On and Auto Knee On), otherwise 1 (hypothesis from one file, not written).",
     "group": "video",
@@ -5658,6 +5742,7 @@
   },
   "00106": {
     "name": "Knee Slope (menu step -99..+99)",
+    "help": "How strongly the highlights above the knee point are compressed.",
     "status": "confirmed",
     "evidence": "FS7M2 round 11 (gamma category S-Log3 -> STD, Knee Setting Off -> On, Auto Knee On -> Off, Point 90 -> 80, Slope 0 -> +5): 0 -> 1647 (= 5 x 329.33, same scale as the other menu steps).",
     "group": "video",
@@ -5682,6 +5767,7 @@
   },
   "00109": {
     "name": "Knee Saturation Setting (On/Off)",
+    "help": "Switches the colour saturation control above the knee point on or off. It cannot be used together with Black Gamma.",
     "status": "confirmed",
     "evidence": "FS7M2 round 12 (Knee Saturation On -> Off, Knee Saturation Level 0 -> +10 before it was switched Off): 1 -> 0 (1 = On, the camera default).",
     "group": "video",
@@ -5699,6 +5785,7 @@
   },
   "00107": {
     "name": "Knee Saturation Level (menu step -99..+99)",
+    "help": "Colour saturation of the highlights above the knee point.",
     "status": "confirmed",
     "evidence": "FS7M2 round 12 (Knee Saturation On -> Off, Knee Saturation Level 0 -> +10 before it was switched Off): 0 -> 3293 (= 10 x 329.33); the value stays in the file when the setting is Off.",
     "group": "video",
@@ -5723,6 +5810,7 @@
   },
   "00037": {
     "name": "Black Gamma Setting (On/Off)",
+    "help": "Switches Black Gamma on or off. It reshapes the gamma curve in the darkest part of the picture. Only possible with the STD gamma category, and not together with Knee Saturation.",
     "status": "confirmed",
     "evidence": "FS7M2 round 13 (Black Gamma Setting Off -> On, Range -> Low, Master Black Gamma 0 -> +5; gamma category STD, Knee Saturation Off): 0 -> 1 (1 = On).",
     "group": "video",
@@ -5740,6 +5828,7 @@
   },
   "00036": {
     "name": "Black Gamma Range",
+    "help": "How far up into the shadows Black Gamma reaches: Low, Mid or High.",
     "status": "likely",
     "evidence": "FS7M2 rounds 13, 35, 36 (2026-10-13), gamma category STD: Low = 3 (round 13), High = 1 (round 35, also the value in all older files, the camera default), Mid = 2 (round 36). The menu order is Low, Mid, High; the stored index runs the other way.",
     "group": "video",
@@ -5758,6 +5847,7 @@
   },
   "00032": {
     "name": "Master Black Gamma (menu step -99..+99)",
+    "help": "Strength of the Black Gamma correction: shifts the shadow part of the gamma curve up or down.",
     "status": "likely",
     "evidence": "FS7M2 round 13 (Black Gamma Setting Off -> On, Range -> Low, Master Black Gamma 0 -> +5; gamma category STD, Knee Saturation Off): 0 -> 5; the value is the menu step itself, not step x 329.33 (single data point, negative values unverified). FS7M2 round 37 (2026-10-13): Master Black Gamma -7 is stored as -7 (negative values confirmed).",
     "group": "video",
@@ -5777,6 +5867,7 @@
   },
   "00501": {
     "name": "Offset White On/Off (field 0: <A>, field 1: <B>, field 2: <ATW>)",
+    "help": "Adds a colour temperature offset to the white balance of memory A, memory B or ATW. Each of the three has its own On/Off switch.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 14, 15 and 17: 0,0,0 -> 1,0,0 (<A> On) -> 1,1,0 (<B> On) -> 1,1,1 (<ATW> On). In the sample look sample files the value is 1,1,0 (A and B On).",
     "group": "video",
@@ -5820,6 +5911,7 @@
   },
   "00502": {
     "name": "Warm Cool <A>, Warm Cool Balance <A> (menu step -99..+99)",
+    "help": "The size of the colour temperature offset towards warm or cool. The Balance value is the fine adjustment of it.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 14 and 15 (white switch on A, then B: Offset White Off -> On, Warm Cool 0 -> +5 / +10, Warm Cool Balance 0 -> -5 / -10): 0,0 -> 1651,-1816 for +5 and -5; the sample look sample files hold -8254,3467 and -8419,3302 (-25 and +10 as displayed). Scale 330.16 per step like R/B Black.",
     "group": "video",
@@ -5851,6 +5943,7 @@
   },
   "00508": {
     "name": "Warm Cool <B>, Warm Cool Balance <B> (menu step -99..+99)",
+    "help": "The size of the colour temperature offset towards warm or cool. The Balance value is the fine adjustment of it.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 14 and 15 (white switch on A, then B: Offset White Off -> On, Warm Cool 0 -> +5 / +10, Warm Cool Balance 0 -> -5 / -10): 0,0 -> 3302,-3302 for +10 and -10 (10 x 330.16).",
     "group": "video",
@@ -5881,6 +5974,7 @@
   },
   "00505": {
     "name": "Warm Cool <ATW>, Warm Cool Balance <ATW> (menu step -99..+99)",
+    "help": "The size of the colour temperature offset towards warm or cool. The Balance value is the fine adjustment of it.",
     "status": "confirmed",
     "evidence": "FS7M2 round 16: 0,0 -> 4952,-5282 for +15 and -16 (x 330.16), set while the Offset White <ATW> flag was Off; round 17 turned the flag On (third field of the flags value). The camera keeps the values while the flag is Off.",
     "group": "video",
@@ -5911,6 +6005,7 @@
   },
   "00312": {
     "name": "White Switch<B> (Memory / ATW)",
+    "help": "What the white balance switch uses in position B: the stored memory or the automatic tracking white balance (ATW).",
     "status": "likely",
     "evidence": "FS7M2 round 16 (White Switch<B> Memory -> ATW, Warm Cool <ATW> 0 -> +15, Balance <ATW> 0 -> -16; the Offset White <ATW> flag was left Off): 0 -> 1 when White Switch<B> was changed from Memory to ATW (the only unexplained change besides the ATW values).",
     "group": "video",
@@ -5927,6 +6022,7 @@
   },
   "00389": {
     "name": "ISO/Gain/EI Mode (ISO / dB)",
+    "help": "Whether the gain is shown and set as ISO or in dB.",
     "status": "likely",
     "evidence": "FS7M2 round 40 (2026-10-13): Camera > ISO/Gain/EI > Mode dB -> ISO: 1 -> 0 and nothing else; round 41 back to dB: 0 -> 1. All Mk1 files and the FS7M2 rounds 1-39 have 1 (dB).",
     "group": "video",
@@ -5943,6 +6039,7 @@
   },
   "00399": {
     "name": "ISO/Gain <L> (dB mode)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "FS7M2 rounds 41 and 42 (2026-10-13), Mode dB: the camera menu shows H 12 dB, M 6 dB, L 0 dB = 5, 3, 1; round 42 M 6 dB -> 9 dB: 00400 3 -> 4 and nothing else. The default of every file is 1, 3, 5.",
     "group": "video",
@@ -5965,6 +6062,7 @@
   },
   "00400": {
     "name": "ISO/Gain <M> (dB mode)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "FS7M2 rounds 41 and 42 (2026-10-13), Mode dB: the camera menu shows H 12 dB, M 6 dB, L 0 dB = 5, 3, 1; round 42 M 6 dB -> 9 dB: 00400 3 -> 4 and nothing else. The default of every file is 1, 3, 5.",
     "group": "video",
@@ -5987,6 +6085,7 @@
   },
   "00401": {
     "name": "ISO/Gain <H> (dB mode)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "FS7M2 rounds 41 and 42 (2026-10-13), Mode dB: the camera menu shows H 12 dB, M 6 dB, L 0 dB = 5, 3, 1; round 42 M 6 dB -> 9 dB: 00400 3 -> 4 and nothing else. The default of every file is 1, 3, 5.",
     "group": "video",
@@ -6009,6 +6108,7 @@
   },
   "00390": {
     "name": "ISO/Gain <L> (ISO mode, 460% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "Probably the ISO/Gain<L> index for the dynamic range 460% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), STD: H 3200, M 1600, L 800 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
     "group": "video",
@@ -6034,6 +6134,7 @@
   },
   "00391": {
     "name": "ISO/Gain <M> (ISO mode, 460% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "Probably the ISO/Gain<M> index for the dynamic range 460% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), STD: H 3200, M 1600, L 800 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
     "group": "video",
@@ -6059,6 +6160,7 @@
   },
   "00392": {
     "name": "ISO/Gain <H> (ISO mode, 460% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "Probably the ISO/Gain<H> index for the dynamic range 460% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), STD: H 3200, M 1600, L 800 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
     "group": "video",
@@ -6084,6 +6186,7 @@
   },
   "00393": {
     "name": "ISO/Gain <L> (ISO mode, 800% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "FS7M2 rounds 40-42 (2026-10-13), gamma category User (dynamic range 800%), Mode ISO: L 1600, M 3200, H 6400 = 0, 3, 6; the user set M 2500 and H 8000 in one file: 00394 3 -> 2, 00395 6 -> 7. The index is the position in the manual's ISO list for the dynamic range (800%: ISO 1600 ... ISO 12500). The default is 0, 3, 6 (L, M, H) in every file, which matches the defaults of the manual: M = ISO 1600 (460%), 3200 (800%), 4000 (1300%).",
     "group": "video",
@@ -6109,6 +6212,7 @@
   },
   "00394": {
     "name": "ISO/Gain <M> (ISO mode, 800% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "FS7M2 rounds 40-42 (2026-10-13), gamma category User (dynamic range 800%), Mode ISO: L 1600, M 3200, H 6400 = 0, 3, 6; the user set M 2500 and H 8000 in one file: 00394 3 -> 2, 00395 6 -> 7. The index is the position in the manual's ISO list for the dynamic range (800%: ISO 1600 ... ISO 12500). The default is 0, 3, 6 (L, M, H) in every file, which matches the defaults of the manual: M = ISO 1600 (460%), 3200 (800%), 4000 (1300%).",
     "group": "video",
@@ -6134,6 +6238,7 @@
   },
   "00395": {
     "name": "ISO/Gain <H> (ISO mode, 800% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "FS7M2 rounds 40-42 (2026-10-13), gamma category User (dynamic range 800%), Mode ISO: L 1600, M 3200, H 6400 = 0, 3, 6; the user set M 2500 and H 8000 in one file: 00394 3 -> 2, 00395 6 -> 7. The index is the position in the manual's ISO list for the dynamic range (800%: ISO 1600 ... ISO 12500). The default is 0, 3, 6 (L, M, H) in every file, which matches the defaults of the manual: M = ISO 1600 (460%), 3200 (800%), 4000 (1300%).",
     "group": "video",
@@ -6159,6 +6264,7 @@
   },
   "00396": {
     "name": "ISO/Gain <L> (ISO mode, 1300% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "Probably the ISO/Gain<L> index for the dynamic range 1300% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), S-Log3: H 8000, M 4000, L 2000 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
     "group": "video",
@@ -6184,6 +6290,7 @@
   },
   "00397": {
     "name": "ISO/Gain <M> (ISO mode, 1300% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "Probably the ISO/Gain<M> index for the dynamic range 1300% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), S-Log3: H 8000, M 4000, L 2000 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
     "group": "video",
@@ -6209,6 +6316,7 @@
   },
   "00398": {
     "name": "ISO/Gain <H> (ISO mode, 1300% range)",
+    "help": "The gain that this position of the gain switch (L, M or H) selects. In ISO mode the available values depend on the dynamic range of the chosen gamma (460, 800 or 1300 %).",
     "status": "likely",
     "evidence": "Probably the ISO/Gain<H> index for the dynamic range 1300% (the camera keeps one L/M/H triplet per range: 00390-00392 = 460%, 00393-00395 = 800%, 00396-00398 = 1300%); not changed in any file, the default 0, 3, 6 fits the manual's defaults; the user read the camera menu (2026-10-13), S-Log3: H 8000, M 4000, L 2000 = the list positions 6, 3, 0 of the files. The 800% triplet is confirmed (rounds 40-42).",
     "group": "video",
@@ -6234,6 +6342,7 @@
   },
   "00280": {
     "name": "ND Filter presets",
+    "help": "The three ND densities (from 1/4 to 1/128) that the camera uses in the preset ND filter mode.",
     "status": "confirmed",
     "evidence": "FS7M2 round 43 (2026-10-13): Camera > ND Filter > Preset 1 1/4 -> 1/8: field 0 of ALL 00280 (scene 00097, id_map) 4 -> 8, the other fields unchanged (the camera also stood on a different gamma category in this file). The value is the denominator of the ND fraction (manual: 1/4, 1/8, 1/16, 1/32, 1/64, 1/128). Round 44 (2026-10-13): Preset 2 1/16 -> 1/32 and Preset 3 1/64 -> 1/128 change fields 1 and 2 (16 -> 32, 64 -> 128) and nothing else, so the three fields are Preset 1, 2 and 3; fields 3 to 5 (4608 / 4096, 0, 4) are unknown. The FS7 Mk1 has no variable ND presets (0, 0, 0, 4096 there): the dropdowns are shown for the six-field shape of the FS7M2 only. Round 48: Auto Exposure > Auto ND Filter Off -> On changes field 4 (0 -> 1): the automatic ND filter is stored in this ID (likely).",
     "group": "video",
@@ -6293,6 +6402,7 @@
   },
   "00222": {
     "name": "Auto Exposure Speed",
+    "help": "How fast the automatic exposure reacts to changes of the light.",
     "status": "likely",
     "evidence": "FS7M2 rounds 45 and 46 (2026-10-13): Camera > Auto Exposure > Speed 0 -> +7 -> -9: 00222 0 -> 7 -> -9 (the menu step itself, range assumed -99..+99).",
     "group": "video",
@@ -6312,6 +6422,7 @@
   },
   "00265": {
     "name": "Auto Exposure Mode",
+    "help": "How the automatic exposure treats difficult scenes: Backlight, Standard or Spotlight (bright spots on the subject).",
     "status": "likely",
     "evidence": "FS7M2 round 46 (2026-10-13): Auto Exposure Mode Standard -> Backlight: 00265 1 -> 2 (Standard = 1, Backlight = 2; Round 47: Spotlight = 3 (2 -> 3)).",
     "group": "video",
@@ -6330,6 +6441,7 @@
   },
   "00221": {
     "name": "Auto Exposure Level",
+    "help": "Target brightness of the automatic exposure, from -2.0 to +2.0.",
     "status": "likely",
     "evidence": "FS7M2 rounds 45 and 46 (2026-10-13): Auto Exposure Level -0.75 and -1.25 (the user first wrote +0.75 by mistake): 00221 `1, 0` -> `100, -75` -> `100, -125`. Field 1 = level x 100 (the menu offers -2.0 to +2.0 in steps of 0.25). Field 0 went from 1 to 100 with the first change and stayed there; field 0 / field 1 look like denominator / numerator (0/1 = 0 by default, then -75/100). Level 0 after a change has not been seen (the camera might write 1 or 100 into field 0). Round 47: Level back to 0: `100, -125` -> `1, 0` (field 0 is 1 again).",
     "group": "video",
@@ -6455,6 +6567,7 @@
   },
   "00235": {
     "name": "Auto Exposure AGC",
+    "help": "Allows the automatic exposure to raise the gain in dark scenes (automatic gain control).",
     "status": "likely",
     "evidence": "FS7M2 round 47 (2026-10-13): Auto Exposure AGC Off -> On: scene 00079 / ALL 00235 0 -> 1 (the old guess 00079 = ALL 00219 was wrong: 00219 did not change); ALL 00232 field 4 follows (0 -> 1), like field 6 follows Auto Knee. The AGC Limit is greyed out in the camera menu while AGC is Off.",
     "group": "video",
@@ -6484,6 +6597,7 @@
   },
   "00456": {
     "name": "Auto Exposure AGC Limit (ISO mode, 460% range)",
+    "help": "Highest gain the automatic gain control may use.",
     "status": "hypothesis",
     "evidence": "FS7M2 round 47 (2026-10-13), gamma S-Log3 (1300% range): AGC Limit ISO 10000 -> another value: scene 00163 / ALL 00458 4 -> 2. The default of every file is 4 (10000 at 1300%), so the value is the position in the manual's list (ISO 2500 / 4000 / 5000 / 8000 / 10000 / 16000). One triplet per dynamic range like the ISO values: 00456 = 460%, 00457 = 800%, 00458 = 1300% (the first two are assumed from the order and their default 4).",
     "group": "video",
@@ -6505,6 +6619,7 @@
   },
   "00457": {
     "name": "Auto Exposure AGC Limit (ISO mode, 800% range)",
+    "help": "Highest gain the automatic gain control may use.",
     "status": "hypothesis",
     "evidence": "FS7M2 round 47 (2026-10-13), gamma S-Log3 (1300% range): AGC Limit ISO 10000 -> another value: scene 00163 / ALL 00458 4 -> 2. The default of every file is 4 (10000 at 1300%), so the value is the position in the manual's list (ISO 2500 / 4000 / 5000 / 8000 / 10000 / 16000). One triplet per dynamic range like the ISO values: 00456 = 460%, 00457 = 800%, 00458 = 1300% (the first two are assumed from the order and their default 4).",
     "group": "video",
@@ -6526,6 +6641,7 @@
   },
   "00458": {
     "name": "Auto Exposure AGC Limit (ISO mode, 1300% range)",
+    "help": "Highest gain the automatic gain control may use.",
     "status": "confirmed",
     "evidence": "FS7M2 round 47 (2026-10-13), gamma S-Log3 (1300% range): AGC Limit ISO 10000 -> another value: scene 00163 / ALL 00458 4 -> 2 (the user set ISO 5000, position 2 of the 1300% list). The default of every file is 4 (10000 at 1300%), so the value is the position in the manual's list (ISO 2500 / 4000 / 5000 / 8000 / 10000 / 16000). One triplet per dynamic range like the ISO values: 00456 = 460%, 00457 = 800%, 00458 = 1300% (the first two are assumed from the order and their default 4).",
     "group": "video",
@@ -6547,6 +6663,7 @@
   },
   "00267": {
     "name": "Auto Exposure Detect Window",
+    "help": "Chooses the metering area (1 to 6) that the automatic exposure measures.",
     "status": "likely",
     "evidence": "FS7M2 round 48 (2026-10-13): Auto Exposure Detect Window 1 -> 5: scene 00088 / ALL 00267 1 -> 5 (the manual offers 1 to 6).",
     "group": "video",
@@ -6568,6 +6685,7 @@
   },
   "00269": {
     "name": "Auto Exposure Auto Shutter",
+    "help": "Allows the automatic exposure to change the shutter speed.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 48 and 49 (2026-10-13): Auto Exposure > Auto Shutter Off -> On (round 48, together with other changes) and On -> Off (round 49, alone): scene 00090 / ALL 00269 0 -> 1 -> 0 and nothing else changed in round 49.",
     "group": "video",
@@ -6584,6 +6702,7 @@
   },
   "00266": {
     "name": "Auto Exposure Clip High Light",
+    "help": "The automatic exposure ignores small bright highlights, so that extreme brightness has less influence.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 48 and 50 (2026-10-13): Auto Exposure > Clip High light Off -> On (round 48, with other changes) and On -> Off (round 50, alone): scene 00087 / ALL 00266 0 -> 1 -> 0, nothing else changed in round 50.",
     "group": "video",
@@ -6600,6 +6719,7 @@
   },
   "00268": {
     "name": "Auto Exposure Detect Window Indication",
+    "help": "Shows the metering area of the automatic exposure in the picture.",
     "status": "likely",
     "evidence": "FS7M2 round 48 (2026-10-13): Detect Window Indication Off -> On is the one remaining switch of the six changes: scene 00089 / ALL 00268 1 -> 0 (Auto Shutter = 00269 and Clip High light = 00266 were identified by rounds 49 and 50). By elimination the coding is inverted: 1 = Off, 0 = On; not changed alone yet.",
     "group": "video",
@@ -6617,6 +6737,7 @@
   },
   "00258": {
     "name": "AF Assist",
+    "help": "While on, autofocus is suspended for a moment and you can focus by hand.",
     "status": "confirmed",
     "evidence": "FS7M2 round 51 (2026-10-14): Camera > Focus > Focus Area Wide -> Center and AF Assist On -> Off were changed together; ALL 00258 1 -> 0 and 00460 field 0 0 -> 1 are the only differences (no scene file change; the manual lists both items as All File only). The assignment of the two IDs is by value shape (single On/Off flag vs. three-field value with a mode in field 0), not proven by a single change. Round 57 (2026-10-14): AF Assist Off -> On alone changed 00258 0 -> 1 (with two unrelated changes in other IDs); 00460 stayed unchanged, so AF Assist = 00258 is confirmed and Focus Area = 00460 follows by elimination.",
     "group": "video",
@@ -6632,6 +6753,7 @@
   },
   "00460": {
     "name": "Focus Area",
+    "help": "Target area for autofocus: Wide, Center or Flexible Spot.",
     "status": "confirmed",
     "evidence": "FS7M2 round 51 (2026-10-14): Focus Area Wide -> Center changed field 0 from 0 to 1 (together with AF Assist, see 00258). Wide = 0 and Center = 1 are seen; Flexible Spot = 2 is an assumption from the manual's option order (Wide / Center / Flexible Spot). Fields 1 and 2 (0, 0) are unknown; they may hold the Flexible Spot position or the Push AF area. Round 57: 00460 did not change when AF Assist was switched, so it is not AF Assist (Focus Area by elimination). Round 58 (2026-10-14): Focus Area Center -> Flexible Spot changed field 0 from 1 to 2 (Flexible Spot = 2 confirmed); fields 1 and 2 stayed 0. Wide = 0, Center = 1 as before (Focus Area = 00460 confirmed by the unchanged ID in round 57 and this round).",
     "group": "video",
@@ -6656,6 +6778,7 @@
   },
   "00459": {
     "name": "Shutter",
+    "help": "Electronic shutter: Speed or Angle sets the exposure time, ECS tunes the frequency to avoid rolling bars on monitors. The available values depend on the frame rate.",
     "status": "likely",
     "evidence": "FS7M2 round 52 (2026-10-14): Camera > Shutter > Mode Speed -> Angle and Shutter Angle 180 -> 216 degrees changed ALL 00459 / scene 00160 field 0 (0 -> 1) and field 1 (9 -> 10) and nothing else. Field 1 is the position in the manual's angle list (5.6, 11.2, 22.5, 45, 90, 120, 144, 150, 172.8, 180, 216, 300: 180 = 9, 216 = 10). Mode 0 = Speed, 1 = Angle; Off = 3 is an assumption from the manual's order.  Round 53 (2026-10-14): Mode Speed/Angle -> ECS and ECS Frequency 50.xx -> 49.77 Hz changed field 0 (1 -> 2, ECS = 2 confirmed) and field 3 (563 -> 559) and nothing else; field 3 is therefore the ECS Frequency (hypothesis for the coding: about 11.23 per Hz, 559 / 49.77 = 11.23, which would make 563 about 50.1 Hz; the exact earlier frequency is not known). Not editable yet. Fields 2, 4, 5, 6 (4, 0, 0, 7) unknown. Round 54 (2026-10-14, 25P format): Mode ECS -> Speed, Shutter Speed 1/50 -> 1/25 and ECS Frequency 49.77 -> 55.02 Hz changed fields 0 (2 -> 0), 2 (4 -> 3), 3 (559 -> 613) and 6 (7 -> 6) and nothing else. Field 2 is the position in the manual's Shutter Speed list of the frame rate (25P: 1/3, 1/6, 1/12, 1/25, 1/50, ...: 1/50 = 4, 1/25 = 3), likely; the list differs per frame rate, so it is not editable yet. Field 3 (ECS Frequency): 559 = 49.77 Hz and 613 = 55.02 Hz fit roughly v = 10.29 x f + 47 (hypothesis, only two points with rounded values; 563 would be about 50.2 Hz). Field 6 (7 -> 6) moved together with the speed, meaning unknown. Fields 4 and 5 (0, 0) unknown. Round 56 (2026-10-14, ALL only, 25P): ECS Frequency 34.00 Hz (after switching Mode Speed -> ECS: field 0 0 -> 2) gives field 3 = 297. With 49.77 -> 559 and 55.02 -> 613 the coding is v = floor(1125 - 28125 / f) for 25P (1125 = total lines of an HD frame, 28125 = 1125 x 25): 34.00 -> 297.8, 49.77 -> 559.9, 55.02 -> 613.8 (all match the truncated value); the earlier 563 is 50.04 Hz. Inverse f = 28125 / (1125 - v). Presumably 1125 x frame rate for other frame rates (not checked). Likely, three points. Round 57 (2026-10-14): Mode Off = 3 confirmed (field 0 2 -> 3, nothing else in the ID).",
     "group": "video",
@@ -6829,6 +6952,7 @@
   },
   "00021": {
     "name": "Noise Suppression Setting",
+    "help": "Switches noise suppression on or off. It is off by default in Cine EI mode.",
     "status": "confirmed",
     "evidence": "FS7M2 round 55 (2026-10-14): Camera > Noise Suppression > Setting On -> Off changed scene 00003 / ALL 00021 1 -> 0 (scene 00003 / ALL 00021) and, together with Level Mid -> High, nothing else. Mk1 and Mk2 sample files all have 1 (On).",
     "group": "video",
@@ -6845,6 +6969,7 @@
   },
   "00022": {
     "name": "Noise Suppression Level",
+    "help": "How strong the noise suppression works: Low, Mid or High.",
     "status": "confirmed",
     "evidence": "FS7M2 round 55 (2026-10-14): Camera > Noise Suppression > Level Mid -> High changed scene 00004 / ALL 00022 1 -> 2 (scene 00004 / ALL 00022); Mid = 1 is the value of all sample files, Low = 0 is by the manual's order (assumed). Round 57: Level High -> Low gave 0 (Low = 0 confirmed).",
     "group": "video",
@@ -6862,6 +6987,7 @@
   },
   "00461": {
     "name": "Focus Area (Push AF)",
+    "help": "Target area for Push AF: Center or Flexible Spot.",
     "status": "likely",
     "evidence": "FS7M2 round 58 (2026-10-14): Camera > Focus > Focus Area (Push AF) Center -> Flexible Spot (together with Focus Area -> Flexible Spot, which changed 00460) changed field 0 of ALL 00461 from 0 to 1. Center = 0 and Flexible Spot = 1 (the manual offers only these two); fields 1 and 2 (0, 0) unknown. Not changed alone: 00461 is the only other ID that changed, so the assignment is by elimination.",
     "group": "video",
@@ -6885,6 +7011,7 @@
   },
   "00052": {
     "name": "Color Bars Type",
+    "help": "Type of the colour bar test signal: ARIB, SMPTE, 75 % or 100 %.",
     "status": "confirmed",
     "evidence": "FS7M2 round 59 (2026-10-14): Camera > Color Bars > Setting Off -> On and Type SMPTE -> ARIB changed only ALL 00052 from 1 to 0 (scene unchanged). So Type ARIB = 0, SMPTE = 1, and Setting (On/Off) is not stored in the files (the manual lists Setting as not saved, Type as All File only). 75% = 2 and 100% = 3 are assumptions from the manual's order (ARIB / SMPTE / 75% / 100%). The files of both camera models hold 0 or 1. Round 60 (2026-10-14): Type -> 75% changed 00052 from 0 to 2 (75% = 2 confirmed); 100% = 3 stays an assumption. Round 61: Type -> 100% changed 00052 from 2 to 3 (100% = 3 confirmed).",
     "group": "video",
@@ -6902,6 +7029,7 @@
   },
   "00227": {
     "name": "Flicker Reduce Mode (Off / On)",
+    "help": "Reduces the flicker of lights on mains power: Auto, On or Off.",
     "status": "confirmed",
     "evidence": "FS7M2 round 60 (2026-10-14): Camera > Flicker Reduce > Mode Auto -> On and Frequency 50 Hz -> 60 Hz were changed together (plus Color Bars Type): ALL 00227 0 -> 1 and 00228 0 -> 1 are the only other differences (not in the scene file; the manual lists both as All File only). The assignment is by menu order (Mode first) and by the samples: 00227 is 1 in only a few earlier files, 00228 is 1 in the many files recorded with 59.94 Hz formats. Auto = 0 and On = 1; Off = 2 is an assumption from the manual's order (Auto / On / Off). Round 61 (2026-10-14): Mode -> Off and Frequency -> 50 Hz again changed both IDs together, 1 -> 0 (and nothing else except Color Bars Type). Mode Off gave 0 instead of the assumed 2, so either the camera stood on Off (not Auto) before round 60 (then Off = 0, On = 1, Auto = 2 assumed) or the two IDs are not what they were taken for. Which of the two IDs is Mode and which is Frequency is still open. Round 62: 00227 did not change with the Frequency alone, so it is the Mode (by elimination, likely): Off = 0, On = 1; Auto = 2 is an assumption until a round with Mode Auto alone. Round 63 (2026-10-14): Mode Off -> Auto alone changed 00226 and 00227 together, 0 -> 1. With round 60 (Off -> On changed only 00227) and round 61 (On -> Off, only 00227 back) the coding is: Off = 00226 0 / 00227 0, On = 0 / 1, Auto = 1 / 1 (00226 is the Auto flag, 00227 means Flicker Reduce active). All 113 sample files only contain these three combinations.",
     "group": "video",
@@ -6925,6 +7053,7 @@
   },
   "00228": {
     "name": "Flicker Reduce Frequency",
+    "help": "Mains frequency of the light that causes the flicker, 50 or 60 Hz.",
     "status": "confirmed",
     "evidence": "FS7M2 round 60 (2026-10-14): Frequency 50 Hz -> 60 Hz changed ALL 00228 0 -> 1 (together with Mode, see 00227). 50 Hz = 0, 60 Hz = 1; the earlier files of the camera in 59.94 Hz mode mostly have 1 (supports the assignment). Round 61: 1 -> 0 again together with 00227 (Frequency 60 -> 50 Hz and Mode -> Off); the assignment of the two IDs is not proven. Round 62 (2026-10-14): Frequency 50 -> 60 Hz alone changed only 00228 (0 -> 1): Frequency = 00228 confirmed (50 Hz = 0, 60 Hz = 1).",
     "group": "video",
@@ -6963,6 +7092,7 @@
   },
   "00229": {
     "name": "SteadyShot",
+    "help": "Image stabilisation (SteadyShot or Active SteadyShot). Works only with a compatible lens.",
     "status": "likely",
     "evidence": "FS7M2 round 64 (2026-10-14, ALL only; the manual lists the item as All File only): SteadyShot Off -> SteadyShot, Zoom Speed Type Variable -> Fix and Video Light Set -> Rec Link + Stby were changed together; the only differences were ALL 00229 0 -> 1, 00305 0 -> 2 and 00359 1 -> 0. 00229 is the SteadyShot (the remaining 0 -> 1 change; Off = 0, SteadyShot = 1; Active SteadyShot = 2 is an assumption from the manual's order Active SteadyShot / SteadyShot / Off). The samples hold 0 (105 files) and 1 (9 files). Round 64 follow-up (2026-10-14): on the user's camera and lens the entry Active SteadyShot is greyed out in the menu, so the value for it could not be tested. The manual only says that the function works with a compatible lens and lists no condition for the single options, so Active SteadyShot = 2 stays an assumption. Round 65: the other two IDs of round 64 are confirmed by single changes, so 00229 = SteadyShot follows by elimination (Off 0, SteadyShot 1).",
     "group": "video",
@@ -6980,6 +7110,7 @@
   },
   "00305": {
     "name": "Video Light Set",
+    "help": "How a connected video light (HVL-LBPC) is switched: with the power (Power Link), with recording (Rec Link) or with recording and standby (Rec Link + Stby).",
     "status": "confirmed",
     "evidence": "FS7M2 round 64 (2026-10-14, ALL only; the manual lists the item as All File only): SteadyShot Off -> SteadyShot, Zoom Speed Type Variable -> Fix and Video Light Set -> Rec Link + Stby were changed together; the only differences were ALL 00229 0 -> 1, 00305 0 -> 2 and 00359 1 -> 0. 00305 is the Video Light Set (0 -> 2 can only be the last of three options): Power Link = 0 (all samples), Rec Link = 1 (assumed), Rec Link + Stby = 2. Round 65 (2026-10-14): Video Light Set -> Rec Link alone changed 00305 from 2 to 1 (Rec Link = 1 confirmed; 00305 = Video Light Set confirmed).",
     "group": "video",
@@ -6996,6 +7127,7 @@
   },
   "00359": {
     "name": "Handle Zoom Zoom Speed Type",
+    "help": "How the zoom lever on the handle works: Fix, Variable or Off. Not available without a handle.",
     "status": "confirmed",
     "evidence": "FS7M2 round 64 (2026-10-14, ALL only; the manual lists the item as All File only): SteadyShot Off -> SteadyShot, Zoom Speed Type Variable -> Fix and Video Light Set -> Rec Link + Stby were changed together; the only differences were ALL 00229 0 -> 1, 00305 0 -> 2 and 00359 1 -> 0. 00359 is the Zoom Speed Type (the only value that went down): Variable = 1 (113 of 114 sample files), Fix = 0 (this file). Off = 2 is an assumption from the manual's order Fix / Variable / Off. Round 65: Zoom Speed Type -> Off alone changed 00359 from 0 to 2 (Off = 2 confirmed; 00359 = Zoom Speed Type confirmed).",
     "group": "video",
@@ -7012,6 +7144,7 @@
   },
   "00231": {
     "name": "Handle Zoom Zoom Speed (1 to 8)",
+    "help": "Speed of the zoom lever on the handle, 1 to 8, in Fix mode. Not available without a handle.",
     "status": "likely",
     "evidence": "FS7M2 round 66 (2026-10-14, ALL only; the manual lists Zoom Speed as All File only): Camera > Handle Zoom > Zoom Speed 3 -> 7 changed only ALL 00231 field 0 (3 -> 7). 3 is the manual's default and the value of all other sample files; the range 1 to 8 is from the manual. Field 1 (always 1) and field 2 (0 in 35 files, 2 in 81) are unknown.",
     "group": "video",
@@ -7030,6 +7163,7 @@
   },
   "00369": {
     "name": "CH1 Input Select",
+    "help": "The audio source that is recorded on this channel.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 68 and 69 (2026-10-16, ALL only): CH1 Input Select INPUT1 -> Internal MIC: ALL 00369 `2, 1` -> `0, 1`; Internal MIC -> Shoe 1: `0, 1` -> `5, 1`. Field 0 is the kind of source (2 = INPUT1/INPUT2 connector, 0 = Internal MIC, 5 = Shoe), field 1 the number of the input / channel. The manual offers INPUT1 / Internal MIC / Shoe 1 for CH1.",
     "group": "audio",
@@ -7046,6 +7180,7 @@
   },
   "00370": {
     "name": "CH2 Input Select",
+    "help": "The audio source that is recorded on this channel.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 68-70 (2026-10-16, ALL only): CH2 Input Select INPUT2 -> INPUT1: ALL 00370 `2, 2` -> `2, 1`; INPUT1 -> Internal MIC: `2, 1` -> `0, 2`; Internal MIC -> Shoe 2: `0, 2` -> `5, 2`. Field 0 = kind of source (2 = INPUT1/INPUT2 connector, 0 = Internal MIC, 5 = Shoe), field 1 = number of the input (connector) or of the channel (mic, shoe).",
     "group": "audio",
@@ -7063,6 +7198,7 @@
   },
   "00239": {
     "name": "CH1 Wind Filter",
+    "help": "Reduces wind noise on this channel.",
     "status": "confirmed",
     "evidence": "FS7M2 (2026-10-16, ALL only; the SCENE file stays unchanged), round 68: CH1 Wind Filter Off -> On = field 0 of ALL 00239 `0,1,2` -> `1,1,2` (0 = Off, 1 = On). The other two fields are unknown (`1, 2` and `2, 2` in the factory state).",
     "group": "audio",
@@ -7084,6 +7220,7 @@
   },
   "00240": {
     "name": "CH2 Wind Filter",
+    "help": "Reduces wind noise on this channel.",
     "status": "confirmed",
     "evidence": "FS7M2 (2026-10-16, ALL only; the SCENE file stays unchanged), round 69: CH2 Wind Filter Off -> On = field 0 of ALL 00240 `0,2,2` -> `1,2,2` (0 = Off, 1 = On). The other two fields are unknown (`1, 2` and `2, 2` in the factory state).",
     "group": "audio",
@@ -7105,6 +7242,7 @@
   },
   "00427": {
     "name": "CH3 Input Select",
+    "help": "The audio source that is recorded on this channel.",
     "status": "likely",
     "evidence": "FS7M2 round 70 (2026-10-16, ALL only; the SCENE file is unchanged): CH3 Input Select Off -> Internal MIC changes ALL 00427 `12, 3` -> `0, 3`. Same coding as CH1/CH2 (field 0 = kind of source, field 1 = channel); Off = 12. The manual offers Off / Internal MIC / Shoe 1 for CH3. An older FS7 file showed `11, x` -> `5, x` in this ID, so the Off value may differ between the cameras.",
     "group": "audio",
@@ -7122,6 +7260,7 @@
   },
   "00428": {
     "name": "CH4 Input Select",
+    "help": "The audio source that is recorded on this channel.",
     "status": "likely",
     "evidence": "FS7M2 round 70 (2026-10-16, ALL only; the SCENE file is unchanged): CH4 Input Select Off -> Shoe 2 changes ALL 00428 `12, 4` -> `5, 4`. Same coding as CH1-CH3 (Shoe = 5, field 1 = channel); Off = 12. The manual offers Off / Internal MIC / Shoe 2 for CH4; Internal MIC is assumed to be `0, 4`.",
     "group": "audio",
@@ -7139,6 +7278,7 @@
   },
   "00142": {
     "name": "CH3 Level Control",
+    "help": "Auto: the camera sets the recording level of this channel. Manual: you set it.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 71-72 (2026-10-16, ALL only; the SCENE file is unchanged): CH3 Level Control Auto -> Manual: ALL 00142 0 -> 1 (round 71, together with the other channel); CH3 Level Control Manual -> Auto: 1 -> 0 (round 72); 0 = Auto, 1 = Manual. CH1 and CH2 have hardware switches on the camera body, so only CH3 and CH4 have a menu item.",
     "group": "audio",
@@ -7154,6 +7294,7 @@
   },
   "00143": {
     "name": "CH4 Level Control",
+    "help": "Auto: the camera sets the recording level of this channel. Manual: you set it.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 71-72 (2026-10-16, ALL only; the SCENE file is unchanged): CH4 Level Control Auto -> Manual: ALL 00143 0 -> 1 (round 71, together with the other channel); unchanged in round 72 (stays Manual, so CH3 = 00142 and CH4 = 00143 are separated); 0 = Auto, 1 = Manual. CH1 and CH2 have hardware switches on the camera body, so only CH3 and CH4 have a menu item.",
     "group": "audio",
@@ -7169,6 +7310,7 @@
   },
   "00304": {
     "name": "Scene White Data",
+    "help": "Whether the white balance data of a scene file are applied when the scene file is loaded.",
     "status": "likely",
     "evidence": "FS7M2 round 71 (2026-10-16, ALL only; the SCENE file is unchanged): File > Scene File > Scene White Data Off -> On changed ALL 00304 from 0 to 1. The manual lists the item as All File only; it decides whether the white balance data of a SCENE file is applied when the file is loaded. The assignment follows from the three simultaneous changes (the other two are the level controls).",
     "group": "misc",
@@ -7184,6 +7326,7 @@
   },
   "00438": {
     "name": "CH3 Input Level",
+    "help": "Input level of this channel (0 to 99) when the level is set manually.",
     "status": "confirmed",
     "evidence": "FS7M2 round 72 (2026-10-16, ALL only): CH3 Input Level 49 -> 41 (range 0 to 99, factory 49): ALL 00438 49 -> 41. Only used with CH3 Level Control = Manual.",
     "group": "audio",
@@ -7201,6 +7344,7 @@
   },
   "00439": {
     "name": "CH4 Input Level",
+    "help": "Input level of this channel (0 to 99) when the level is set manually.",
     "status": "confirmed",
     "evidence": "FS7M2 round 72 (2026-10-16, ALL only): CH4 Input Level 49 -> 55 (range 0 to 99, factory 49): ALL 00439 49 -> 55. Only used with CH4 Level Control = Manual.",
     "group": "audio",
@@ -7218,6 +7362,7 @@
   },
   "00429": {
     "name": "CH3 Wind Filter",
+    "help": "Reduces wind noise on this channel.",
     "status": "confirmed",
     "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): CH3 Wind Filter Off -> On changes field 0 of ALL 00429 from 0 to 1 (0 = Off, 1 = On); the other two fields (channel number 3 and 2) did not change. Same layout as CH1 / CH2 (00239 / 00240).",
     "group": "audio",
@@ -7239,6 +7384,7 @@
   },
   "00430": {
     "name": "CH4 Wind Filter",
+    "help": "Reduces wind noise on this channel.",
     "status": "confirmed",
     "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): CH4 Wind Filter Off -> On changes field 0 of ALL 00430 from 0 to 1 (0 = Off, 1 = On); the other two fields (channel number 4 and 2) did not change. Same layout as CH1 / CH2 (00239 / 00240).",
     "group": "audio",
@@ -7260,6 +7406,7 @@
   },
   "00440": {
     "name": "Monitor CH",
+    "help": "Which channels are heard on the headphone jack and the built-in speaker.",
     "status": "likely",
     "evidence": "FS7M2 round 73 (2026-10-16, ALL only; the SCENE file is unchanged): Audio > Audio Output > Monitor CH CH1/CH2 -> MIX ALL changes ALL 00440 from 0 to 2. Monitor CH MIX ALL -> CH3 (round 74) changes it from 2 to 5. The manual lists CH1/CH2 / CH3/CH4 / MIX ALL / CH1 / CH2 / CH3 / CH4; the indices follow that order (0 = CH1/CH2 factory, 2 = MIX ALL and 5 = CH3 are seen, 1, 3, 4 and 6 are assumed).",
     "group": "audio",
@@ -7288,6 +7435,7 @@
   },
   "00137": {
     "name": "Monitor Volume",
+    "help": "Volume of the headphone jack and the built-in speaker (0 to 15).",
     "status": "confirmed",
     "evidence": "FS7M2 round 74 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Output > Monitor Volume 7 -> 12 changes field 0 of ALL 00137 `7,15` -> `12,15` (range 0 to 15, factory 7). Field 1 (15) did not change and is unknown.",
     "group": "audio",
@@ -7305,6 +7453,7 @@
   },
   "00375": {
     "name": "Alarm Volume",
+    "help": "Volume of the warning tones (0 to 7).",
     "status": "confirmed",
     "evidence": "FS7M2 round 74 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Output > Alarm Volume 4 -> 2 changes ALL 00375 from 4 to 2 (range 0 to 7, factory 4).",
     "group": "audio",
@@ -7322,6 +7471,7 @@
   },
   "00371": {
     "name": "Audio Input Level",
+    "help": "Master audio input level (0 to 99). Each channel's \"Level\" setting decides how it is combined with the side knobs.",
     "status": "confirmed",
     "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Input > Audio Input Level 99 -> 30 changes ALL 00371 from 99 to 30 (range 0 to 99, factory 99).",
     "group": "audio",
@@ -7339,6 +7489,7 @@
   },
   "00146": {
     "name": "Limiter Mode",
+    "help": "Threshold of the limiter that catches loud signals when the level is set manually: Off or -6 to -17 dB.",
     "status": "likely",
     "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Input > Limiter Mode Off -> -12 dB changed ALL 00146 from 0 to 1 and ALL 00147 from 0 to -12. So 00146 is the switch (0 = Off, 1 = On) and 00147 the limiter level in dB.",
     "group": "audio",
@@ -7374,6 +7525,7 @@
   },
   "00144": {
     "name": "AGC Spec",
+    "help": "Characteristic of the automatic gain control: target level from -6 to -17 dB.",
     "status": "confirmed",
     "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): Audio Input > AGC Spec -6 dB -> -9 dB changes ALL 00144 from -6 to -9 (factory -6). The manual lists -6 / -9 / -12 / -15 / -17 dB; the file holds the dB value.",
     "group": "audio",
@@ -7392,6 +7544,7 @@
   },
   "00053": {
     "name": "1 kHz Tone on Color Bars",
+    "help": "Records and outputs the 1 kHz reference tone while colour bars are shown.",
     "status": "likely",
     "evidence": "FS7M2 round 75 (2026-10-16, ALL only; the SCENE file is unchanged): 1 kHz Tone on Color Bars Off -> On (state told by the user) changed ALL 00053 from 1 to 0, so 1 = Off and 0 = On (inverted). 00053 sits next to Color Bars Type 00052; the assignment follows from the four simultaneous changes of the round (the other IDs belong to the input level, the limiter and the AGC spec).",
     "group": "audio",
@@ -7407,6 +7560,7 @@
   },
   "00141": {
     "name": "CH1&2 AGC Mode",
+    "help": "Whether the two channels are controlled by the automatic gain control together (Stereo) or each by itself (Mono).",
     "status": "confirmed",
     "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): CH1&2 AGC Mode Mono -> Stereo changes field 0 of ALL 00141 from 0 to 1 (0 = Mono, 1 = Stereo); field 1 (1) is the first channel of the pair and did not change.",
     "group": "audio",
@@ -7428,6 +7582,7 @@
   },
   "00431": {
     "name": "CH3&4 AGC Mode",
+    "help": "Whether the two channels are controlled by the automatic gain control together (Stereo) or each by itself (Mono).",
     "status": "confirmed",
     "evidence": "FS7M2 round 76 (2026-10-16, ALL only; the SCENE file is unchanged): CH3&4 AGC Mode Mono -> Stereo changes field 0 of ALL 00431 from 0 to 1 (0 = Mono, 1 = Stereo); field 1 (3) is the first channel of the pair and did not change.",
     "group": "audio",
@@ -7449,6 +7604,7 @@
   },
   "00372": {
     "name": "CH1 Level",
+    "help": "Which level controls apply to this channel: the master input level, the knob on the camera body, or a combination of both.",
     "status": "likely",
     "evidence": "Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. Coding in the order of the manual's list: 0 = Audio Input Level, 1 = the channel's own input level, 2 = both combined (factory). Seen (round 76, 2026-10-16): CH1 Level set from the factory entry to the first entry (Audio Input Level): ALL 00372 2 -> 0.",
     "group": "audio",
@@ -7465,6 +7621,7 @@
   },
   "00373": {
     "name": "CH2 Level",
+    "help": "Which level controls apply to this channel: the master input level, the knob on the camera body, or a combination of both.",
     "status": "likely",
     "evidence": "Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. Coding in the order of the manual's list: 0 = Audio Input Level, 1 = the channel's own input level, 2 = both combined (factory). User (2026-10-16): CH2 Level shows 'Level+Side' and ALL 00373 is 2 (unchanged since the factory state), so 2 = Level+Side; the assignment CH2 = 00373 still follows the ID order (00433 is also 2). Round 77 (2026-10-16): ALL 00373 changed from 2 to 0 (= Audio Input Level, the first entry); with 00373 = CH2 Level this fits the request of that round. The user confirmed that both CH2 Level and CH4 Level were set to Audio Input Level in round 77; as 00373 and 00433 changed together, which of the two is CH2 and which CH4 follows the ID order (the same order as CH1 / CH3 at 00372 / 00432).",
     "group": "audio",
@@ -7481,6 +7638,7 @@
   },
   "00432": {
     "name": "CH3 Level",
+    "help": "Which level controls apply to this channel: the master input level, the knob on the camera body, or a combination of both.",
     "status": "likely",
     "evidence": "Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. Coding in the order of the manual's list: 0 = Audio Input Level, 1 = the channel's own input level, 2 = both combined (factory). Seen (round 76, 2026-10-16): ALL 00432 changed from 2 to 1; the user states that CH3 Level shows 'CH3 Input Level' now, so 1 = CH3 Input Level.",
     "group": "audio",
@@ -7497,6 +7655,7 @@
   },
   "00433": {
     "name": "CH4 Level",
+    "help": "Which level controls apply to this channel: the master input level, the knob on the camera body, or a combination of both.",
     "status": "likely",
     "evidence": "Level selection of the recording channel (menu items CH1 Level ... CH4 Level; without XLR adapter: Audio Input Level / the channel's own input level ('Side' for CH1 and CH2) / both combined). All four IDs 00372, 00373, 00432, 00433 are 2 in the factory state. Coding in the order of the manual's list: 0 = Audio Input Level, 1 = the channel's own input level, 2 = both combined (factory). CH4 Level: ALL 00433 changed from 2 to 0 (Audio Input Level, the first entry) in round 77 together with CH2 Level 00373; assigned by the ID order. The user confirmed that both CH2 Level and CH4 Level were set to Audio Input Level in round 77; as 00373 and 00433 changed together, which of the two is CH2 and which CH4 follows the ID order (the same order as CH1 / CH3 at 00372 / 00432).",
     "group": "audio",
@@ -7513,6 +7672,7 @@
   },
   "00139": {
     "name": "Headphone Out",
+    "help": "Headphone output in mono or stereo.",
     "status": "likely",
     "evidence": "FS7M2 round 77 (2026-10-16, ALL only; the SCENE file is unchanged): Headphone Out Mono -> Stereo and Output Limiter Off -> On were changed together: ALL 00139 0 -> 1 and ALL 00376 0 -> 1. By the neighbours (00139 next to Monitor Volume 00137, 00376 next to Alarm Volume 00375) and the order of the menu (Monitor Volume, Headphone Out, Alarm Volume, Output Limiter), 00139 = Headphone Out (0 Mono, 1 Stereo) and 00376 = Output Limiter (0 Off, 1 On); the two are not separated by an own round. The user confirmed that both items were changed in that round.",
     "group": "audio",
@@ -7528,6 +7688,7 @@
   },
   "00376": {
     "name": "Output Limiter",
+    "help": "Switches the limiter of the audio output on or off.",
     "status": "likely",
     "evidence": "FS7M2 round 77 (2026-10-16, ALL only; the SCENE file is unchanged): Headphone Out Mono -> Stereo and Output Limiter Off -> On were changed together: ALL 00139 0 -> 1 and ALL 00376 0 -> 1. By the neighbours (00139 next to Monitor Volume 00137, 00376 next to Alarm Volume 00375) and the order of the menu (Monitor Volume, Headphone Out, Alarm Volume, Output Limiter), 00139 = Headphone Out (0 Mono, 1 Stereo) and 00376 = Output Limiter (0 Off, 1 On); the two are not separated by an own round. The user confirmed that both items were changed in that round.",
     "group": "audio",
@@ -7543,6 +7704,7 @@
   },
   "00441": {
     "name": "HDMI Output CH",
+    "help": "Which channel pair is sent to the HDMI output: CH1/CH2 or CH3/CH4.",
     "status": "confirmed",
     "evidence": "FS7M2 round 77 (2026-10-16, ALL only; the SCENE file is unchanged): HDMI Output CH CH1/CH2 -> CH3/CH4 changes ALL 00441 from 0 to 1 (confirmed by the user; changed in the same round as Headphone Out, Output Limiter and the CH2 / CH4 level selections, but no other ID fits). Next to Monitor CH (00440).",
     "group": "audio",
@@ -7558,6 +7720,7 @@
   },
   "00480": {
     "name": "Zebra 1 (copy)",
+    "help": "Zebra stripes mark the image areas at a chosen brightness to check exposure. Zebra 1 works on a level (default 70 %) with an aperture band (1 to 20 %) around it.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Zebra",
@@ -7567,6 +7730,7 @@
   },
   "00481": {
     "name": "Zebra 2 (copy)",
+    "help": "Zebra stripes mark the image areas at a chosen brightness to check exposure. Zebra 2 is usually set to a high level (default 100 %) to warn before clipping.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Zebra",
@@ -7576,6 +7740,7 @@
   },
   "00120": {
     "name": "Peaking (Type, Color, Levels)",
+    "help": "Focus aid: outlines sharp edges in the viewfinder, in white or a colour. Frequency and levels set how strongly.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Peaking",
@@ -7639,6 +7804,7 @@
   },
   "00075": {
     "name": "Center Marker",
+    "help": "Shows a marker in the centre of the picture (types 1 to 4) or hides it.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7742,6 +7908,7 @@
   },
   "00076": {
     "name": "Center Marker type",
+    "help": "Shape of the centre marker.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7751,6 +7918,7 @@
   },
   "00078": {
     "name": "Safety Zone",
+    "help": "Shows a frame that marks the area normally visible on TV sets.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7766,6 +7934,7 @@
   },
   "00510": {
     "name": "Marker Color",
+    "help": "Colour of the markers.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7786,6 +7955,7 @@
   },
   "00080": {
     "name": "Aspect Marker",
+    "help": "Shows the marker of the chosen aspect ratio as a Line or Mask, or hides it.",
     "status": "likely",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7851,6 +8021,7 @@
   },
   "00081": {
     "name": "Aspect Marker style",
+    "help": "Shows the aspect ratio marker as a line or as a mask.",
     "status": "likely",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7860,6 +8031,7 @@
   },
   "00082": {
     "name": "Aspect Select",
+    "help": "Aspect ratio of the aspect marker: 4:3, 1.66:1, 1.85:1, 2.35:1 or 2.4:1.",
     "status": "likely",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7878,6 +8050,7 @@
   },
   "00083": {
     "name": "Aspect Mask",
+    "help": "How dark the area outside the aspect marker is shown (0 to 15).",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7895,6 +8068,7 @@
   },
   "00323": {
     "name": "User Box",
+    "help": "Shows a box (a frame you can size and move) in the viewfinder, for example to check a crop.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7910,6 +8084,7 @@
   },
   "00326": {
     "name": "User Box H Position",
+    "help": "Horizontal position of the centre of the user box.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7927,6 +8102,7 @@
   },
   "00084": {
     "name": "Aspect Safety Zone",
+    "help": "Shows a safety frame for the chosen aspect ratio.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7942,6 +8118,7 @@
   },
   "00327": {
     "name": "User Box V Position",
+    "help": "Vertical position of the centre of the user box.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7959,6 +8136,7 @@
   },
   "00360": {
     "name": "100% Marker",
+    "help": "Shows the 100 % marker.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7974,6 +8152,7 @@
   },
   "00245": {
     "name": "Guide Frame",
+    "help": "Shows a grid in the viewfinder to help with composition.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -7989,6 +8168,7 @@
   },
   "00243": {
     "name": "Brightness",
+    "help": "Brightness of the viewfinder picture.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "VF › VF Setting",
@@ -8006,6 +8186,7 @@
   },
   "00260": {
     "name": "HDMI TC Out",
+    "help": "Sends the timecode on the HDMI output so that other devices can use it.",
     "status": "likely",
     "group": "video",
     "subgroup": "TC/UB › HDMI TC Out",
@@ -8021,6 +8202,7 @@
   },
   "00158": {
     "name": "Timecode Mode / Run",
+    "help": "Mode: Preset starts from a value you set, Regen continues from the last clip, Clock follows the internal clock. Run: Rec Run counts only while recording, Free Run always.",
     "status": "likely",
     "group": "video",
     "subgroup": "TC/UB › Timecode",
@@ -8039,6 +8221,7 @@
   },
   "00176": {
     "name": "TC Display Select",
+    "help": "What the time display shows: Timecode, Users Bit or Duration.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "TC/UB › TC Display",
@@ -8055,6 +8238,7 @@
   },
   "00246": {
     "name": "Color Mode",
+    "help": "Viewfinder shows the picture in colour or black and white while shooting.",
     "status": "likely",
     "group": "video",
     "subgroup": "VF › VF Setting",
@@ -8070,6 +8254,7 @@
   },
   "00074": {
     "name": "Setting",
+    "help": "Master switch of all markers in the viewfinder.",
     "status": "likely",
     "group": "video",
     "subgroup": "VF › Marker",
@@ -8085,6 +8270,7 @@
   },
   "00284": {
     "name": "Users Bit Setting",
+    "help": "The fixed value stored in the Users Bit.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "TC/UB › Users Bit",
@@ -8098,6 +8284,7 @@
   },
   "00159": {
     "name": "NTSC / PAL Area",
+    "help": "Television system of the camera. Switching it changes the frame rates that are available.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Country",
@@ -8129,6 +8316,7 @@
   },
   "00161": {
     "name": "Date Mode",
+    "help": "Order of the date display: YYMMDD, MMDDYY or DDMMYY.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Clock Set",
@@ -8145,6 +8333,7 @@
   },
   "00162": {
     "name": "12H/24H",
+    "help": "Shows the time of day in the 12 hour or the 24 hour format.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Clock Set",
@@ -8160,6 +8349,7 @@
   },
   "00163": {
     "name": "Time Zone",
+    "help": "Difference of the camera clock from UTC (universal time), from UTC -12:00 to +14:00.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Clock Set",
@@ -8227,6 +8417,7 @@
   },
   "00003": {
     "name": "Low BATT",
+    "help": "Battery charge (5 to 50 %, in steps of 5) at which the low battery notice appears.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Camera Battery Alarm",
@@ -8246,6 +8437,7 @@
   },
   "00177": {
     "name": "Rec Lamp",
+    "help": "Switches the record lamp (tally light) on or off.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Rec Lamp",
@@ -8267,6 +8459,7 @@
   },
   "00248": {
     "name": "Language",
+    "help": "Language of the camera menus.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Language",
@@ -8290,6 +8483,7 @@
   },
   "00495": {
     "name": "Fan Control",
+    "help": "Fan mode: Auto, Minimum or Off in Rec. Even with Off in Rec the fan runs when the inside of the camera gets too warm.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Fan Control",
@@ -8306,6 +8500,7 @@
   },
   "00420": {
     "name": "HOLD with Rec Button",
+    "help": "Whether the HOLD switch also locks the record button.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › HOLD Switch Setting",
@@ -8321,6 +8516,7 @@
   },
   "00421": {
     "name": "HOLD with Hand Grip Remote",
+    "help": "Whether the HOLD switch also locks the hand grip remote.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › HOLD Switch Setting",
@@ -8336,6 +8532,7 @@
   },
   "00357": {
     "name": "Assignable Dial / IRIS Dial and directions",
+    "help": "What the assignable dial on the hand grip remote does (IRIS, ISO/Gain/EI, ND Filter, Focus, Audio Input Level or Off), the same for the IRIS dial when the ND/IRIS switch is on IRIS, and the turning direction (Normal or Opposite).",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Assignable Dial",
@@ -8391,6 +8588,7 @@
   },
   "00004": {
     "name": "BATT Empty",
+    "help": "Battery charge (3 to 7 %) at which the battery empty warning appears.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Camera Battery Alarm",
@@ -8409,6 +8607,7 @@
   },
   "00001": {
     "name": "DC Low Voltage1 (Camera DC IN Alarm)",
+    "help": "Input voltage (11.5 to 17 V) below which the camera shows a low voltage warning.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Camera DC IN Alarm",
@@ -8429,6 +8628,7 @@
   },
   "00002": {
     "name": "DC Low Voltage2 (Camera DC IN Alarm)",
+    "help": "Input voltage (11.0 to 14.0 V) below which the camera shows an insufficient voltage warning.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Camera DC IN Alarm",
@@ -8449,6 +8649,7 @@
   },
   "00047": {
     "name": "Assignable Button <1> to <10>",
+    "help": "The function of each of the ten assignable buttons <1> to <10>, for example Marker, Zebra, Peaking, Focus Magnifier, S&Q Motion, Color Bars or User Menu.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Assignable Button",
@@ -8946,6 +9147,7 @@
   },
   "00257": {
     "name": "GPS",
+    "help": "Switches the GPS on or off. While it is on, the camera records the position in the clips. The GPS module is in the handle.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › GPS",
@@ -8961,6 +9163,7 @@
   },
   "00264": {
     "name": "IR Remote Setting",
+    "help": "Allows control of the camera with the supplied infrared remote.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › IR Remote",
@@ -8976,6 +9179,7 @@
   },
   "00477": {
     "name": "ND Dial Direction",
+    "help": "Turning direction of the ND/IRIS dial when the ND/IRIS switch is on ND: Normal (clockwise) or Opposite.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › ND Dial",
@@ -8991,6 +9195,7 @@
   },
   "00361": {
     "name": "Near End: Info Battery",
+    "help": "Charge (5 to 100 %) of an Info-Lithium battery on the extension unit XDCA-FS7 at which the low charge warning appears.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Ext. Unit Battery Alarm",
@@ -9010,6 +9215,7 @@
   },
   "00363": {
     "name": "Near End: Other Battery",
+    "help": "Voltage (11.5 to 17 V) of another kind of battery on the extension unit XDCA-FS7 at which the low charge warning appears.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Ext. Unit Battery Alarm",
@@ -9030,6 +9236,7 @@
   },
   "00364": {
     "name": "End: Info Battery",
+    "help": "Charge (0 to 5 %) of an Info-Lithium battery on the extension unit XDCA-FS7 at which the empty warning appears and access to the media is stopped.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Ext. Unit Battery Alarm",
@@ -9048,6 +9255,7 @@
   },
   "00365": {
     "name": "End: Sony Battery",
+    "help": "Voltage (11.0 to 11.5 V) of a Sony battery on the extension unit XDCA-FS7 at which the empty warning appears and access to the media is stopped.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Ext. Unit Battery Alarm",
@@ -9068,6 +9276,7 @@
   },
   "00366": {
     "name": "End: Other Battery",
+    "help": "Voltage (11.0 to 14.0 V) of another kind of battery on the extension unit XDCA-FS7 at which the empty warning appears and access to the media is stopped.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Ext. Unit Battery Alarm",
@@ -9088,6 +9297,7 @@
   },
   "00367": {
     "name": "DC Low Voltage1 (Ext. Unit DC IN Alarm)",
+    "help": "Input voltage (11.5 to 17 V) of the extension unit XDCA-FS7 below which a low voltage warning is shown.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Ext. Unit DC IN Alarm",
@@ -9108,6 +9318,7 @@
   },
   "00368": {
     "name": "DC Low Voltage2 (Ext. Unit DC IN Alarm)",
+    "help": "Input voltage (11.0 to 14.0 V) of the extension unit XDCA-FS7 below which an insufficient voltage warning is shown.",
     "status": "confirmed",
     "group": "video",
     "subgroup": "System › Ext. Unit DC IN Alarm",
@@ -9128,6 +9339,7 @@
   },
   "00455": {
     "name": "Interval Rec: Pre-Lighting",
+    "help": "Seconds the video light is switched on before each recording in Interval Rec (needs the video light HVL-LBPC).",
     "status": "likely",
     "group": "video",
     "subgroup": "Recording › Interval Rec",
@@ -9145,6 +9357,7 @@
   },
   "00277": {
     "name": "Simul Rec",
+    "help": "Records the same clip on both media slots at the same time.",
     "status": "likely",
     "group": "video",
     "subgroup": "Recording › Simul Rec",
@@ -9178,6 +9391,7 @@
   },
   "00286": {
     "name": "Auto Naming",
+    "help": "How clips are named: Cam ID + Reel# (camera ID, reel, shot number, date and random characters) or Title (title prefix plus clip number). Cam ID + Reel# is not possible while Simul Rec is on.",
     "status": "likely",
     "group": "video",
     "subgroup": "Media › Clip",
@@ -9194,6 +9408,7 @@
   },
   "00444": {
     "name": "Rec/Out EI Applied",
+    "help": "When on, the Exposure Index of the Camera menu is also applied as the ISO sensitivity to the outputs whose Monitor LUT is off (not for RAW), and the camera shows the gain as EI. Works in Cine EI mode.",
     "status": "likely",
     "group": "video",
     "subgroup": "System › Base Setting",
@@ -9210,6 +9425,7 @@
   },
   "00412": {
     "name": "Monitor LUT Category",
+    "help": "Where the monitoring look comes from: a built-in LUT, a Look Profile or your own 3D LUT. Only in Cine EI mode.",
     "status": "likely",
     "group": "video",
     "subgroup": "Video › Monitor LUT",
@@ -9227,6 +9443,7 @@
   },
   "00413": {
     "name": "Look Profile Select",
+    "help": "The Look Profile (1 to 4) used for monitoring when the category is Look Profile.",
     "status": "likely",
     "group": "video",
     "subgroup": "Video › Monitor LUT",
@@ -9244,6 +9461,7 @@
   },
   "00414": {
     "name": "LUT Select",
+    "help": "The built-in LUT used for monitoring when the category is LUT: P1 to P5, or your own U1 to U6 from an SD card.",
     "status": "likely",
     "group": "video",
     "subgroup": "Video › Monitor LUT",
@@ -9269,6 +9487,7 @@
   },
   "00416": {
     "name": "Monitor LUT on the outputs",
+    "help": "Whether the monitor LUT is applied to SDI1 and the internal recording, SDI2, HDMI and the viewfinder.",
     "status": "likely",
     "group": "video",
     "subgroup": "Video › Monitor LUT",
@@ -9316,6 +9535,7 @@
   },
   "00402": {
     "name": "Exposure Index <L>",
+    "help": "Exposure Index for this position of the gain switch (L, M or H). Only available in Cine EI mode.",
     "status": "likely",
     "group": "video",
     "subgroup": "Camera › ISO/Gain/EI",
@@ -9343,6 +9563,7 @@
   },
   "00403": {
     "name": "Exposure Index <M>",
+    "help": "Exposure Index for this position of the gain switch (L, M or H). Only available in Cine EI mode.",
     "status": "likely",
     "group": "video",
     "subgroup": "Camera › ISO/Gain/EI",
@@ -9370,6 +9591,7 @@
   },
   "00404": {
     "name": "Exposure Index <H>",
+    "help": "Exposure Index for this position of the gain switch (L, M or H). Only available in Cine EI mode.",
     "status": "likely",
     "group": "video",
     "subgroup": "Camera › ISO/Gain/EI",
@@ -9397,6 +9619,7 @@
   },
   "00281": {
     "name": "Shockless Gain",
+    "help": "Changes the gain smoothly when you move the gain switch, instead of in one jump.",
     "status": "likely",
     "group": "video",
     "subgroup": "Camera › ISO/Gain/EI",
@@ -9412,6 +9635,7 @@
   },
   "00415": {
     "name": "User 3D LUT Select",
+    "help": "Which of your own 3D LUTs (1 to 4) is used when the category is User 3D LUT.",
     "status": "likely",
     "group": "video",
     "subgroup": "Video › Monitor LUT",
@@ -9429,6 +9653,7 @@
   },
   "00172": {
     "name": "Output Display SDI2",
+    "help": "Whether menus and status information are overlaid on this output.",
     "status": "likely",
     "group": "video",
     "subgroup": "Video › Output Display",
@@ -9451,6 +9676,7 @@
   },
   "00509": {
     "name": "Filter White Memory",
+    "help": "On: every ND filter position has its own white memory. Off: one white memory is used for all ND positions.",
     "status": "confirmed",
     "evidence": "FS7M2 round 134 (2026-10-20, ALL + SCENE): Paint > White > Filter White Memory Off -> On (with the white memories per ND filter edited afterwards): ALL 00509 0 -> 1; the scene file has no counterpart. With On the white memories are stored per ND filter position: the changed values appear in the triples 00195, 00198, 00201, 00204, 00474 and 00475 (scene 00167, 00170, 00173, 00176, 00179, 00180).",
     "group": "video",
@@ -9467,6 +9693,7 @@
   },
   "00195": {
     "name": "White Memory <A> at ND 1 (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored for memory A at this ND filter position (R gain, B gain and the resulting colour temperature). Used when \"Filter White Memory\" is on.",
     "status": "confirmed",
     "scene_equivalent": "00167",
     "evidence": "FS7M2 rounds 134 and 135 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on A): R Gain <A> typed at ND 1: +20 -> 6603,0,3878 (round 134), +22 -> 7428,0,3962 (round 135; 7428 = +22.5 in steps of 330.16). The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third probably memory B; the first is unknown.",
@@ -9497,6 +9724,7 @@
   },
   "00198": {
     "name": "White Memory <A> at ND 2 (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored for memory A at this ND filter position (R gain, B gain and the resulting colour temperature). Used when \"Filter White Memory\" is on.",
     "status": "confirmed",
     "scene_equivalent": "00170",
     "evidence": "FS7M2 rounds 134 and 135: R Gain <A> at ND 2: +30 -> 9905,0,4183, +33 -> 10895,0,4278. The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third probably memory B; the first is unknown.",
@@ -9527,6 +9755,7 @@
   },
   "00201": {
     "name": "White Memory <A> at ND 3 (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored for memory A at this ND filter position (R gain, B gain and the resulting colour temperature). Used when \"Filter White Memory\" is on.",
     "status": "confirmed",
     "scene_equivalent": "00173",
     "evidence": "FS7M2 rounds 134 and 135: R Gain <A> at ND 3: +40 -> 13206,0,4468, +44 -> 14527,0,4587. The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third probably memory B; the first is unknown.",
@@ -9557,6 +9786,7 @@
   },
   "00474": {
     "name": "White Memory <A> at CLEAR (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored for memory A at this ND filter position (R gain, B gain and the resulting colour temperature). Used when \"Filter White Memory\" is on.",
     "status": "confirmed",
     "scene_equivalent": "00179",
     "evidence": "FS7M2 rounds 134 and 135: R Gain <A> at ND CLEAR: +10 -> 3467,0,3572, +11 -> 3632,0,3595 (an ID that only the Mk2 files have; the memory of the CLEAR position). The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third probably memory B; the first is unknown.",
@@ -9587,6 +9817,7 @@
   },
   "00475": {
     "name": "White Memory <B> at CLEAR (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored for memory B at this ND filter position (R gain, B gain and the resulting colour temperature). Used when \"Filter White Memory\" is on.",
     "status": "confirmed",
     "scene_equivalent": "00180",
     "evidence": "FS7M2 round 136 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on B): R Gain <B> typed at CLEAR: +12 -> 3962,0,3619 (+12.0). (Memory B at CLEAR was first seen in round 134: -10 -> -3302.) The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third memory B; the first is unknown.",
@@ -9617,6 +9848,7 @@
   },
   "00196": {
     "name": "White Memory <B> at ND 1 (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored for memory B at this ND filter position (R gain, B gain and the resulting colour temperature). Used when \"Filter White Memory\" is on.",
     "status": "confirmed",
     "scene_equivalent": "00168",
     "evidence": "FS7M2 round 136 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on B): R Gain <B> typed at ND 1: +23 -> 7593,0,3978 (+23.0). (Memory B at CLEAR was first seen in round 134: -10 -> -3302.) The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third memory B; the first is unknown.",
@@ -9647,6 +9879,7 @@
   },
   "00199": {
     "name": "White Memory <B> at ND 2 (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored for memory B at this ND filter position (R gain, B gain and the resulting colour temperature). Used when \"Filter White Memory\" is on.",
     "status": "confirmed",
     "scene_equivalent": "00171",
     "evidence": "FS7M2 round 136 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on B): R Gain <B> typed at ND 2: +34 -> 11225,0,4307 (+34.0). (Memory B at CLEAR was first seen in round 134: -10 -> -3302.) The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third memory B; the first is unknown.",
@@ -9677,6 +9910,7 @@
   },
   "00202": {
     "name": "White Memory <B> at ND 3 (R Gain, B Gain; Color Temp)",
+    "help": "White balance stored for memory B at this ND filter position (R gain, B gain and the resulting colour temperature). Used when \"Filter White Memory\" is on.",
     "status": "confirmed",
     "scene_equivalent": "00174",
     "evidence": "FS7M2 round 136 (2026-10-20, Filter White Memory On, ND switch on Preset, WHT BAL on B): R Gain <B> typed at ND 3: +45 -> 15022,0,4626 (+45.5). (Memory B at CLEAR was first seen in round 134: -10 -> -3302.) The triples 00194-00206 and 00474-00476 hold the white memories per ND filter (Filter White Memory On, 00509): three per ND position, the second of each group is memory A, the third memory B; the first is unknown.",
@@ -9707,6 +9941,7 @@
   },
   "00498": {
     "name": "ATW Speed",
+    "help": "How fast the automatic tracking white balance follows changes of the light. 1 is the fastest.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 132 and 136 (2026-10-20): ATW Speed 3 -> 2 changed 00498 from 2 to 1 (scene 00146 the same); the value is the displayed speed minus one (1 = fastest).",
     "group": "video",
@@ -9727,6 +9962,7 @@
   },
   "00341": {
     "name": "Output Color Space (SDI2 / AL)",
+    "help": "Colour space of the video outputs. Shown by the camera; it follows from the matrix, the output format and S&Q.",
     "status": "confirmed",
     "evidence": "FS7M2 round 138 (2026-10-20): Video > Output Setting > Output Color Space set to 'SDI2 BT.2020' (list: SDI2 BT.709, SDI2 BT.2020, ALL BT.709) changed ALL 00341 (an ID that only the Mk2 files have) from 0 to 1 (together with the format change to 4K and Preset Select BT.2020 in the same round, so the link is not isolated); 0 and 2 follow the order of the list. FS7M2 round 138b (2026-10-20, interim round, 4K + Preset Select BT.2020 unchanged): Output Color Space SDI2 BT.2020 -> SDI2 BT.709 changed 00341 from 1 to 0 and, as the only other value, 00340 from 2 to 1: both values 0 and 1 are confirmed; 2 (ALL BT.709) still follows the order of the list.",
     "group": "video",
@@ -9744,6 +9980,7 @@
   },
   "00027": {
     "name": "Test Saw",
+    "help": "Switches a test sawtooth signal on or off. A maintenance function, not used in normal shooting.",
     "status": "confirmed",
     "evidence": "FS7M2 rounds 140 and 141 (2026-10-20, ALL only; the manual lists the item as All File only): Paint > Maintenance > Test Saw Off -> On changed ALL 00027 from 0 to 1 (together with HD/2K Modulation in round 140); Test Saw back to Off in round 141 changed only 00027 from 1 to 0.",
     "group": "video",
@@ -9760,6 +9997,7 @@
   },
   "00419": {
     "name": "HD/2K Modulation",
+    "help": "Bandwidth of the outputs when the picture is down-converted to HD or 2K: High or Low.",
     "status": "confirmed",
     "evidence": "FS7M2 round 140 (2026-10-20, ALL only; the manual lists the item as All File only): System > Camera Config > HD/2K Modulation High -> Low (together with Test Saw On) changed ALL 00419 from 0 to 1; in round 141 only Test Saw changed back (00027), 00419 stayed 1, so 00419 is HD/2K Modulation (0 = High, 1 = Low; the manual lists only High / Low).",
     "group": "video",

@@ -38,7 +38,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.3.0"
-_date = "2026-10-24"
+_date = "2026-10-25"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -562,7 +562,7 @@ def translate_db(node):
     if isinstance(node, dict):
         out = {}
         for key, value in node.items():
-            if key in ("note", "reason", "text", "message", "message_4k", "message_2k") and isinstance(value, str):
+            if key in ("note", "reason", "text", "message", "message_4k", "message_2k", "help") and isinstance(value, str):
                 out[key] = tr(value)
             elif key == "label" and isinstance(value, str):
                 out[key] = tr_label(value)
@@ -4234,7 +4234,11 @@ class App(ctk.CTk):
             ident = ""
         else:
             text, ident = key, ""
-        return RowLabel(container, text, ident, bg or self._c["bg"], self._c["label"], self._c["font"], self._sc(235 if ident else 300))
+        label = RowLabel(container, text, ident, bg or self._c["bg"], self._c["label"], self._c["font"], self._sc(235 if ident else 300))
+        if info and info.get("help"):
+            for part in (label, label.name, label.ident):
+                Tooltip(part, info["help"], delay=HELP_DELAY)
+        return label
 
     def _ensure_built(self, group: str):
         """Build the rows of a block that was left unbuilt while it was collapsed."""
