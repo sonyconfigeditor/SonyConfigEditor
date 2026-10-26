@@ -2283,7 +2283,10 @@
           "choices": {
             "0": "Off",
             "1": "On"
-          }
+          },
+          "models": [
+            "PXW-FS7M2"
+          ]
         }
       ],
       "note": "The value is the denominator of the ND fraction (1/4 to 1/128); all three presets are confirmed by files."

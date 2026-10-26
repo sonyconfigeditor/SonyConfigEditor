@@ -3,6 +3,13 @@
 Newest first. `_version` / `_date` in `SonyConfigEditor.py` match the top entry.
 The version number is only raised for a release.
 
+## [0.9.1] - 2026-10-26
+
+### Added
+- **User menu conversion FS7 <-> FS7M2:** the model switch now works for a user menu, item by item: the ND Filter item (not on the FS7) and the 16 flags the FS7 lacks are left out and come back when you switch back; going to the FS7M2 switches the flags the FS7 does not have on for the items in the menu. **New** in the USER type starts an empty user menu (20 empty slots, every flag off) of the chosen model; the user menu of a new SCENE or ALL file starts empty, too. The message in the status line and the tooltip of the model menu are up to date.
+- **User menu of the FS7 (Mk1):** the sub-elements of a menu item are shown as check boxes for the Mk1, too: the Mk1 uses the same flags as the Mk2 except 16 (no Auto ND Filter, six assignable buttons, no Shading and Chromatic Aberration Compensation in Lens, no Notice Message in Display On/Off, no Output Color Space, no Ext. Unit version items), so the check boxes of an item show only the sub-elements the file has. The menu item list of an FS7 file has no ND Filter item (the Mk1 does not offer it).
+- **Auto ND Filter** (ND Filter presets row) exists on the FS7 Mk2 only and is not shown for the FS7 Mk1.
+
 ## [0.9.0] - 2026-10-25
 
 ### Added

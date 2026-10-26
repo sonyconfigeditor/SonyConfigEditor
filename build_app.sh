@@ -15,6 +15,13 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Private working copy: it holds sample files and templates of third parties that must never be bundled. Build from the exported copy (the GitHub repository).
+if [ -d sample set A ] || [ -d own files ]; then
+    echo "This folder is the private working copy: do not build a release here, the program would contain private templates." >&2
+    echo "Build from the exported copy of the repository instead." >&2
+    exit 1
+fi
+
 PYTHON="${PYTHON:-python3}"
 OS="$(uname -s)"
 case "$OS" in

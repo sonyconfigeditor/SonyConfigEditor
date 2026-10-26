@@ -37,8 +37,8 @@ from tkinter import filedialog, messagebox
 import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
-_version = "0.9.0"
-_date = "2026-10-25"
+_version = "0.9.1"
+_date = "2026-10-26"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -150,13 +150,51 @@ def load_user_menu_subs() -> dict:
             if isinstance(entry, dict) and entry.get("sub_elements") and len(entry.get("sub_flags", entry.get("flags", []))) == len(entry["sub_elements"])}
 
 
-def user_menu_choices(values) -> dict:
-    """Choices of a user menu slot (raw first value -> text): empty, the known menu items by name, then the numbers that occur in the given slot
-    values (``code,sub`` texts) and have no name yet."""
+def user_menu_not_on(model: str | None) -> set:
+    """Numbers of the menu items the camera model does not offer (``not_on_models`` in user_menu_items.json: the FS7 has no ND Filter item)."""
+    if not model:
+        return set()
+    try:
+        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+    except (OSError, ValueError):
+        return set()
+    return {int(number) for number, entry in items.items() if isinstance(entry, dict) and model in entry.get("not_on_models", [])}
+
+
+def user_menu_missing_flags(model: str | None) -> set:
+    """IDs of the flags a user menu file of the camera model does not have (an FS7 file lacks 16 of the FS7M2 flags: ``_models`` in user_menu_items.json)."""
+    try:
+        data = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("_models", {})
+    except (OSError, ValueError):
+        return set()
+    return set((data.get(model) or {}).get("missing_flags", []))
+
+
+def empty_user_params(model: str) -> dict | None:
+    """A user menu without any item: 20 empty slots and every flag of the model off (the flag IDs of the FS7M2 file, without the ones the model lacks).
+    None for a model that has no user menu here."""
+    if model not in MODELS:
+        return None
+    try:
+        keys = [k for k in SceneFile.load(TEMPLATE_DIR / "PXW-FS7M2.USER").params if k > f"{USER_SLOTS:05d}"]
+    except (OSError, SceneFileError):
+        return None
+    params = {f"{slot:05d}": "0,0" for slot in range(1, USER_SLOTS + 1)}
+    params.update({k: "0" for k in keys if k not in user_menu_missing_flags(model)})
+    return params
+
+
+def user_menu_choices(values, model: str | None = None) -> dict:
+    """Choices of a user menu slot (raw first value -> text): empty, the known menu items by name (without the ones the camera ``model`` does not offer,
+    unless the file holds them), then the numbers that occur in the given slot values (``code,sub`` texts) and have no name yet."""
     names = load_user_menu_names()
+    values = list(values)
+    used = {int(v.split(",")[0]) - USER_MENU_BASE for v in values if v.split(",")[0].strip().isdigit()}
+    missing = user_menu_not_on(model) - used
     choices = {"0": tr("(empty)")}
     for number, name in sorted(names.items(), key=lambda kv: kv[1].lower()):
-        choices[str(USER_MENU_BASE + int(number))] = name
+        if int(number) not in missing:
+            choices[str(USER_MENU_BASE + int(number))] = name
     unknown = set()
     for value in values:
         code = value.split(",")[0].strip()
@@ -942,6 +980,8 @@ class SceneSession:
 
     @staticmethod
     def _template(model: str, kind: str = "scene") -> dict | None:
+        if kind == "user":      # a user menu starts empty (no sample file of a camera is used as a template)
+            return empty_user_params(model)
         path = TEMPLATE_DIR / f"{model}.{kind.upper()}"
         try:
             return SceneFile.load(path).params
@@ -1020,12 +1060,62 @@ class SceneSession:
             if (target.get("00044") == "1" or slog3) and "00125" in target:
                 target["00125"] = "0"
 
+    def _switch_user(self, target_model: str) -> dict:
+        """Convert a user menu to the other camera model item by item: the menu items the target model does not offer are left out (and come back when you
+        switch back), the flags the target model lacks are dropped, the flags it has in addition are switched on for the items that are in the menu."""
+        source_key, target_key = self.key, f"user:{target_model}"
+        src = self.store[source_key]
+        prior = self.store.get(target_key)
+        report = {"copied": 0, "kept": 0, "hidden": 0, "added": 0, "template": False}
+
+        def items_of(params):
+            out = []
+            for slot in range(1, USER_SLOTS + 1):
+                raw = params.get(f"{slot:05d}", "0,0")
+                code = raw.split(",")[0].strip()
+                if code.lstrip("-").isdigit() and int(code) > USER_MENU_BASE:
+                    out.append((int(code) - USER_MENU_BASE, raw))
+            return out
+
+        not_here, not_there = user_menu_not_on(self.model), user_menu_not_on(target_model)
+        mine = items_of(src)
+        keep = [(n, raw) for n, raw in mine if n not in not_there]
+        report["copied"], report["hidden"] = len(keep), len(mine) - len(keep)
+        kept_numbers = {n for n, _raw in keep}
+        extra = [(n, raw) for n, raw in items_of(prior) if n in not_here and n not in kept_numbers] if prior else []      # items only the target model has
+        slots = (keep + extra)[:USER_SLOTS]
+        lacks_src, lacks_dst = user_menu_missing_flags(self.model), user_menu_missing_flags(target_model)
+        target = dict(prior) if prior else {k: v for k, v in src.items() if k > f"{USER_SLOTS:05d}" and k not in lacks_dst}
+        for flag in lacks_src - lacks_dst:      # flags only the target model has
+            target.setdefault(flag, "0")
+        for flag in list(target):
+            if flag > f"{USER_SLOTS:05d}" and flag in src:
+                target[flag] = src[flag]
+        in_menu = {n for n, _raw in slots}
+        owners = load_user_menu_flags()
+        was_in_menu = {n for n, _raw in items_of(prior)} if prior else set()
+        for number in in_menu - was_in_menu:      # an item that is new in the target: its flags the source did not have are on (all sub-elements, the camera's default)
+            for flag in owners.get(number, []):
+                if flag in lacks_src and flag not in lacks_dst and flag in target:
+                    target[flag] = "1"
+                    report["added"] += 1
+        for slot in range(1, USER_SLOTS + 1):
+            target[f"{slot:05d}"] = slots[slot - 1][1] if slot <= len(slots) else "0,0"
+        self.store[target_key] = target
+        self.baseline[target_key] = dict(target)
+        self.model = target_model
+        self.scene.model = target_model
+        self.scene.params = target
+        return report
+
     def switch(self, target_model: str) -> dict:
-        """Switch the camera model (SCENE only). Returns counts for display."""
+        """Switch the camera model. Returns counts for display."""
         source_key, target_key = self.key, f"{self.kind}:{target_model}"
         report = {"copied": 0, "kept": 0, "hidden": 0, "added": 0, "template": False}
         if target_model == self.model:
             return report
+        if self.kind == "user":
+            return self._switch_user(target_model)
         src = self.store[source_key]
         edited = {k: v for k, v in src.items() if self.baseline[source_key].get(k) != v}
         if target_key in self.store:
@@ -3491,8 +3581,8 @@ class App(ctk.CTk):
             buttons["SCENE"]: tr("SCENE file: the picture look of one scene (paint settings such as gamma, matrix, detail, knee, white balance). Scene files only exist in Custom mode, not in Cine EI."),
             buttons["ALL"]: tr("ALL file: nearly all camera settings in one file. It holds everything a scene file holds plus recording format, audio, viewfinder, timecode, system and more. In Cine EI mode only ALL files can be saved."),
             buttons["USER"]: tr("USER file: the user menu of the camera, up to 20 menu items you put together for quick access, with the sub-elements chosen for each item."),
-            self.lbl_model: tr("Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold is kept and returns when you switch back. A user menu (USER) cannot be converted: the camera refuses a user menu file of the other model."),
-            self.menu_model: tr("Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold is kept and returns when you switch back. A user menu (USER) cannot be converted: the camera refuses a user menu file of the other model."),
+            self.lbl_model: tr("Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold (in a user menu: menu items and sub-elements) is kept and returns when you switch back."),
+            self.menu_model: tr("Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold (in a user menu: menu items and sub-elements) is kept and returns when you switch back."),
         }
         for widget, text in self._header_help.items():
             widget._lock_tip = Tooltip(widget, text, delay=HELP_DELAY)
@@ -3627,10 +3717,26 @@ class App(ctk.CTk):
         if not self._confirm_discard(tr("New")):
             return
         model = self._ask_model()
+        if model and self.kind == "user":      # a new user menu is an empty one
+            self.new_user_for_model(model)
+            return
         if model and self.new_for_model(model) and self.session and self.session.can_switch_kind():
             self._switch_kind("ALL")
             self._history_reset()        # the new file itself is the starting point, not an edit: nothing to undo, no asterisk
             self.lbl_switch.configure(text="")
+
+    def new_user_for_model(self, model: str) -> bool:
+        """Start a new user menu file for the model: no menu item in the 20 slots, every sub-element flag off."""
+        params = empty_user_params(model)
+        if params is None:
+            messagebox.showwarning(APP_NAME, tr("There is no template for {model}.").format(model=model))
+            return False
+        self.scene = SceneFile(name="NEW", model=model, params=params)
+        self._adopt("user")
+        self.lbl_status.configure(text=tr("New (empty user menu)"))
+        self._bars_changed()
+        self._history_reset()
+        return True
 
     def new_for_model(self, model: str) -> bool:
         params = new_scene_params(model)
@@ -3691,7 +3797,7 @@ class App(ctk.CTk):
             self.lbl_switch.configure(text=tr("Switching between SCENE and ALL exists only for {models} so far (no mapping for {model}).").format(
                 models=", ".join(load_id_map()), model=self.scene.model))
         elif self.session and kind == "user":
-            self.lbl_switch.configure(text=tr("User menu file: the slots of the camera's user menu. Which menu item a number means is mostly not known yet."))
+            self.lbl_switch.configure(text=tr("User menu file: the 20 slots of the camera's user menu, with the sub-elements of each menu item."))
         elif self.session:
             self.lbl_switch.configure(text="")   # nothing to report: the disabled model menu already shows that
         elif kind == "all" and not db_applies:
@@ -3728,7 +3834,7 @@ class App(ctk.CTk):
         """The menu items the slots of a user menu file offer (known names and the unnamed numbers of this file): a table built with other ones is stale."""
         if self.kind != "user" or self.scene is None:
             return frozenset()
-        return frozenset(user_menu_choices(self.scene.params.get(f"{slot:05d}", "") for slot in range(1, USER_SLOTS + 1)))
+        return frozenset(user_menu_choices((self.scene.params.get(f"{slot:05d}", "") for slot in range(1, USER_SLOTS + 1)), self.scene.model))
 
     def _table_valid(self, state: dict) -> bool:
         return (state["_built_db"] == self.param_db and state["_built_look"] == self._look() and set(state["vars"]) == set(self.scene.params)
@@ -4196,7 +4302,7 @@ class App(ctk.CTk):
         self.var_model.set(self.scene.model)
         self.menu_model.configure(state="normal" if self.session and self.scene.model in MODELS else "disabled")
         self.seg_kind.configure(state="normal" if self.session and self._kinds_reachable() else "disabled")
-        self.menu_model.configure(state="normal" if self.session and self.scene.model in MODELS and self.kind != "user" else "disabled")      # a user menu file is not converted between the models
+        self.menu_model.configure(state="normal" if self.session and self.scene.model in MODELS else "disabled")
         self._update_lock_marks()
 
     def _table_footer(self):
@@ -5156,7 +5262,7 @@ class App(ctk.CTk):
 
         def make_choice(cell, f):
             if f.get("choices_from") == "user_menu":      # the menu items of the user menu: the known names, and the numbers of this file that have no name yet
-                choices = user_menu_choices(self.scene.params.get(f"{slot:05d}", "") for slot in range(1, 21))
+                choices = user_menu_choices((self.scene.params.get(f"{slot:05d}", "") for slot in range(1, 21)), self.scene.model)
                 f = dict(f, choices=choices)
             idx, choices = f["index"], {k: with_raw(v, k) for k, v in f["choices"].items()} if "choices_from" not in f else f["choices"]
             cur = var.get().split(",")[idx].strip()
@@ -5383,7 +5489,10 @@ class App(ctk.CTk):
             code = var.get().split(",")[0].strip()
             number = int(code) - USER_MENU_BASE if code.lstrip("-").isdigit() and int(code) >= USER_MENU_BASE else None
             known = load_user_menu_subs().get(number) if number is not None else None
-            if not known or any(fid not in self.vars for fid in known[1]):
+            if known:      # a model can have fewer sub-elements (the FS7 has no Auto ND Filter, six assignable buttons): only the flags the file holds are shown
+                present = [(name, fid) for name, fid in zip(*known) if fid in self.vars]
+                known = ([n for n, _f in present], [f for _n, f in present])
+            if not known or not known[1]:
                 for w in subs.winfo_children():
                     w.destroy()
                 built.clear()

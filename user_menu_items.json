@@ -215,11 +215,14 @@
         "00819",
         "00820"
       ],
-      "evidence": "FS7M2 user menu file DEFG, tenth version (2026-10-21): slot 1 changed from Noise Suppression to ND Filter: 00001 = 100664012,0 (= 0x06000000 + 716) and flags 00818, 00819 and 00820 from 0 to 1 (the three sub-elements Preset1, Preset2 and Preset3, all selected in the camera dialog). Eleventh version: Preset1 and Preset3 deselected: 00818 and 00820 went 1 -> 0, 00819 stayed 1, so Preset2 = 00819 (confirmed); Preset1 and Preset3 are 00818 / 00820 in an order not yet known. Twelfth version: Preset2 and Preset3 deselected: 00819 and 00820 went 1 -> 0. With the eleventh version (Preset1 and Preset3 off: 00818, 00820) every flag is decided: Preset1 = 00818, Preset2 = 00819, Preset3 = 00820 (00820 is in both sets = Preset3).",
+      "evidence": "FS7M2 user menu file DEFG, tenth version (2026-10-21): slot 1 changed from Noise Suppression to ND Filter: 00001 = 100664012,0 (= 0x06000000 + 716) and flags 00818, 00819 and 00820 from 0 to 1 (the three sub-elements Preset1, Preset2 and Preset3, all selected in the camera dialog). Eleventh version: Preset1 and Preset3 deselected: 00818 and 00820 went 1 -> 0, 00819 stayed 1, so Preset2 = 00819 (confirmed); Preset1 and Preset3 are 00818 / 00820 in an order not yet known. Twelfth version: Preset2 and Preset3 deselected: 00819 and 00820 went 1 -> 0. With the eleventh version (Preset1 and Preset3 off: 00818, 00820) every flag is decided: Preset1 = 00818, Preset2 = 00819, Preset3 = 00820 (00820 is in both sets = Preset3). The FS7 (Mk1) has no ND Filter item in its user menu list (the user counted 76 items on the Mk1 on 2026-10-26; its user menu files lack the flags 00818 to 00820).",
       "sub_elements": [
         "Preset1",
         "Preset2",
         "Preset3"
+      ],
+      "not_on_models": [
+        "PXW-FS7"
       ]
     },
     "474": {
@@ -1315,6 +1318,29 @@
         "Ext. Unit Version Number",
         "Ext. Unit Version Up"
       ]
+    }
+  },
+  "_models": {
+    "PXW-FS7": {
+      "missing_flags": [
+        "00608",
+        "00691",
+        "00692",
+        "00693",
+        "00818",
+        "00819",
+        "00820",
+        "01308",
+        "01310",
+        "01311",
+        "01312",
+        "01385",
+        "01386",
+        "01387",
+        "01409",
+        "01410"
+      ],
+      "note": "Flag IDs of the FS7M2 user menu files that an FS7 (Mk1) file does not have (an FS7 file holds 408 flags, an FS7M2 file 424; checked 2026-10-26 with a Mk1 file of the camera and 27 sub-elements switched off at first, middle and last positions of nine items). The user menu of the Mk1 is the one of the Mk2 without these flags and without the ND Filter item (not_on_models)."
     }
   }
 }

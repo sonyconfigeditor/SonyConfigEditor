@@ -804,5 +804,8 @@
   "When on, the Exposure Index of the Camera menu is also applied as the ISO sensitivity to the outputs whose Monitor LUT is off (not for RAW), and the camera shows the gain as EI. Works in Cine EI mode.": "开启时，Camera 菜单中的 Exposure Index 也会作为 ISO 感光度应用到 Monitor LUT 关闭的输出（RAW 除外），摄影机把增益显示为 EI。在 Cine EI 模式下有效。",
   "Bandwidth of the outputs when the picture is down-converted to HD or 2K: High or Low.": "图像下变换为 HD 或 2K 时输出的带宽：High 或 Low。",
   "Automatic correction of lens distortion: Auto or Off. Not available while recording or in Picture Cache Rec, and not applied to 4K or QFHD recording.": "镜头畸变自动校正：Auto 或 Off。录制期间和 Picture Cache Rec 中不可用，4K 或 QFHD 录制时不应用。",
-  "Master switch of all markers in the viewfinder.": "取景器中所有标记的总开关。"
+  "Master switch of all markers in the viewfinder.": "取景器中所有标记的总开关。",
+  "Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold (in a user menu: menu items and sub-elements) is kept and returns when you switch back.": "文件所属的摄影机型号。切换时会把数值转换为另一型号；另一型号无法容纳的内容（用户菜单中为菜单项和子项）会保留，切换回来时恢复。",
+  "New (empty user menu)": "新建（空的用户菜单）",
+  "User menu file: the 20 slots of the camera's user menu, with the sub-elements of each menu item.": "用户菜单文件：摄影机用户菜单的 20 个位置，以及每个菜单项的子项。"
 }

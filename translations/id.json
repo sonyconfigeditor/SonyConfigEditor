@@ -807,5 +807,8 @@
   "When on, the Exposure Index of the Camera menu is also applied as the ISO sensitivity to the outputs whose Monitor LUT is off (not for RAW), and the camera shows the gain as EI. Works in Cine EI mode.": "Bila menyala, Exposure Index dari menu Camera juga diterapkan sebagai sensitivitas ISO pada keluaran yang Monitor LUT-nya mati (tidak untuk RAW), dan kamera menampilkan gain sebagai EI. Berfungsi pada mode Cine EI.",
   "Bandwidth of the outputs when the picture is down-converted to HD or 2K: High or Low.": "Lebar pita keluaran ketika gambar dikonversi turun ke HD atau 2K: High atau Low.",
   "Automatic correction of lens distortion: Auto or Off. Not available while recording or in Picture Cache Rec, and not applied to 4K or QFHD recording.": "Koreksi otomatis distorsi lensa: Auto atau Off. Tidak tersedia saat merekam dan pada Picture Cache Rec, serta tidak diterapkan pada perekaman 4K atau QFHD.",
-  "Master switch of all markers in the viewfinder.": "Sakelar utama semua penanda di viewfinder."
+  "Master switch of all markers in the viewfinder.": "Sakelar utama semua penanda di viewfinder.",
+  "Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold (in a user menu: menu items and sub-elements) is kept and returns when you switch back.": "Model kamera tempat file dibuat. Saat berpindah, nilai dikonversi ke model lain; yang tidak dapat ditampung model lain (pada menu pengguna: item menu dan sub-item) tetap tersimpan dan kembali saat Anda berpindah lagi.",
+  "New (empty user menu)": "Baru (menu pengguna kosong)",
+  "User menu file: the 20 slots of the camera's user menu, with the sub-elements of each menu item.": "File menu pengguna: 20 slot menu pengguna kamera, dengan sub-item dari setiap item menu."
 }

@@ -857,5 +857,8 @@
   "When on, the Exposure Index of the Camera menu is also applied as the ISO sensitivity to the outputs whose Monitor LUT is off (not for RAW), and the camera shows the gain as EI. Works in Cine EI mode.": "Wenn an, wird der Exposure Index aus dem Menü Camera auch als ISO-Empfindlichkeit auf die Ausgänge angewendet, deren Monitor LUT aus ist (nicht für RAW), und die Kamera zeigt die Verstärkung als EI. Funktioniert im Modus Cine EI.",
   "Bandwidth of the outputs when the picture is down-converted to HD or 2K: High or Low.": "Bandbreite der Ausgänge, wenn das Bild auf HD oder 2K heruntergerechnet wird: High oder Low.",
   "Automatic correction of lens distortion: Auto or Off. Not available while recording or in Picture Cache Rec, and not applied to 4K or QFHD recording.": "Automatische Korrektur der Objektivverzeichnung: Auto oder Off. Nicht verfügbar während der Aufnahme und bei Picture Cache Rec, und bei 4K- oder QFHD-Aufnahmen nicht angewendet.",
-  "Master switch of all markers in the viewfinder.": "Hauptschalter aller Markierungen im Sucher."
+  "Master switch of all markers in the viewfinder.": "Hauptschalter aller Markierungen im Sucher.",
+  "Camera model the file is made for. Switching converts the values to the other model; what the other model cannot hold (in a user menu: menu items and sub-elements) is kept and returns when you switch back.": "Kameramodell, für das die Datei gemacht ist. Beim Umschalten werden die Werte in das andere Modell umgerechnet; was das andere Modell nicht aufnehmen kann (im User-Menü: Menüpunkte und Unterpunkte), bleibt gespeichert und kommt beim Zurückschalten wieder.",
+  "New (empty user menu)": "Neu (leeres User-Menü)",
+  "User menu file: the 20 slots of the camera's user menu, with the sub-elements of each menu item.": "User-Menü-Datei: die 20 Plätze des User-Menüs der Kamera, mit den Unterpunkten jedes Menüpunkts."
 }

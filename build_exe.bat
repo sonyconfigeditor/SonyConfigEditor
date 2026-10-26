@@ -5,6 +5,16 @@ REM is embedded in the file properties (Details tab), not in the file name.
 setlocal
 cd /d "%~dp0"
 
+REM Private working copy: it holds sample files and templates of third parties that must never be bundled. Build from the exported copy (the GitHub repository).
+if exist "sample set A\" goto private_copy
+if exist "own files\" goto private_copy
+goto build_ok
+:private_copy
+echo This folder is the private working copy: do not build a release here, the program would contain private templates.
+echo Build from the exported copy of the repository instead.
+exit /b 1
+:build_ok
+
 REM 1. Is there a usable Python at all? (the Microsoft Store stub "python.exe" counts as missing)
 python -c "import sys" >nul 2>&1
 if errorlevel 1 (
