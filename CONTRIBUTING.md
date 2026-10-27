@@ -22,7 +22,13 @@ Before you send files:
 
 ### User menu files
 
-The user menu (Edit User Menu, saved as a `.USER` file) is decoded the same way. Put exactly **one** menu item into the user menu (slot 1), tick all its sub-elements when the camera asks, save the `.USER` file, and write down the name of the item and the sub-elements in the order of the dialog. For the order of the flags, save one more file with some of the sub-elements switched off. The camera accepts a user menu file only for its own model.
+The user menu (Edit User Menu on the camera) is saved as a `.USER` file. The FS7 II side is decoded completely (all 77 menu items with their sub-elements); what is still open is the **FS7 (Mk1) side** and the conversion between the two cameras. If you own an FS7 (Mk1) or an FS7 II, these files help most:
+
+1. **Your own user menu file** (FS7 or FS7 II): File > User Menu Item > Save SD Card on the camera (see the camera manual for the card folder). The more menu items you have registered, the better; the file only holds the list of the items and which sub-elements are on, no personal data apart from its File ID (the name you gave it; it is shown in the editor and can be changed there).
+2. **A report whether the camera accepts a file made with the editor.** Open a `.USER` file in the editor, change something (for example move an item or switch a sub-element off) or switch the model (FS7 <-> FS7M2), save, load it on the camera (File > User Menu Item > Load SD Card) and tell us what happened: did the camera load it, which items did it show, did anything look different from what the editor showed? A converted file is an especially useful test.
+3. **FS7 (Mk1) only:** if a menu item in the Mk1 dialog "Edit Sub Item" has other sub-elements, or a different order, than the same item in the editor, a short note with the item name and the order you see helps.
+
+For a new menu item or sub-element that the editor does not know yet: put exactly **one** menu item into the user menu (slot 1), tick all its sub-elements when the camera asks, save the `.USER` file, and write down the name of the item and the sub-elements in the order of the dialog; for the assignment of the flags, save more files with some sub-elements switched off. Files go into a ZIP attached to a test report like the pairs above.
 
 ## 2. Bug reports and ideas
 

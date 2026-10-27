@@ -38,7 +38,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.9.1"
-_date = "2026-10-26"
+_date = "2026-10-27"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -121,10 +121,24 @@ def load_param_db(kind: str = "scene") -> dict:
     return translate_db({k: v for k, v in _read_param_file(kind).items() if not k.startswith("_")})
 
 
+_USER_MENU_CACHE: dict = {"stamp": None, "data": {}}
+
+
+def _user_menu_data() -> dict:
+    """The parsed user_menu_items.json (read again when the file changes: the table of a user menu asks for it once per slot and refresh).
+    Raises OSError / ValueError like reading it directly."""
+    stat = USER_MENU_FILE.stat()
+    stamp = (stat.st_mtime_ns, stat.st_size)
+    if _USER_MENU_CACHE["stamp"] != stamp:
+        _USER_MENU_CACHE["data"] = json.loads(USER_MENU_FILE.read_text(encoding="utf-8"))
+        _USER_MENU_CACHE["stamp"] = stamp
+    return _USER_MENU_CACHE["data"]
+
+
 def load_user_menu_names() -> dict:
     """Menu item number (str) -> name of the items of the user menu that are known (user_menu_items.json), empty if the file is missing."""
     try:
-        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+        items = _user_menu_data().get("items", {})
     except (OSError, ValueError):
         return {}
     return {str(number): entry["name"] for number, entry in items.items() if isinstance(entry, dict) and entry.get("name")}
@@ -133,7 +147,7 @@ def load_user_menu_names() -> dict:
 def load_user_menu_flags() -> dict:
     """Menu item number -> IDs of the flags (sub-elements of the item that are switched on) of the items whose flags are known."""
     try:
-        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+        items = _user_menu_data().get("items", {})
     except (OSError, ValueError):
         return {}
     return {int(number): list(entry["flags"]) for number, entry in items.items() if isinstance(entry, dict) and isinstance(entry.get("flags"), list)}      # an empty list = known: the item has no sub-elements
@@ -143,7 +157,7 @@ def load_user_menu_subs() -> dict:
     """Menu item number -> (names of its sub-elements, IDs of their flags in the same order) for the items where both are known. 'sub_flags' are the flags of the
     sub-elements; 'flags' (all flags that come on with the item) can hold more (Focus: twelve flags that no sub-element switches)."""
     try:
-        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+        items = _user_menu_data().get("items", {})
     except (OSError, ValueError):
         return {}
     return {int(number): (list(entry["sub_elements"]), list(entry.get("sub_flags", entry.get("flags", [])))) for number, entry in items.items()
@@ -155,7 +169,7 @@ def user_menu_not_on(model: str | None) -> set:
     if not model:
         return set()
     try:
-        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+        items = _user_menu_data().get("items", {})
     except (OSError, ValueError):
         return set()
     return {int(number) for number, entry in items.items() if isinstance(entry, dict) and model in entry.get("not_on_models", [])}
@@ -164,7 +178,7 @@ def user_menu_not_on(model: str | None) -> set:
 def user_menu_missing_flags(model: str | None) -> set:
     """IDs of the flags a user menu file of the camera model does not have (an FS7 file lacks 16 of the FS7M2 flags: ``_models`` in user_menu_items.json)."""
     try:
-        data = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("_models", {})
+        data = _user_menu_data().get("_models", {})
     except (OSError, ValueError):
         return set()
     return set((data.get(model) or {}).get("missing_flags", []))
@@ -182,6 +196,15 @@ def empty_user_params(model: str) -> dict | None:
     params = {f"{slot:05d}": "0,0" for slot in range(1, USER_SLOTS + 1)}
     params.update({k: "0" for k in keys if k not in user_menu_missing_flags(model)})
     return params
+
+
+def load_user_menu_help() -> dict:
+    """Menu item number -> one sentence that says what the item is (``help`` in user_menu_items.json), in the active language."""
+    try:
+        items = _user_menu_data().get("items", {})
+    except (OSError, ValueError):
+        return {}
+    return {int(number): tr(entry["help"]) for number, entry in items.items() if isinstance(entry, dict) and isinstance(entry.get("help"), str)}
 
 
 def user_menu_choices(values, model: str | None = None) -> dict:
@@ -210,7 +233,7 @@ def user_menu_slot_sub(number: int) -> str | None:
     (every item checked so far; Codec has 0 in an FS7M2 file although it has none: ``slot_sub`` in the item overrides). None while we do not know the item's
     sub-elements: the value of the slot stays as it is."""
     try:
-        entry = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {}).get(str(number))
+        entry = _user_menu_data().get("items", {}).get(str(number))
     except (OSError, ValueError):
         return None
     if not isinstance(entry, dict):
@@ -227,7 +250,7 @@ def user_menu_slot_sub(number: int) -> str | None:
 def user_flag_owners() -> dict:
     """Flag ID -> (name of the menu item, name of the sub-element or '') for the flags of the user menu that are known."""
     try:
-        items = json.loads(USER_MENU_FILE.read_text(encoding="utf-8")).get("items", {})
+        items = _user_menu_data().get("items", {})
     except (OSError, ValueError):
         return {}
     owners = {}
@@ -371,6 +394,8 @@ LANG = SOURCE_LANGUAGE      # active language
 TRANSLATIONS: dict[str, dict[str, str]] = {}
 DEFAULT_LANGUAGE = SOURCE_LANGUAGE      # used when neither a saved choice nor the operating-system language has a catalog
 USE_SAVED_LANGUAGE = True   # the tests switch it off and run in the source language
+DEFER_TABS = True           # build the rows of the menus that are not shown later (the tests build everything at once)
+ROW_CHUNK = 12              # rows that a menu is built with in one step of the background build (the window stays usable between the steps)
 
 
 def load_translations() -> None:
@@ -1432,18 +1457,27 @@ class ImportDialog(ctk.CTkToplevel):
         top.pack(fill="x", padx=8, pady=(8, 2))
         self.var_search = tk.StringVar()
         ctk.CTkLabel(top, text=tr("Search")).pack(side="left", padx=(8, 4))
-        ctk.CTkEntry(top, textvariable=self.var_search, width=200, height=26).pack(side="left", padx=4)
+        search = ctk.CTkEntry(top, textvariable=self.var_search, width=200, height=26)
+        search.pack(side="left", padx=4)
+        Tooltip(search, tr("Shows only the values whose ID, name or value contains all of these words."), delay=HELP_DELAY)
         self.var_diff = tk.BooleanVar(value=True)
         self.var_known = tk.BooleanVar(value=False)
-        for text, var in ((tr("differences only"), self.var_diff), (tr("known only"), self.var_known)):
-            ctk.CTkCheckBox(top, text=text, variable=var, command=self._refilter, width=20, checkbox_width=20, checkbox_height=20).pack(side="left", padx=(12, 2))
+        for text, var, help_text in ((tr("differences only"), self.var_diff, tr("Hides the values that are the same in both files.")),
+                                     (tr("known only"), self.var_known, tr("Hides the values the program has no name for yet (raw IDs)."))):
+            box = ctk.CTkCheckBox(top, text=text, variable=var, command=self._refilter, width=20, checkbox_width=20, checkbox_height=20)
+            box.pack(side="left", padx=(12, 2))
+            Tooltip(box, help_text, delay=HELP_DELAY)
         self.var_search.trace_add("write", lambda *_a: self._refilter())
         bar = ctk.CTkFrame(self)
         bar.pack(fill="x", padx=8, pady=2)
-        for source, cmd in (("All", lambda: self._set_visible(lambda v, _i: True)), ("None", lambda: self._set_visible(lambda v, _i: False)),
-                            ("Invert selection", lambda: self._set_visible(lambda v, _i: not v)),
-                            ("Known only", lambda: self._set_visible(lambda _v, i: i["known"]))):
-            ctk.CTkButton(bar, text=tr(source), width=app._tr_width(source, 110), height=26, command=cmd).pack(side="left", padx=(6, 2), pady=3)
+        for source, cmd, help_text in (("All", lambda: self._set_visible(lambda v, _i: True), tr("Ticks all the values shown in the list.")),
+                                       ("None", lambda: self._set_visible(lambda v, _i: False), tr("Unticks all the values shown in the list.")),
+                                       ("Invert selection", lambda: self._set_visible(lambda v, _i: not v), tr("Ticks what is not ticked and unticks what is ticked, for the values shown.")),
+                                       ("Known only", lambda: self._set_visible(lambda _v, i: i["known"]),
+                                        tr("Ticks only the values the program has a name for and unticks the others, among the values shown."))):
+            button = ctk.CTkButton(bar, text=tr(source), width=app._tr_width(source, 110), height=26, command=cmd)
+            button.pack(side="left", padx=(6, 2), pady=3)
+            Tooltip(button, help_text, delay=HELP_DELAY)
         self.lbl_count = ctk.CTkLabel(bar, text="", text_color="gray")
         self.lbl_count.pack(side="right", padx=10)
         self.list = ctk.CTkScrollableFrame(self)
@@ -1461,10 +1495,14 @@ class ImportDialog(ctk.CTkToplevel):
             self.rows.append(cb)
         foot = ctk.CTkFrame(self, fg_color="transparent")
         foot.pack(fill="x", padx=8, pady=(2, 8))
-        ctk.CTkButton(foot, text=tr("Import selection"), width=app._tr_width("Import selection", 150), command=self._ok).pack(side="right", padx=4)
-        ctk.CTkButton(foot, text=tr("Import all known"), width=app._tr_width("Import all known", 190), command=self._all_known).pack(side="right", padx=4)
-        ctk.CTkButton(foot, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy).pack(side="right", padx=4)
-        ctk.CTkButton(foot, text=tr("Show differences"), width=app._tr_width("Show differences", 170), command=self._show_diff).pack(side="left", padx=4)
+        for text, width, command, side, help_text, extra in (
+                ("Import selection", 150, self._ok, "right", tr("Takes over the ticked values into the open file (one undo step)."), {}),
+                ("Import all known", 190, self._all_known, "right", tr("Takes over all values that have a name and differ, whatever is ticked."), {}),
+                ("Cancel", 100, self.destroy, "right", tr("Closes the window without importing anything."), {"fg_color": "gray40", "hover_color": "gray30"}),
+                ("Show differences", 170, self._show_diff, "left", tr("Opens the side-by-side comparison of the open file and the other file."), {})):
+            button = ctk.CTkButton(foot, text=tr(text), width=app._tr_width(text, width), command=command, **extra)
+            button.pack(side=side, padx=4)
+            Tooltip(button, help_text, delay=HELP_DELAY)
         self._refilter()
 
     def _visible(self, idx: int) -> bool:
@@ -1526,12 +1564,20 @@ class UserImportDialog(ctk.CTkToplevel):
         ctk.CTkLabel(self, text=tr("Choose the menu items to take over. The sub-elements that were selected for an item come along."), anchor="w",
                      justify="left", wraplength=app._sc(560)).pack(fill="x", padx=12, pady=(10, 4))
         self.var_mode = tk.StringVar(value="append")
-        for value, text in (("same", tr("At their own slots (a filled slot is replaced)")), ("append", tr("Append behind the last filled slot, in their order"))):
-            ctk.CTkRadioButton(self, text=text, variable=self.var_mode, value=value).pack(anchor="w", padx=16, pady=2)
+        for value, text, help_text in (("same", tr("At their own slots (a filled slot is replaced)"),
+                                        tr("Each chosen menu item goes to the slot it has in the other file; a slot that is filled there is replaced.")),
+                                       ("append", tr("Append behind the last filled slot, in their order"),
+                                        tr("The chosen menu items go behind the last filled slot, in their order, as far as the 20 slots reach."))):
+            radio = ctk.CTkRadioButton(self, text=text, variable=self.var_mode, value=value)
+            radio.pack(anchor="w", padx=16, pady=2)
+            Tooltip(radio, help_text, delay=HELP_DELAY)
         bar = ctk.CTkFrame(self, fg_color="transparent")
         bar.pack(fill="x", padx=8, pady=(6, 2))
-        for source, command in (("All", lambda: self._set_all(True)), ("None", lambda: self._set_all(False))):
-            ctk.CTkButton(bar, text=tr(source), width=app._tr_width(source, 90), height=26, command=command).pack(side="left", padx=(6, 2))
+        for source, command, help_text in (("All", lambda: self._set_all(True), tr("Ticks all menu items that are not in the menu yet.")),
+                                           ("None", lambda: self._set_all(False), tr("Unticks all menu items."))):
+            button = ctk.CTkButton(bar, text=tr(source), width=app._tr_width(source, 90), height=26, command=command)
+            button.pack(side="left", padx=(6, 2))
+            Tooltip(button, help_text, delay=HELP_DELAY)
         self.list = ctk.CTkScrollableFrame(self)
         self.list.pack(fill="both", expand=True, padx=8, pady=2)
         self.vars, self.available = [], []
@@ -1546,9 +1592,13 @@ class UserImportDialog(ctk.CTkToplevel):
         self.lbl_problem.pack(fill="x", padx=12)
         foot = ctk.CTkFrame(self, fg_color="transparent")
         foot.pack(fill="x", padx=8, pady=(2, 8))
-        ctk.CTkButton(foot, text=tr("Import selection"), width=app._tr_width("Import selection", 150), command=self._ok).pack(side="right", padx=4)
-        ctk.CTkButton(foot, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy).pack(side="right", padx=4)
-        ctk.CTkButton(foot, text=tr("Show differences"), width=app._tr_width("Show differences", 170), command=self._show_diff).pack(side="left", padx=4)
+        for text, width, command, side, help_text, extra in (
+                ("Import selection", 150, self._ok, "right", tr("Takes over the ticked menu items, with their sub-elements, into the open file (one undo step)."), {}),
+                ("Cancel", 100, self.destroy, "right", tr("Closes the window without importing anything."), {"fg_color": "gray40", "hover_color": "gray30"}),
+                ("Show differences", 170, self._show_diff, "left", tr("Opens the side-by-side comparison of the open file and the other file."), {})):
+            button = ctk.CTkButton(foot, text=tr(text), width=app._tr_width(text, width), command=command, **extra)
+            button.pack(side=side, padx=4)
+            Tooltip(button, help_text, delay=HELP_DELAY)
         self.bind("<Escape>", lambda _e: self.destroy())
 
     def _set_all(self, value: bool):
@@ -1592,12 +1642,18 @@ class DiffDialog(ctk.CTkToplevel):
                         "only": "#5a2f2f" if dark else "#ffd6d6"}
         bar = ctk.CTkFrame(self)
         bar.pack(fill="x", padx=8, pady=(8, 2))
-        sources = (("Previous difference", "Alt+Up", self.previous_difference), ("Next difference", "Alt+Down", self.next_difference))
-        for source, hint, command in sources:
-            ctk.CTkButton(bar, text=f"{tr(source)}  ({hint})", width=app._tr_width(source, 150) + 60, height=26, command=command).pack(side="left", padx=(6, 2), pady=3)
+        sources = (("Previous difference", "Alt+Up", self.previous_difference, tr("Jumps to the previous row that differs.")),
+                   ("Next difference", "Alt+Down", self.next_difference, tr("Jumps to the next row that differs.")))
+        for source, hint, command, help_text in sources:
+            button = ctk.CTkButton(bar, text=f"{tr(source)}  ({hint})", width=app._tr_width(source, 150) + 60, height=26, command=command)
+            button.pack(side="left", padx=(6, 2), pady=3)
+            Tooltip(button, help_text, delay=HELP_DELAY)
         self.seg = ctk.CTkSegmentedButton(bar, values=[tr("Show full files") + "  (Ctrl+1)", tr("Show only differences") + "  (Ctrl+2)"], command=self._segment)
         self.seg.set(tr("Show only differences") + "  (Ctrl+2)")
         self.seg.pack(side="left", padx=(16, 2), pady=3)
+        seg_help = tr("Shows all rows of both files or only the rows that differ.")
+        for seg_button in self.seg._buttons_dict.values():      # (the segmented button itself cannot be bound: its parts can)
+            Tooltip(seg_button, seg_help, delay=HELP_DELAY)
         self.lbl_count = ctk.CTkLabel(bar, text="", text_color="gray")
         self.lbl_count.pack(side="right", padx=10)
         font = app._font
@@ -1884,7 +1940,9 @@ class LicenseDialog(ctk.CTkToplevel):
             text = tr("{file} not found.").format(file=filename)
         box.insert("1.0", text)
         box.configure(state="disabled")
-        ctk.CTkButton(self, text=tr("Close"), width=app._tr_width("Close", 100), command=self.destroy).pack(pady=(0, 12))
+        close = ctk.CTkButton(self, text=tr("Close"), width=app._tr_width("Close", 100), command=self.destroy)
+        close.pack(pady=(0, 12))
+        Tooltip(close, tr("Closes this window."), delay=HELP_DELAY)
 
 
 def open_mail_client() -> bool:
@@ -2008,13 +2066,17 @@ class AboutDialog(ctk.CTkToplevel):
                             font=ctk.CTkFont(underline=True))
         link.pack(anchor="w")
         link.bind("<Button-1>", lambda _e: open_mail_client())
+        Tooltip(link, tr("Opens your mail program with the address of the project."), delay=HELP_DELAY)
         self.link = link
         row = ctk.CTkFrame(self, fg_color="transparent")
         row.pack(pady=(0, 16))
-        ctk.CTkButton(row, text=tr("License text…"), width=app._tr_width("License text…", 130), command=self.show_license).pack(side="left", padx=6)
-        ctk.CTkButton(row, text=tr("Third-party licenses…"), width=app._tr_width("Third-party licenses…", 170),
-                      command=lambda: self.show_license("THIRD_PARTY_NOTICES.md", "Third-party licenses")).pack(side="left", padx=6)
-        ctk.CTkButton(row, text=tr("Close"), width=app._tr_width("Close", 100), command=self.destroy).pack(side="left", padx=6)
+        for text, width, command, help_text in (
+                ("License text…", 130, self.show_license, tr("Shows the license of this program.")),
+                ("Third-party licenses…", 170, lambda: self.show_license("THIRD_PARTY_NOTICES.md", "Third-party licenses"), tr("Shows the licenses of the components this program uses.")),
+                ("Close", 100, self.destroy, tr("Closes this window."))):
+            button = ctk.CTkButton(row, text=tr(text), width=app._tr_width(text, width), command=command)
+            button.pack(side="left", padx=6)
+            Tooltip(button, help_text, delay=HELP_DELAY)
 
     def show_license(self, filename: str = "LICENSE", title: str = "License text"):
         dialog = LicenseDialog(self.app, invisible=self.invisible, filename=filename, title=title, parent=self)
@@ -2209,10 +2271,14 @@ class ModelDialog(ctk.CTkToplevel):
         ctk.CTkLabel(self, text=tr("Which camera is the new file for?")).pack(padx=24, pady=(18, 10))
         row = ctk.CTkFrame(self, fg_color="transparent")
         row.pack(padx=24, pady=(0, 6))
-        for label, model in (("FS7 (Mk1)", "PXW-FS7"), ("FS7 Mk2", "PXW-FS7M2")):
-            ctk.CTkButton(row, text=label, width=130, command=lambda m=model: self._pick(m)).pack(side="left", padx=6)
+        for label, model, help_text in (("FS7 (Mk1)", "PXW-FS7", tr("Starts a new file for the FS7 (Mk1).")), ("FS7 Mk2", "PXW-FS7M2", tr("Starts a new file for the FS7 Mk2."))):
+            button = ctk.CTkButton(row, text=label, width=130, command=lambda m=model: self._pick(m))
+            button.pack(side="left", padx=6)
+            Tooltip(button, help_text, delay=HELP_DELAY)
         ctk.CTkLabel(self, text=tr("Neutral values from the templates; not a factory state."), text_color="gray").pack(padx=24, pady=(0, 6))
-        ctk.CTkButton(self, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy).pack(pady=(0, 16))
+        cancel = ctk.CTkButton(self, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy)
+        cancel.pack(pady=(0, 16))
+        Tooltip(cancel, tr("Closes the window without creating a file."), delay=HELP_DELAY)
 
     def _pick(self, model: str):
         self.result = model
@@ -2490,6 +2556,8 @@ class FileOpenDialog(ctk.CTkToplevel):
         self.path_var = tk.StringVar()
         self.path_entry = ctk.CTkEntry(bar, textvariable=self.path_var)
         self.path_entry.grid(row=0, column=4, sticky="ew")
+        Tooltip(self.path_entry, tr("The folder that is shown. Type a path and press Enter to go there."), delay=HELP_DELAY)
+        Tooltip(self.drive_menu, tr("Switches to another drive."), delay=HELP_DELAY)
         self.path_entry.bind("<Return>", lambda _e: self.navigate(Path(self.path_var.get().strip().strip('"')), fallback=True))
         self.listbox = tk.Listbox(right, activestyle="none", exportselection=False, bg=colors["entry"], fg=colors["text"], font=colors["font"], relief="flat",
                                   highlightthickness=sc(1), highlightbackground=colors["border"], highlightcolor=colors["focus"],
@@ -2511,16 +2579,22 @@ class FileOpenDialog(ctk.CTkToplevel):
         self.name_entry.bind("<FocusIn>", lambda _e: self.name_var.get() == NO_NAME and self.name_var.set(""), add="+")      # typing starts on an empty field
         self.name_entry.bind("<FocusOut>", lambda _e: not self.name_var.get().strip() and self.name_var.set(NO_NAME), add="+")
         self.name_entry.grid(row=0, column=1, sticky="ew")
+        Tooltip(self.name_entry, tr("The name of the file to open. A name that you type works, too."), delay=HELP_DELAY)
         self.name_entry.bind("<Return>", lambda _e: self.accept(typed=True))
         labels = [label for label, _p in self._types]
         self.type_var = tk.StringVar(value=labels[0])
         self.type_menu = ctk.CTkOptionMenu(low, values=labels, variable=self.type_var, command=lambda _v: self.navigate(self._folder), dynamic_resizing=False,
                                           width=round(max(colors["font"].measure(label) for label in labels) / scale) + 50)      # as wide as its longest text (customtkinter scales the width itself); the file name gets the rest
         self.type_menu.grid(row=0, column=2, padx=(sc(8), 0))
+        Tooltip(self.type_menu, tr("Which kinds of files the list shows."), delay=HELP_DELAY)
         buttons = ctk.CTkFrame(low, fg_color="transparent")
         buttons.grid(row=1, column=0, columnspan=3, sticky="e", pady=(sc(10), 0))
-        ctk.CTkButton(buttons, text=tr("Open"), width=app._tr_width("Open", 100), command=self.accept).pack(side="left", padx=(0, sc(8)))
-        ctk.CTkButton(buttons, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy).pack(side="left")
+        open_button = ctk.CTkButton(buttons, text=tr("Open"), width=app._tr_width("Open", 100), command=self.accept)
+        open_button.pack(side="left", padx=(0, sc(8)))
+        Tooltip(open_button, tr("Opens the marked file."), delay=HELP_DELAY)
+        cancel_button = ctk.CTkButton(buttons, text=tr("Cancel"), width=app._tr_width("Cancel", 100), fg_color="gray40", hover_color="gray30", command=self.destroy)
+        cancel_button.pack(side="left")
+        Tooltip(cancel_button, tr("Closes the window without opening a file."), delay=HELP_DELAY)
         self.bind("<Escape>", lambda _e: self.destroy())
 
         start = Path(initialdir) if initialdir else Path.home()
@@ -3089,6 +3163,8 @@ class Tooltip:
 
     def __init__(self, widget, text: str = "", delay: int = 0):
         self.widget, self.text, self.delay, self._tip, self._job = widget, text, delay, None, None
+        if not hasattr(widget, "_help_tip"):      # (the tests look the explanation of a control up here)
+            widget._help_tip = self
         widget.bind("<Enter>", self._enter, add="+")
         widget.bind("<Leave>", self._hide, add="+")
         widget.bind("<Destroy>", self._hide, add="+")
@@ -3235,6 +3311,10 @@ class App(ctk.CTk):
         self._cat_collapsed: set[str] = set()   # collapsed categories ("Paint")
         self._groups: dict[str, dict] = {}
         self._lazy_groups: set[str] = set()   # blocks whose rows are not built yet
+        self._pending_groups: dict = {}      # menus whose rows are built later: group -> (items, container, has_preview)
+        self._running_builds: dict = {}      # menus that are being built in steps: group -> generator
+        self._built_before: dict = {}      # the rows that were there when the build of a menu began
+        self._build_job = None
         self._reflow: list = []               # widgets whose fields wrap to the width of the window (see _reflow_all)
         self._reflow_job = None
         self._rows: dict[str, dict] = {}      # parameter id -> {"label", "widget", "sub"} (for the filter)
@@ -3368,10 +3448,11 @@ class App(ctk.CTk):
             return tk.Menu(parent, tearoff=False, font=self._font, bg=colors["entry"], fg=colors["text"], activebackground=colors["focus"],
                            activeforeground="#ffffff", selectcolor=colors["text"], borderwidth=1, relief="solid", activeborderwidth=0)
 
-        def cascade(label, menu):
+        def cascade(label, menu, help_text):
             button = ctk.CTkButton(bar, text=label, width=10, height=26, corner_radius=4, fg_color="transparent", text_color=colors["label"],
                                    hover_color=colors["border"], command=lambda: popup(button, menu))
             button.pack(side="left", padx=(4, 0), pady=2)
+            Tooltip(button, help_text, delay=HELP_DELAY)
 
         def popup(button, menu):
             if menu is file_menu:
@@ -3395,14 +3476,14 @@ class App(ctk.CTk):
         add(file_menu, "compare", "Compare…", self.compare_file, "Ctrl+D")
         file_menu.add_separator()
         add(file_menu, "exit", "Exit", self.on_close, "Alt+F4")
-        cascade(tr("File"), file_menu)
+        cascade(tr("File"), file_menu, tr("Create, open, save, import and compare files; the list of the recent files."))
 
         edit_menu = new_menu(bar)
         add(edit_menu, "undo", "Undo", self.undo, "Ctrl+Z")
         add(edit_menu, "redo", "Redo", self.redo, "Ctrl+Y")
         edit_menu.add_separator()
         add(edit_menu, "search", "Find", lambda: self.entry_search.focus_set(), "Ctrl+F")
-        cascade(tr("Edit"), edit_menu)
+        cascade(tr("Edit"), edit_menu, tr("Undo and redo changes and jump to the search field."))
 
         view_menu = new_menu(bar)
         lang_menu = new_menu(view_menu)
@@ -3420,11 +3501,11 @@ class App(ctk.CTk):
         view_menu.add_cascade(label=tr("Appearance"), menu=look_menu)
         view_menu.add_separator()
         add(view_menu, "reset_window", "Reset window size and position", self.reset_window)
-        cascade(tr("View"), view_menu)
+        cascade(tr("View"), view_menu, tr("Expand or collapse the groups, choose the language and the appearance, reset the window size and position."))
 
         help_menu = new_menu(bar)
         help_menu.add_command(label=tr("About {app}…").format(app=APP_NAME), command=self.show_about, accelerator="F1")
-        cascade(tr("Help"), help_menu)
+        cascade(tr("Help"), help_menu, tr("Information about the program, its license and the licenses of its components."))
 
         self._menu_bar = bar
         self._menu_commands = {"new": self.new_file, "open": self.open_file, "save": self.save, "save_as": self.save_as, "import": self.import_file, "compare": self.compare_file,
@@ -3820,7 +3901,7 @@ class App(ctk.CTk):
                 error=PARAM_DB_ERRORS[kind]))
         return True
 
-    TABLE_STATE = ("table", "entries", "vars", "_groups", "_rows", "_subheads", "_cats", "_lazy_groups", "_reflow",
+    TABLE_STATE = ("table", "entries", "vars", "_groups", "_rows", "_subheads", "_cats", "_lazy_groups", "_pending_groups", "_reflow",
                    "_built_model", "_built_kind", "_built_db", "_built_look", "_built_choices")
 
     def _look(self) -> tuple:
@@ -3895,6 +3976,7 @@ class App(ctk.CTk):
             state["table"].destroy()
             state = None
         if state is not None:
+            self._finish_build()      # (the table that is left is kept complete)
             self._swap_table(key, state)         # not shown yet: its values are updated before it is laid out
             self._table_header()
             self._refresh_in_place(reset_original)
@@ -3904,6 +3986,7 @@ class App(ctk.CTk):
             self._reflow_all()
             return
         if key != self._active_key and self._active_key is not None and self.vars:
+            self._finish_build()
             self._keep_left_table()      # keep the table we leave (within the budget of widgets)
             with contextlib.suppress(tk.TclError):      # (destroyed by the budget when it did not fit)
                 self.table.pack_forget()
@@ -3998,6 +4081,10 @@ class App(ctk.CTk):
             order = info.get("order", 99) if info else 99
             return (SUBGROUP_ORDER.index(sub) if sub in SUBGROUP_ORDER else len(SUBGROUP_ORDER), sub, order, key)
 
+        present = [g for g, _title in GROUPS if by_group[g] or (g == "vf" and self.kind == "all")]
+        order = [g for g, _title in self._group_order() if g in present]
+        active = self._tab if self._tab in present else (order[0] if order else None)      # (the tab that is shown)
+        self._pending_groups, self._running_builds, self._built_before = {}, {}, {}
         table_row = 0
         for group, title in GROUPS:
             items = sorted(by_group[group], key=sort_key)
@@ -4018,95 +4105,11 @@ class App(ctk.CTk):
             self._groups[group] = {"title": tr(title), "header": header, "container": container, "count": len(items),
                                    "keys": [k for k, _v, _i in items], "visible": len(items), "sep": sep}
             self._row_parent = container
-            row, current_sub, sub_info = 0, None, None
-            if has_preview:
-                self._build_vf_preview(container).grid(row=0, column=0, columnspan=2, sticky="ew", padx=self._sc(5), pady=(self._sc(4), self._sc(6)))
-                row = 1
-            if group == "unknown" and self._tab != "unknown":
-                # the rows without a database entry (about 180 in an ALL file) are built when the tab is opened; rows that have an entry
-                # (sub-group "Other") are built at once because they need their description and widget
-                lazy = [(key, value) for key, value, info in items if info is None]
-                items = [(key, value, info) for key, value, info in items if info is not None]
-                for key, value in lazy:
-                    var = tk.StringVar(value=value)
-                    var.trace_add("write", lambda *_a, k=key: self._on_edit(k))
-                    self.vars[key] = var
-                    self._rows[key] = {"label": None, "widget": None, "sub": None, "info": None, "lazy": True}
-                if lazy:
-                    self._lazy_groups.add(group)
-            card, card_row, first_sub = container, 0, True
-            for key, value, info in items:
-                sub = (info.get("subgroup", "Other") if info else None)
-                if sub is not None and sub != current_sub:
-                    category = sub.split(" › ")[0] if " › " in sub and sub.split(" › ")[0] in CATEGORIES else None
-                    if category and not any(c["title"] == category for c in self._cats):
-                        cat_sep = self._separator(container, "main", row=row, column=0, columnspan=2, pady=(self._sc(12), 0))
-                        cat_label = tk.Label(container, text="", anchor="w", bg=self._c["bg"], fg=self._c["label"], font=self._font_bold, cursor="hand2")
-                        cat_label.grid(row=row + 1, column=0, columnspan=2, sticky="w", padx=self._sc(5), pady=(self._sc(6), self._sc(2)))
-                        cat_info = {"label": cat_label, "sep": cat_sep, "title": category, "subs": [], "group": group}
-                        cat_label.bind("<Button-1>", lambda _e, ci=cat_info: self._toggle_cat(ci))
-                        self._set_cat_text(cat_info)
-                        self._cats.append(cat_info)
-                        row += 2
-                        first_sub = True
-                    # every sub-group is a rounded card (slightly different fill); a thin light line separates it from the previous one
-                    wrap = tk.Frame(container, bg=self._c["bg"])
-                    wrap.grid(row=row, column=0, columnspan=2, sticky="ew", padx=(self._sc(24 if category else 5), self._sc(5)))
-                    wrap.grid_columnconfigure(0, weight=1)
-                    if not first_sub:
-                        self._separator(wrap, "sub", row=0, column=0, pady=(self._sc(5), self._sc(5)))
-                    first_sub = False
-                    card = ctk.CTkFrame(wrap, corner_radius=10, fg_color=self._c["card"], border_width=1, border_color=self._c["card_border"])
-                    card.grid(row=1, column=0, sticky="ew", ipady=self._sc(3))
-                    card.grid_columnconfigure(0, minsize=self._sc(300))
-                    card.grid_columnconfigure(1, weight=1)
-                    heading = tk.Label(card, text=sub, anchor="w", bg=self._c["card"], fg=self._c["accent"], font=self._font_bold, cursor="hand2")
-                    heading.grid(row=0, column=0, columnspan=2, sticky="w", padx=self._sc(10), pady=(self._sc(6), self._sc(2)))
-                    divider = None
-                    if sub in REORDER_BY_LOCK:
-                        divider = tk.Label(card, text=tr("Not used with the current settings"), anchor="w", bg=self._c["card"], fg="#7a7a7a", font=self._font)
-                    sub_info = {"label": heading, "outer": wrap, "keys": [], "title": sub, "suffix": "", "category": category, "group": group, "divider": divider,
-                                "display": sub_heading(sub)}
-                    if category:
-                        next(c for c in self._cats if c["title"] == category)["subs"].append(sub_info)
-                    heading.bind("<Button-1>", lambda _e, si=sub_info: self._toggle_sub(si))
-                    self._set_sub_text(sub_info)
-                    self._subheads.append(sub_info)
-                    current_sub, row, card_row = sub, row + 1, 1
-                parent, prow = (card, card_row) if sub is not None else (container, row)
-                self._row_parent = parent
-                name_label = self._row_label(parent, key, info, self._c["card"] if sub is not None else None)
-                name_label.grid(row=prow, column=0, padx=self._sc(10 if sub is not None else 5), pady=self._sc(1), sticky="w")
-                var = tk.StringVar(value=value)
-                var.trace_add("write", lambda *_a, k=key: self._on_edit(k))
-                widget = self._build_choice_widget(key, var, info.get("widget") if info else None)
-                if widget is None:
-                    widget = tk.Entry(
-                        parent, textvariable=var, bg=self._c["entry"], fg=self._c["text"], insertbackground=self._c["text"],
-                        relief="flat", highlightthickness=self._sc(1), highlightbackground=self._c["border"],
-                        highlightcolor=self._c["focus"], font=self._c["font"],
-                    )
-                    widget.grid(row=prow, column=1, padx=self._sc(5), pady=self._sc(2), sticky="ew", ipady=self._sc(2))
-                    outer = None
-                elif hasattr(widget, "_mark"):
-                    widget.grid(row=prow, column=1, padx=5, pady=2, sticky="w")
-                    outer = None
-                else:
-                    # widgets whose children fill the whole frame (step fields, multi-choice) get an outer frame for the yellow "changed" border:
-                    # a border on the widget itself would be covered by its own children
-                    outer = ctk.CTkFrame(parent, fg_color="transparent", border_width=2, border_color=self._c["card"], corner_radius=4)
-                    outer.grid(row=prow, column=1, padx=3, pady=2, sticky="w")
-                    widget.grid(in_=outer, row=0, column=0, padx=5, pady=5, sticky="w")
-                    widget.lift()
-                    widget._mark = outer
-                self.vars[key], self.entries[key] = var, widget
-                self._rows[key] = {"label": name_label, "widget": widget, "outer": outer, "sub": sub_info if sub is not None else None, "info": info}
-                if sub is not None:
-                    sub_info["keys"].append(key)
-                    card_row += 1
-                else:
-                    row += 1
-            self._apply_group_state(group)
+            if group != active and DEFER_TABS:      # the rows of the menus that are not shown are built when their tab is opened (or in the background)
+                self._defer_group(group, items, container, has_preview)
+            else:
+                for _step in self._build_group_rows(group, items, container, has_preview):
+                    pass
             table_row += 3
         self._row_parent = self.table
         for wkey, widget in self.entries.items():
@@ -4120,6 +4123,200 @@ class App(ctk.CTk):
         self._table_footer()
         self.update_idletasks()
         self.table._parent_canvas.yview_moveto(scroll)
+        self._schedule_build()
+
+    def _defer_group(self, group: str, items: list, container, has_preview: bool):
+        """Leave the rows of a menu unbuilt: the variables exist (the file values are complete), the rows are built by _build_pending when the tab is
+        opened, when a filter needs them, or in the background (a table of an ALL file has about 1000 widgets and building them all took seconds)."""
+        for key, value, info in items:
+            var = tk.StringVar(value=value)
+            var.trace_add("write", lambda *_a, k=key: self._on_edit(k))
+            self.vars[key] = var
+            self._rows[key] = {"label": None, "widget": None, "sub": None, "info": info, "lazy": True}
+        self._pending_groups[group] = (items, container, has_preview)
+        self._apply_group_state(group)
+
+    def _build_group_rows(self, group: str, items: list, container, has_preview: bool):
+        """The rows of one menu (sub-group cards, labels and widgets); `self.vars` may hold the variables already (deferred menu)."""
+        previous_parent = self._row_parent
+        self._row_parent = container
+        row, current_sub, sub_info = 0, None, None
+        if has_preview:
+            self._build_vf_preview(container).grid(row=0, column=0, columnspan=2, sticky="ew", padx=self._sc(5), pady=(self._sc(4), self._sc(6)))
+            row = 1
+        if group == "unknown" and self._tab != "unknown":
+            # the rows without a database entry (about 180 in an ALL file) are built when the tab is opened; rows that have an entry
+            # (sub-group "Other") are built at once because they need their description and widget
+            lazy = [(key, value) for key, value, info in items if info is None]
+            items = [(key, value, info) for key, value, info in items if info is not None]
+            for key, value in lazy:
+                var = self.vars.get(key)
+                if var is None:
+                    var = tk.StringVar(value=value)
+                    var.trace_add("write", lambda *_a, k=key: self._on_edit(k))
+                self.vars[key] = var
+                self._rows[key] = {"label": None, "widget": None, "sub": None, "info": None, "lazy": True}
+            if lazy:
+                self._lazy_groups.add(group)
+        card, card_row, first_sub, built = container, 0, True, 0
+        for key, value, info in items:
+            sub = (info.get("subgroup", "Other") if info else None)
+            if sub is not None and sub != current_sub:
+                category = sub.split(" › ")[0] if " › " in sub and sub.split(" › ")[0] in CATEGORIES else None
+                if category and not any(c["title"] == category for c in self._cats):
+                    cat_sep = self._separator(container, "main", row=row, column=0, columnspan=2, pady=(self._sc(12), 0))
+                    cat_label = tk.Label(container, text="", anchor="w", bg=self._c["bg"], fg=self._c["label"], font=self._font_bold, cursor="hand2")
+                    cat_label.grid(row=row + 1, column=0, columnspan=2, sticky="w", padx=self._sc(5), pady=(self._sc(6), self._sc(2)))
+                    cat_info = {"label": cat_label, "sep": cat_sep, "title": category, "subs": [], "group": group}
+                    cat_label.bind("<Button-1>", lambda _e, ci=cat_info: self._toggle_cat(ci))
+                    self._set_cat_text(cat_info)
+                    self._cats.append(cat_info)
+                    row += 2
+                    first_sub = True
+                # every sub-group is a rounded card (slightly different fill); a thin light line separates it from the previous one
+                wrap = tk.Frame(container, bg=self._c["bg"])
+                wrap.grid(row=row, column=0, columnspan=2, sticky="ew", padx=(self._sc(24 if category else 5), self._sc(5)))
+                wrap.grid_columnconfigure(0, weight=1)
+                if not first_sub:
+                    self._separator(wrap, "sub", row=0, column=0, pady=(self._sc(5), self._sc(5)))
+                first_sub = False
+                card = ctk.CTkFrame(wrap, corner_radius=10, fg_color=self._c["card"], border_width=1, border_color=self._c["card_border"])
+                card.grid(row=1, column=0, sticky="ew", ipady=self._sc(3))
+                card.grid_columnconfigure(0, minsize=self._sc(300))
+                card.grid_columnconfigure(1, weight=1)
+                heading = tk.Label(card, text=sub, anchor="w", bg=self._c["card"], fg=self._c["accent"], font=self._font_bold, cursor="hand2")
+                heading.grid(row=0, column=0, columnspan=2, sticky="w", padx=self._sc(10), pady=(self._sc(6), self._sc(2)))
+                divider = None
+                if sub in REORDER_BY_LOCK:
+                    divider = tk.Label(card, text=tr("Not used with the current settings"), anchor="w", bg=self._c["card"], fg="#7a7a7a", font=self._font)
+                sub_info = {"label": heading, "outer": wrap, "keys": [], "title": sub, "suffix": "", "category": category, "group": group, "divider": divider,
+                            "display": sub_heading(sub)}
+                if category:
+                    next(c for c in self._cats if c["title"] == category)["subs"].append(sub_info)
+                heading.bind("<Button-1>", lambda _e, si=sub_info: self._toggle_sub(si))
+                self._set_sub_text(sub_info)
+                self._subheads.append(sub_info)
+                current_sub, row, card_row = sub, row + 1, 1
+            parent, prow = (card, card_row) if sub is not None else (container, row)
+            self._row_parent = parent
+            name_label = self._row_label(parent, key, info, self._c["card"] if sub is not None else None)
+            name_label.grid(row=prow, column=0, padx=self._sc(10 if sub is not None else 5), pady=self._sc(1), sticky="w")
+            var = self.vars.get(key)
+            if var is None:
+                var = tk.StringVar(value=value)
+                var.trace_add("write", lambda *_a, k=key: self._on_edit(k))
+            widget = self._build_choice_widget(key, var, info.get("widget") if info else None)
+            if widget is None:
+                widget = tk.Entry(
+                    parent, textvariable=var, bg=self._c["entry"], fg=self._c["text"], insertbackground=self._c["text"],
+                    relief="flat", highlightthickness=self._sc(1), highlightbackground=self._c["border"],
+                    highlightcolor=self._c["focus"], font=self._c["font"],
+                )
+                widget.grid(row=prow, column=1, padx=self._sc(5), pady=self._sc(2), sticky="ew", ipady=self._sc(2))
+                outer = None
+            elif hasattr(widget, "_mark"):
+                widget.grid(row=prow, column=1, padx=5, pady=2, sticky="w")
+                outer = None
+            else:
+                # widgets whose children fill the whole frame (step fields, multi-choice) get an outer frame for the yellow "changed" border:
+                # a border on the widget itself would be covered by its own children
+                outer = ctk.CTkFrame(parent, fg_color="transparent", border_width=2, border_color=self._c["card"], corner_radius=4)
+                outer.grid(row=prow, column=1, padx=3, pady=2, sticky="w")
+                widget.grid(in_=outer, row=0, column=0, padx=5, pady=5, sticky="w")
+                widget.lift()
+                widget._mark = outer
+            self.vars[key], self.entries[key] = var, widget
+            self._rows[key] = {"label": name_label, "widget": widget, "outer": outer, "sub": sub_info if sub is not None else None, "info": info}
+            if sub is not None:
+                sub_info["keys"].append(key)
+                card_row += 1
+            else:
+                row += 1
+            built += 1
+            if built % ROW_CHUNK == 0:
+                yield      # (a deferred menu is built in small steps; the caller goes on with the next step or builds the rest at once)
+        self._apply_group_state(group)
+        self._row_parent = previous_parent
+
+    def _advance_build(self, group: str, steps: int | None = None) -> bool:
+        """Run the build of a deferred menu: all of it, or `steps` steps of ROW_CHUNK rows. True when the rows of the menu are complete."""
+        pending = self._pending_groups.get(group)
+        if pending is None:
+            return True
+        gen = self._running_builds.get(group)
+        if gen is None:
+            items, container, has_preview = pending
+            self._built_before[group] = set(self.entries)
+            gen = self._running_builds[group] = self._build_group_rows(group, items, container, has_preview)
+        busy, self._busy = self._busy, True      # (building a row must not count as an edit)
+        done, count = False, 0
+        try:
+            with lazy_layout():
+                while steps is None or count < steps:
+                    try:
+                        next(gen)
+                    except StopIteration:
+                        done = True
+                        break
+                    count += 1
+        finally:
+            self._busy = busy
+            self._row_parent = self.table
+        return done
+
+    def _complete_build(self, group: str, refilter: bool):
+        """The rows of a deferred menu are all there: derived rows follow the rows they combine, changed rows are marked, locks and options apply."""
+        self._pending_groups.pop(group, None)
+        self._running_builds.pop(group, None)
+        before = self._built_before.pop(group, set())
+        for key in set(self.entries) - before:
+            deps = getattr(self.entries[key], "_derived_deps", None)
+            if deps:
+                for pid in deps:
+                    if pid in self.vars:
+                        self.vars[pid].trace_add("write", lambda *_a, w=self.entries[key], k=key: (w._refresh(), self._paint_mark(k)))
+                self.entries[key]._refresh()
+            self._paint_mark(key)
+        self._refresh_vf_preview()
+        self._refresh_availability()      # locks and greyed-out options of the new rows
+        if refilter:
+            self._apply_filter()      # folded sub-groups and an active filter apply to the new rows, too
+
+    def _build_pending(self, group: str, refilter: bool = False):
+        """Build a deferred menu now (its tab was opened, a filter needs its rows, or the table is put away)."""
+        if group not in self._pending_groups:
+            return
+        self._advance_build(group)
+        self._complete_build(group, refilter)
+
+    def _schedule_build(self, delay: int = 60):
+        """Build the deferred menus one after the other in small steps in the background (the window stays usable)."""
+        if self._build_job is None and self._pending_groups:
+            self._build_job = self.after(delay, self._build_step)
+
+    def _build_step(self):
+        self._build_job = None
+        try:
+            if not self.winfo_exists():
+                return
+        except tk.TclError:
+            return
+        for group, _title in GROUPS:
+            if group in self._pending_groups:
+                if self._advance_build(group, steps=1):
+                    self._complete_build(group, refilter=True)
+                break
+        self._schedule_build(15)
+
+    def _finish_build(self):
+        """Build every deferred menu now (before the table is put away, and in the tests)."""
+        if self._build_job is not None:
+            with contextlib.suppress(tk.TclError, ValueError):
+                self.after_cancel(self._build_job)
+            self._build_job = None
+        for group, _title in GROUPS:
+            if group in self._pending_groups:
+                self._build_pending(group)
 
     def _display_flags(self) -> list[int] | None:
         """The values of ALL 00175 as numbers (None when the file has no such row or it does not hold numbers)."""
@@ -4348,6 +4545,8 @@ class App(ctk.CTk):
 
     def _ensure_built(self, group: str):
         """Build the rows of a block that was left unbuilt while it was collapsed."""
+        if group in self._pending_groups:
+            self._build_pending(group, refilter=True)
         if group not in self._lazy_groups:
             return
         self._lazy_groups.discard(group)
@@ -4478,6 +4677,7 @@ class App(ctk.CTk):
         changed_only, known_only = self.var_changed.get(), self.var_known.get()
         active = bool(tokens or changed_only or known_only)
         if active:
+            self._finish_build()      # a filter looks at the rows of every menu
             for group in list(self._lazy_groups):
                 self._ensure_built(group)
         shown_keys: set[str] = set()
@@ -5475,6 +5675,19 @@ class App(ctk.CTk):
         raw = ctk.CTkLabel(body, text=tr("Raw value: {value}").format(value=var.get()), text_color="gray", wraplength=430, justify="left")
         raw.grid(row=(len(fields) - 1) // per_row + 1, column=0, columnspan=per_row, sticky="w", padx=4)
         var.trace_add("write", lambda *_a: raw.configure(text=tr("Raw value: {value}").format(value=var.get())))
+        help_label = None
+        if spec.get("sub_elements") == "user_menu":      # what the chosen menu item is, under its raw value
+            help_label = ctk.CTkLabel(body, text="", text_color="gray", wraplength=430, justify="left")
+            help_label.grid(row=(len(fields) - 1) // per_row + 2, column=0, columnspan=per_row, sticky="w", padx=4)
+
+            def show_item_help(*_a):
+                code = var.get().split(",")[0].strip()
+                number = int(code) - USER_MENU_BASE if code.lstrip("-").isdigit() and int(code) > USER_MENU_BASE else None
+                if help_label.winfo_exists():
+                    help_label.configure(text=load_user_menu_help().get(number, "") if number is not None else "")
+
+            var.trace_add("write", show_item_help)
+            show_item_help()
         subs = ctk.CTkFrame(frame, fg_color="transparent") if spec.get("sub_elements") == "user_menu" else None      # check boxes for the sub-elements of the item of a user menu slot
         watched: set = set()
         room = [0.0]      # width the line of check boxes may use (set by relayout), the line is as wide as the window allows and wraps there
@@ -5569,6 +5782,8 @@ class App(ctk.CTk):
             for n, cell in enumerate(cells):
                 cell.grid(row=n // per, column=n % per, padx=4, pady=2)
             raw.grid(row=(len(cells) - 1) // per + 1, column=0, columnspan=per, sticky="w", padx=4)
+            if help_label is not None:
+                help_label.grid(row=(len(cells) - 1) // per + 2, column=0, columnspan=per, sticky="w", padx=4)
 
         frame._relayout = relayout
         self._add_reflow(frame)
@@ -6024,7 +6239,7 @@ class App(ctk.CTk):
         for key, row in self._rows.items():
             locked = key in row_reason
             info = row["info"]
-            if not info or not (key in lock_ids or any(self._lock_matches(lock, info.get("subgroup", "")) for lock in group_locks)) or bool(row.get("locked")) == locked:
+            if row.get("lazy") or not info or not (key in lock_ids or any(self._lock_matches(lock, info.get("subgroup", "")) for lock in group_locks)) or bool(row.get("locked")) == locked:
                 continue
             row["locked"] = locked
             self._set_enabled(row["widget"], not locked)

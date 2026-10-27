@@ -4,6 +4,7 @@
     "17": {
       "name": "S&Q Motion",
       "status": "confirmed",
+      "help": "Slow & quick motion: records at another frame rate than the playback rate.",
       "flags": [
         "00119",
         "01079",
@@ -19,6 +20,7 @@
     "21": {
       "name": "Timecode",
       "status": "confirmed",
+      "help": "Timecode mode, run mode, setting, reset and format.",
       "flags": [
         "00123",
         "00124",
@@ -38,6 +40,7 @@
     "39": {
       "name": "Format Media",
       "status": "confirmed",
+      "help": "Formats (initializes) the memory cards.",
       "flags": [
         "00141",
         "00142",
@@ -53,6 +56,7 @@
     "124": {
       "name": "VF Setting",
       "status": "confirmed",
+      "help": "Brightness and colour mode of the viewfinder.",
       "flags": [
         "00228",
         "00229"
@@ -66,6 +70,7 @@
     "364": {
       "name": "Base Setting",
       "status": "confirmed",
+      "help": "Shooting mode (Custom or Cine EI), colour space and imager scan mode.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Round 25 (2026-10-23): Base Setting alone in slot 1 with its four sub-elements (Shooting Mode, Color Space, Imager Scan Mode, Rec/Out EI Applied) switched on: compared with the file before, only flag 01907 changed (0 to 1); the other flags of the item were already 1 from earlier files, so they show only when sub-elements are switched off (not decoded yet). Round 26: all four sub-elements switched off in the dialog: the camera did not register the item (slot 1 stayed empty) and exactly four flags went from 1 to 0: 00462, 00463, 01166 and 01907, so these are the flags of the four sub-elements (their assignment is not known yet). Round 27: Base Setting registered again with Shooting Mode and Imager Scan Mode switched off (Color Space and Rec/Out EI Applied on): flags 00462 and 01166 are 0, 00463 and 01907 are 1, so {Shooting Mode, Imager Scan Mode} = {00462, 01166} and {Color Space, Rec/Out EI Applied} = {00463, 01907}. Round 28: Color Space and Imager Scan Mode switched off (Shooting Mode and Rec/Out EI Applied on): 00463 and 01166 are 0, 00462 and 01907 are 1. Together with round 27: Imager Scan Mode = 01166 (off in both), Shooting Mode = 00462, Color Space = 00463, Rec/Out EI Applied = 01907 (dialog order = flag order 00462, 00463, 01166, 01907).",
       "sub_elements": [
         "Shooting Mode",
@@ -83,12 +88,14 @@
     "433": {
       "name": "Output Format",
       "status": "confirmed",
+      "help": "Resolution of the SDI, HDMI and REF outputs.",
       "flags": [],
       "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Round 101 (2026-10-24): the user added Output Format alone to slot 1 on the FS7M2 camera: the camera asks for no sub-elements (nothing to select), and the saved file (v101) differs from the one before only in slot 1 (`100663729,-1`, code 0x060001B1, second value -1 as in the first file with this item), no flag changed. So Output Format has no flags."
     },
     "463": {
       "name": "Monitor LUT",
       "status": "confirmed",
+      "help": "The look or LUT used for monitoring in Cine EI mode.",
       "flags": [
         "00702",
         "00565",
@@ -114,6 +121,7 @@
     "559": {
       "name": "Rec Format",
       "status": "confirmed",
+      "help": "Video format and RAW output format.",
       "flags": [
         "00661",
         "01063"
@@ -127,6 +135,7 @@
     "700": {
       "name": "Codec",
       "status": "confirmed",
+      "help": "The recording codec: XAVC, MPEG HD422, ProRes or RAW.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. The user confirmed on the FS7M2 camera (2026-10-23) that Codec has no sub-element: the camera does not ask for any when it is added, so it needs no flags.",
       "flags": [],
       "slot_sub": "0"
@@ -134,6 +143,7 @@
     "704": {
       "name": "Simul Rec",
       "status": "confirmed",
+      "help": "Records to both memory cards at the same time.",
       "flags": [
         "00806",
         "00807"
@@ -147,12 +157,14 @@
     "755": {
       "name": "Auto Black Balance",
       "status": "confirmed",
+      "help": "Runs the automatic black balance (lens cap on).",
       "flags": [],
       "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Round 111 (2026-10-24): the user added Auto Black Balance alone to slot 1 on the FS7M2 camera: it has no sub-elements; the saved file (v111) differs from the one before only in slot 1 (`100664051,-1`, code 0x060002F3, second value -1), no flag changed. So Auto Black Balance has no flags."
     },
     "763": {
       "name": "Picture Cache Rec",
       "status": "confirmed",
+      "help": "Also records the seconds before you press the record button.",
       "flags": [
         "01086",
         "01087"
@@ -166,12 +178,14 @@
     "892": {
       "name": "APR",
       "status": "confirmed",
+      "help": "Runs the automatic pixel correction of the image sensor (lens cap on).",
       "flags": [],
       "evidence": "FS7M2 user menu file DEFG (2026-10-21): the camera's user menu was filled with these items in this order (slots 1 to 13); the numbers are the file's values minus 0x06000000. 364, 700, 17, 21 and 763 are in the FS7 (Mk1) sample file, too, so the numbering is the same on both cameras. Round 110 (2026-10-24): the user added APR alone to slot 1 on the FS7M2 camera: it has no sub-elements; the saved file (v110) differs from the one before only in slot 1 (`100664188,-1`, code 0x0600037C, second value -1), no flag changed. So APR has no flags."
     },
     "1101": {
       "name": "ISO/Gain/EI",
       "status": "confirmed",
+      "help": "Gain as ISO or dB and the exposure index for the L, M and H positions.",
       "flags": [
         "01207",
         "01203",
@@ -197,6 +211,7 @@
     "189": {
       "name": "Noise Suppression",
       "status": "confirmed",
+      "help": "Noise suppression on or off and its level.",
       "sub_elements": [
         "Setting",
         "Level"
@@ -210,6 +225,7 @@
     "716": {
       "name": "ND Filter",
       "status": "confirmed",
+      "help": "The ND filter preset values (FS7 II only).",
       "flags": [
         "00818",
         "00819",
@@ -228,6 +244,7 @@
     "474": {
       "name": "Focus",
       "status": "confirmed",
+      "help": "Autofocus area, Push AF area and AF assist.",
       "flags": [
         "00571",
         "00572",
@@ -259,6 +276,7 @@
     "130": {
       "name": "Color Bars",
       "status": "confirmed",
+      "help": "Switches the colour bars on and off and sets their type.",
       "flags": [
         "00233",
         "00232"
@@ -272,6 +290,7 @@
     "556": {
       "name": "Flicker Reduce",
       "status": "confirmed",
+      "help": "Reduces the flicker of lights on mains power.",
       "evidence": "FS7M2 user menu file DEFG, nineteenth version (2026-10-21): slot 1 changed from Color Bars to Flicker Reduce: 00001 = 100663852,0 (= 0x06000000 + 556); no flag changed (against the version before, with Color Bars Setting off): the flags of its sub-elements Mode and Frequency (as the camera dialog lists them) were on already, probably from an item registered earlier in the same menu. The flags are not known yet (they have to be found by deselecting a sub-element: the flag that goes off is its flag). Twentieth version: Mode deselected: only 00658 went 1 -> 0, so Mode = 00658 (the flag was on already). Twenty-first version: Frequency deselected (against the version with both on): only 00659 went 1 -> 0, so Frequency = 00659 and Mode = 00658.",
       "sub_elements": [
         "Mode",
@@ -285,6 +304,7 @@
     "11": {
       "name": "Zebra",
       "status": "confirmed",
+      "help": "Zebra stripes that show areas at a chosen brightness.",
       "flags": [
         "00113",
         "00114",
@@ -304,6 +324,7 @@
     "520": {
       "name": "Audio Input",
       "status": "confirmed",
+      "help": "Input sources, levels, wind filters and limiter of the recording channels.",
       "flags": [
         "01017",
         "01018",
@@ -361,6 +382,7 @@
     "67": {
       "name": "Audio Output",
       "status": "confirmed",
+      "help": "Monitor channel, volumes, headphone output, limiter and HDMI audio channels.",
       "flags": [
         "00170",
         "01306",
@@ -382,6 +404,7 @@
     "739": {
       "name": "Clip",
       "status": "confirmed",
+      "help": "How clips are named: camera ID, reel number, title prefix.",
       "flags": [
         "00836",
         "01223",
@@ -403,6 +426,7 @@
     "500": {
       "name": "Assignable Button",
       "status": "confirmed",
+      "help": "The function of each assignable button.",
       "flags": [
         "00602",
         "00603",
@@ -432,6 +456,7 @@
     "1157": {
       "name": "Assignable Dial",
       "status": "confirmed",
+      "help": "The function and the turning direction of the assignable dials.",
       "flags": [
         "01259",
         "01261",
@@ -449,6 +474,7 @@
     "1116": {
       "name": "Lens",
       "status": "confirmed",
+      "help": "Zoom ring direction and lens corrections: shading, chromatic aberration, distortion.",
       "flags": [
         "01218",
         "01308",
@@ -466,6 +492,7 @@
     "1109": {
       "name": "AF Micro Adjustment",
       "status": "confirmed",
+      "help": "Fine tuning of the autofocus position for lenses on an LA-EA2/4 adapter.",
       "flags": [
         "01211",
         "01212",
@@ -481,6 +508,7 @@
     "240": {
       "name": "White",
       "status": "confirmed",
+      "help": "White balance: preset, memories A and B, shockless white and ATW speed.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 29): White alone in slot 1 (code 0x06000000 + 240) with all its sub-elements switched on (the user named them in the dialog order: Preset White, Color Temp <A>, Color Balance <A>, R Gain <A>, B Gain <A>, the same block for <B>, Filter White Memory, Shockless White, White Switch <B>, ATW Speed). Compared with the file before (Base Setting, round 28) ten flags changed from 0 to 1: 00342, 00990, 00996, 00998, 00999, 01000, 01001, 01002, 01322, 01431; the item has more sub-elements than that, so the other flags were on already from earlier files (they show only when sub-elements are switched off, not decoded yet). Round 30 (pattern file 1, elements 1, 3, 5, 7, 9, 11, 13 switched off): flags 00342, 00345, 00990, 00999, 01000, 01002 and 01322 went from 1 to 0 (00345 had been on already). Round 31 (pattern file 2, elements 2, 3, 6, 7, 10, 11 switched off): flags 00344, 00345, 00996, 01000, 01322 and 01431 went from 1 to 0. With round 30 this gives the groups: elements 3, 7, 11 = {00345, 01000, 01322}; elements 1, 5, 9, 13 = {00342, 00990, 00999, 01002}; elements 2, 6, 10 = {00344, 00996, 01431}. Round 32 (pattern file 3, elements 4, 5, 6, 7, 12, 13 switched off; compared with the all-on file of round 29): flags 00342, 00346, 00998, 00999, 01000 and 01431 went from 1 to 0 (00344, 00345, 00346 were on already, so the item has 13 flags). Resolved so far: element 6 (Color Temp <B>) = 01431, 7 (Color Balance <B>) = 01000, 8 (R Gain <B>) = 01001; pairs still open: {4, 12} = {00346, 00998}, {5, 13} = {00342, 00999}, {1, 9} = {00990, 01002}, {2, 10} = {00344, 00996}, {3, 11} = {00345, 01322}. Round 33 (pattern file 4, elements 8 to 13 switched off): flags 00342, 00344, 00345, 00346, 01001 and 01002 went from 1 to 0. This separates the pairs of round 32; all four pattern files agree with the assignment (the element lists are in the dialog order): Preset White = 00990, Color Temp <A> = 00996, Color Balance <A> = 01322, R Gain <A> = 00998, B Gain <A> = 00999, Color Temp <B> = 01431, Color Balance <B> = 01000, R Gain <B> = 01001, B Gain <B> = 01002, Filter White Memory = 00344, Shockless White = 00345, White Switch <B> = 00346, ATW Speed = 00342.",
       "sub_elements": [
         "Preset White",
@@ -516,6 +544,7 @@
     "335": {
       "name": "Black",
       "status": "confirmed",
+      "help": "Black level corrections: master, red and blue.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 34): Black alone in slot 1 (code 0x06000000 + 335) with its four sub-elements (Setting, Master Black, R Black, B Black) switched on in the dialog. Compared with the file before (White with six sub-elements off, round 33) only slot 1 changed: no flag went from 0 to 1, so all four flags of Black were on already from earlier files (they show only when sub-elements are switched off, not decoded yet). Round 35: all four sub-elements switched off: the camera did not register the item (slot 1 empty) and exactly four flags went from 1 to 0: 00437, 00438, 00439 and 00440, the flags of the four sub-elements (assignment not known yet). Round 36: Black registered again with only Setting and Master Black on: flags 00437 and 00438 went from 0 to 1 (00439 and 00440 stay 0), so {Setting, Master Black} = {00437, 00438} and {R Black, B Black} = {00439, 00440}. Round 37: Black registered with only Setting and R Black on: 00437 and 00440 on, 00438 off again. With round 36: Setting = 00437 (on in both), Master Black = 00438, R Black = 00440, B Black = 00439 (the dialog order does not follow the flag numbers here: R Black has the higher number).",
       "sub_elements": [
         "Setting",
@@ -533,6 +562,7 @@
     "163": {
       "name": "Gamma",
       "status": "confirmed",
+      "help": "Gamma correction: category, curve and levels.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 38): Gamma alone in slot 1 (code 0x06000000 + 163) with its eight sub-elements (Setting, Step Gamma, Master Gamma, R Gamma, G Gamma, B Gamma, Gamma Category, Gamma Select) switched on in the dialog. Compared with the file before (Black, round 37) only slot 1 changed: no flag went from 0 to 1, so all eight flags of Gamma were on already from earlier files (they show only when sub-elements are switched off, not decoded yet). Round 39 (pattern file 1, elements 1, 3, 5, 7 switched off): flags 00265, 00267, 00271 and 00282 went from 1 to 0. Round 40 (pattern file 2, elements 2, 3, 6, 7 switched off): flags 00266, 00267, 00271 and 00283 went from 1 to 0. With round 39: elements 3, 7 = {00267, 00271}; elements 1, 5 = {00265, 00282}; elements 2, 6 = {00266, 00283}. Round 41 (pattern file 3, elements 4, 5, 6, 7 switched off): flags 00271, 00281, 00282 and 00283 went from 1 to 0. Together with rounds 39 and 40 seven sub-elements are determined: Setting = 00265, Step Gamma = 00266, Master Gamma = 00267, R Gamma = 00281, G Gamma = 00282, B Gamma = 00283, Gamma Category = 00271; Gamma Select (element 8) was off in none of the three files and is decided by round 42. Round 42 (pattern file 4, only element 8 switched off): only flag 00272 went from 1 to 0, so Gamma Select = 00272. All four pattern files agree with the assignment (dialog order): Setting = 00265, Step Gamma = 00266, Master Gamma = 00267, R Gamma = 00281, G Gamma = 00282, B Gamma = 00283, Gamma Category = 00271, Gamma Select = 00272.",
       "sub_elements": [
         "Setting",
@@ -558,6 +588,7 @@
     "396": {
       "name": "Offset White",
       "status": "confirmed",
+      "help": "Colour temperature offset of the white memories and ATW.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-23, round 43): Offset White alone in slot 1 (code 0x06000000 + 396) with all its sub-elements switched on (named by the user in the dialog order: Offset White, Warm Cool, Warm Cool Balance for <A>, the same block for <B>, then Offset White, Warm Cool and Warm Cool Balance for <ATW>). Compared with the file before (Gamma, round 42) nine consecutive flags went from 0 to 1: 01008 to 01016 (the sub-element names are assigned later with pattern files). Round 44 (pattern file 1, elements 1, 3, 5, 7, 9 to be switched off): only four flags went from 1 to 0: 01008, 01010, 01012 and 01014 (01016 stayed on; one deselection did not show, to be clarified). Round 45 (pattern file 1 repeated with all five deselections): flags 01008, 01010, 01012, 01014 and 01016 went from 1 to 0 (elements 1, 3, 5, 7, 9; the 9 had been forgotten in round 44). Round 46 (pattern file 2, elements 2, 3, 6, 7 switched off): flags 01009, 01010, 01013 and 01014 went from 1 to 0. With round 45: elements 3, 7 = {01010, 01014}; elements 1, 5, 9 = {01008, 01012, 01016}; elements 2, 6 = {01009, 01013}; elements 4, 8 = {01011, 01015} (the two left over). Round 47 (pattern file 3, elements 4, 5, 6, 7 switched off): flags 01011, 01012, 01013 and 01014 went from 1 to 0. Determined so far: Warm Cool <A> (2) = 01009, Warm Cool Balance <A> (3) = 01010, Offset White <B> (4) = 01011, Warm Cool <B> (5) = 01012, Warm Cool Balance <B> (6) = 01013, Offset White <ATW> (7) = 01014, Warm Cool <ATW> (8) = 01015 (the one left over); Offset White <A> (1) and Warm Cool Balance <ATW> (9) are {01008, 01016} in an order that round 48 decides. Round 48 (pattern file 4, elements 8 and 9 switched off): flags 01015 and 01016 went from 1 to 0, so Warm Cool <ATW> = 01015 and Warm Cool Balance <ATW> = 01016, and Offset White <A> = 01008. All four pattern files agree: the dialog order follows the flag numbers 01008 to 01016 (Offset White <A> = 01008, Warm Cool <A> = 01009, Warm Cool Balance <A> = 01010, Offset White <B> = 01011, Warm Cool <B> = 01012, Warm Cool Balance <B> = 01013, Offset White <ATW> = 01014, Warm Cool <ATW> = 01015, Warm Cool Balance <ATW> = 01016).",
       "sub_elements": [
         "Offset White <A>",
@@ -585,6 +616,7 @@
     "383": {
       "name": "Matrix",
       "status": "confirmed",
+      "help": "Colour matrix corrections: preset, user and adaptive matrix.",
       "flags": [
         "00485",
         "00841",
@@ -620,6 +652,7 @@
     "750": {
       "name": "Black Gamma",
       "status": "likely",
+      "help": "Reshapes the gamma curve in the darkest part of the picture.",
       "flags": [
         "00852",
         "00853",
@@ -635,6 +668,7 @@
     "469": {
       "name": "Auto Exposure",
       "status": "confirmed",
+      "help": "Automatic exposure: level, mode, speed, gain limit, shutter and metering window.",
       "flags": [
         "00571",
         "00757",
@@ -666,6 +700,7 @@
     "307": {
       "name": "Shutter",
       "status": "confirmed",
+      "help": "Electronic shutter: mode, speed, angle and ECS frequency.",
       "flags": [
         "00410",
         "00785",
@@ -683,12 +718,14 @@
     "550": {
       "name": "SteadyShot",
       "status": "confirmed",
+      "help": "Image stabilisation.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 3 (code 0x06000000 + 550). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "531": {
       "name": "Handle Zoom",
       "status": "confirmed",
+      "help": "Mode and speed of the zoom lever on the handle.",
       "flags": [
         "00987",
         "00986"
@@ -702,12 +739,14 @@
     "714": {
       "name": "Video Light Set",
       "status": "confirmed",
+      "help": "How a connected video light is switched.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 5 (code 0x06000000 + 714). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "147": {
       "name": "Knee",
       "status": "confirmed",
+      "help": "Knee correction: compresses bright highlights so that they do not clip.",
       "flags": [
         "00249",
         "00250",
@@ -729,6 +768,7 @@
     "260": {
       "name": "White Clip",
       "status": "confirmed",
+      "help": "Upper limit of the white level.",
       "flags": [
         "00362",
         "00363"
@@ -742,6 +782,7 @@
     "346": {
       "name": "Detail",
       "status": "confirmed",
+      "help": "Detail correction (edge sharpening) with all its settings.",
       "flags": [
         "00448",
         "00449",
@@ -779,6 +820,7 @@
     "323": {
       "name": "Skin Detail",
       "status": "confirmed",
+      "help": "Detail correction for one colour range, usually skin tones.",
       "flags": [
         "00426",
         "00427",
@@ -802,6 +844,7 @@
     "253": {
       "name": "Aperture",
       "status": "confirmed",
+      "help": "Aperture correction: adds high frequency enhancement to the picture.",
       "flags": [
         "00355",
         "00356"
@@ -815,6 +858,7 @@
     "231": {
       "name": "Multi Matrix",
       "status": "confirmed",
+      "help": "Hue and saturation of single colour axes.",
       "flags": [
         "00333",
         "00334",
@@ -836,12 +880,14 @@
     "119": {
       "name": "Maintenance",
       "status": "confirmed",
+      "help": "Maintenance functions such as the test saw signal.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 12 (code 0x06000000 + 119). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "411": {
       "name": "Output Setting",
       "status": "confirmed",
+      "help": "HDMI target device, output colour space and HD conversion mode.",
       "flags": [
         "01361",
         "01385",
@@ -857,12 +903,14 @@
     "513": {
       "name": "Output Display",
       "status": "confirmed",
+      "help": "Whether menus and status are overlaid on the SDI and HDMI outputs.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 14 (code 0x06000000 + 513). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "4": {
       "name": "Peaking",
       "status": "confirmed",
+      "help": "Focus aid that outlines sharp edges in the viewfinder.",
       "flags": [
         "00106",
         "00107",
@@ -884,6 +932,7 @@
     "172": {
       "name": "Marker",
       "status": "confirmed",
+      "help": "Viewfinder markers: centre, safety zone, aspect, user box and guide frame.",
       "flags": [
         "00274",
         "00858",
@@ -927,6 +976,7 @@
     "82": {
       "name": "Display On/Off",
       "status": "confirmed",
+      "help": "Which items the viewfinder and the outputs show.",
       "flags": [
         "01031",
         "00184",
@@ -1020,6 +1070,7 @@
     "1420": {
       "name": "Video Signal Monitor",
       "status": "confirmed",
+      "help": "Waveform, vector or histogram monitor and its source.",
       "flags": [
         "01522",
         "01523"
@@ -1033,12 +1084,14 @@
     "377": {
       "name": "TC Display",
       "status": "confirmed",
+      "help": "What the time display shows: timecode, users bit or duration.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 115): the user filled all 20 slots with menu items that were not known yet and told the names in slot order; this one is in slot 19 (code 0x06000000 + 377). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "727": {
       "name": "Users Bit",
       "status": "confirmed",
+      "help": "Users bit mode and value.",
       "flags": [
         "00829",
         "00830"
@@ -1052,12 +1105,14 @@
     "570": {
       "name": "HDMI TC Out",
       "status": "confirmed",
+      "help": "Sends the timecode on the HDMI output.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 1 (code 0x06000000 + 570). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "871": {
       "name": "Interval Rec",
       "status": "confirmed",
+      "help": "Interval recording: time between shots, frames per shot and pre-lighting.",
       "flags": [
         "01080",
         "01081",
@@ -1075,12 +1130,14 @@
     "144": {
       "name": "SDI/HDMI Rec Control",
       "status": "confirmed",
+      "help": "Starts and stops external recorders together with the camera.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 3 (code 0x06000000 + 144). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "44": {
       "name": "Update Media",
       "status": "confirmed",
+      "help": "Updates the management file of the memory cards.",
       "flags": [
         "00146",
         "00147"
@@ -1094,30 +1151,35 @@
     "572": {
       "name": "Genlock",
       "status": "confirmed",
+      "help": "Shows the genlock reference: Internal, External (HD) or External (SD).",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 5 (code 0x06000000 + 572). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "1307": {
       "name": "ND Dial",
       "status": "confirmed",
+      "help": "Turning direction of the ND dial.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 6 (code 0x06000000 + 1307). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "553": {
       "name": "Rec Lamp",
       "status": "confirmed",
+      "help": "Switches the record lamp (tally) on and off.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 7 (code 0x06000000 + 553). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "458": {
       "name": "Fan Control",
       "status": "confirmed",
+      "help": "Fan mode: Auto, Minimum or Off in Rec.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 8 (code 0x06000000 + 458). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "1113": {
       "name": "HOLD Switch Setting",
       "status": "confirmed",
+      "help": "Which controls the HOLD switch locks.",
       "flags": [
         "01215",
         "01216"
@@ -1131,12 +1193,14 @@
     "511": {
       "name": "Language",
       "status": "confirmed",
+      "help": "Language of the camera menus.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 10 (code 0x06000000 + 511). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "217": {
       "name": "Clock Set",
       "status": "confirmed",
+      "help": "Time zone, date, time and their display formats.",
       "flags": [
         "00323",
         "00322",
@@ -1156,12 +1220,14 @@
     "476": {
       "name": "Country",
       "status": "confirmed",
+      "help": "Region of use: NTSC or PAL area.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 12 (code 0x06000000 + 476). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "340": {
       "name": "Hours Meter",
       "status": "confirmed",
+      "help": "Shows the operating hours; one counter can be reset.",
       "flags": [
         "01068",
         "01069",
@@ -1177,6 +1243,7 @@
     "78": {
       "name": "Basic Authentication",
       "status": "confirmed",
+      "help": "User name and password for access over the network.",
       "flags": [
         "01902",
         "01903"
@@ -1190,6 +1257,7 @@
     "561": {
       "name": "Wi-Fi",
       "status": "confirmed",
+      "help": "Wi-Fi switch, connection, addresses and password.",
       "flags": [
         "00663",
         "00664",
@@ -1215,18 +1283,21 @@
     "659": {
       "name": "GPS",
       "status": "confirmed",
+      "help": "Switches the GPS on and off.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 16 (code 0x06000000 + 659). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "722": {
       "name": "IR-Remote",
       "status": "confirmed",
+      "help": "Allows control with the infrared remote.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 116): the user filled all 20 slots with twenty more menu items that were not known yet and told the names in slot order; this one is in slot 17 (code 0x06000000 + 722). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "137": {
       "name": "Camera Battery Alarm",
       "status": "confirmed",
+      "help": "Battery charge at which the low battery notice and the empty warning appear.",
       "flags": [
         "01074",
         "01075"
@@ -1240,6 +1311,7 @@
     "1148": {
       "name": "Camera DC IN Alarm",
       "status": "confirmed",
+      "help": "Input voltages at which the low voltage warnings appear.",
       "flags": [
         "01250",
         "01291"
@@ -1253,6 +1325,7 @@
     "1191": {
       "name": "Ext. Unit Battery Alarm",
       "status": "confirmed",
+      "help": "Battery warnings of the extension unit XDCA-FS7.",
       "flags": [
         "01293",
         "01263",
@@ -1276,6 +1349,7 @@
     "1167": {
       "name": "Ext. Unit DC IN Alarm",
       "status": "confirmed",
+      "help": "Input voltage warnings of the extension unit XDCA-FS7.",
       "flags": [
         "01269",
         "01270"
@@ -1289,18 +1363,21 @@
     "367": {
       "name": "All Reset",
       "status": "confirmed",
+      "help": "Resets all settings of the camera to the factory values.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 117): the user filled slots 1 to 4 with the last four menu items that were not known yet and told the names in slot order; this one is in slot 2 (code 0x06000000 + 367). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "442": {
       "name": "Camera Config",
       "status": "confirmed",
+      "help": "Output bandwidth of the conversion down to HD and 2K.",
       "evidence": "FS7M2 user menu file DEFG (2026-10-24, round 117): the user filled slots 1 to 4 with the last four menu items that were not known yet and told the names in slot order; this one is in slot 3 (code 0x06000000 + 442). The sub-elements are not decoded yet. The user confirmed on the camera (2026-10-24) that this item has no sub-elements; its second slot value in the file is -1.",
       "flags": []
     },
     "302": {
       "name": "Version",
       "status": "confirmed",
+      "help": "Software versions and updates of the camera, lens and extension unit.",
       "flags": [
         "01078",
         "00404",
@@ -1340,7 +1417,7 @@
         "01409",
         "01410"
       ],
-      "note": "Flag IDs of the FS7M2 user menu files that an FS7 (Mk1) file does not have (an FS7 file holds 408 flags, an FS7M2 file 424; checked 2026-10-26 with a Mk1 file of the camera and 27 sub-elements switched off at first, middle and last positions of nine items). The user menu of the Mk1 is the one of the Mk2 without these flags and without the ND Filter item (not_on_models)."
+      "remark": "Flag IDs of the FS7M2 user menu files that an FS7 (Mk1) file does not have (an FS7 file holds 408 flags, an FS7M2 file 424; checked 2026-10-26 with a Mk1 file of the camera and 27 sub-elements switched off at first, middle and last positions of nine items). The user menu of the Mk1 is the one of the Mk2 without these flags and without the ND Filter item (not_on_models)."
     }
   }
 }

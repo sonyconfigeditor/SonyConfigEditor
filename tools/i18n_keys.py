@@ -49,7 +49,7 @@ def db_keys(translated: set[str]) -> list[str]:
             for v in node:
                 walk(v)
 
-    for name in ("scene_parameters.json", "all_parameters.json"):
+    for name in ("scene_parameters.json", "all_parameters.json", "user_menu_items.json"):
         walk(json.loads((ROOT / name).read_text(encoding="utf-8")))
     return out
 
