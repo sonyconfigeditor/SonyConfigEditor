@@ -68,7 +68,7 @@ IDs are decoded by comparing files and the manuals. Decoded so far for the FS7M2
 
 | File type | IDs in a file | Named | confirmed / likely / hypothesis |
 |---|---|---|---|
-| ALL | 321 | 249 | 143 / 88 / 18 |
+| ALL | 321 | 250 | 143 / 89 / 18 |
 | SCENE | 136 | 98 | 56 / 37 / 5 |
 | USER (user menu) | 444 | 354 (20 slots + 334 flags) | – |
 

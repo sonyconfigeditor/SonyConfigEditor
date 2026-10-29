@@ -38,7 +38,7 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode import AppearanceModeTracker
 
 _version = "0.9.1"
-_date = "2026-10-27"
+_date = "2026-10-29"
 
 APP_NAME = "Sony Config Editor"
 CONTACT_EMAIL = "sonyconfigeditor@gmail.com"
@@ -62,7 +62,7 @@ SUBGROUP_ORDER = [
     "System › Country", "System › Base Setting", "System › Codec / Rec Format", "System › Rec Format (companion values)", "System › Assignable Button", "System › Assignable Dial", "System › Rec Lamp", "System › Fan Control", "System › ND Dial", "System › HOLD Switch Setting", "System › Lens", "System › Language", "System › Clock Set", "System › GPS", "System › IR Remote", "System › Camera Battery Alarm", "System › Camera DC IN Alarm", "System › Ext. Unit Battery Alarm", "System › Ext. Unit DC IN Alarm", "System › Camera Config",
     "Camera › ISO/Gain/EI", "Camera › ND Filter", "Camera › Auto Exposure", "Camera › Focus", "Camera › Shutter", "Camera › Color Bars", "Camera › Noise Suppression", "Camera › Flicker Reduce", "Camera › SteadyShot", "Camera › Handle Zoom", "Camera › Video Light Set",
     "Paint › White", "Paint › Offset White", "Paint › Black", "Paint › Gamma", "Paint › Black Gamma", "Paint › Knee / White Clip", "Paint › White Clip", "Paint › Detail", "Paint › Skin Detail", "Paint › Detail / Aperture", "Paint › Matrix", "Paint › Maintenance",
-    "Recording › S&Q Motion", "Recording › Interval Rec", "Recording › Simul Rec", "Media › Clip", "Audio › Input", "Audio › Output", "Video › Output", "Video › Output Setting", "Video › Output Display", "Video › Monitor LUT", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File", "User › Menu",
+    "Recording › S&Q Motion", "Recording › Interval Rec", "Recording › Simul Rec", "Recording › SDI/HDMI Rec Control", "Media › Clip", "Audio › Input", "Audio › Output", "Video › Output", "Video › Output Setting", "Video › Output Display", "Video › Monitor LUT", "VF › Marker", "VF › VF Setting", "VF › Zebra", "VF › Peaking", "TC/UB › Timecode", "TC/UB › TC Display", "TC/UB › Users Bit", "TC/UB › HDMI TC Out", "File › Clip", "File › Scene File", "User › Menu",
 ]
 REORDER_BY_LOCK = {"Camera › ISO/Gain/EI"}      # sub-groups whose usable rows move to the top, the greyed-out ones follow below a divider line
 CATEGORIES = ()      # the menus are tabs now; a heading per menu inside a tab would only repeat the tab name (the mechanism for headings is kept)

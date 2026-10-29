@@ -919,5 +919,6 @@
   "Shows the license of this program.": "顯示本程式的授權。",
   "Shows the licenses of the components this program uses.": "顯示本程式所用元件的授權。",
   "Starts a new file for the FS7 (Mk1).": "為 FS7 (Mk1) 新增檔案。",
-  "Starts a new file for the FS7 Mk2.": "為 FS7 Mk2 新增檔案。"
+  "Starts a new file for the FS7 Mk2.": "為 FS7 Mk2 新增檔案。",
+  "Lets the SDI or HDMI output start and stop recording: off, remote interface, or parallel recording.": "允許 SDI 或 HDMI 輸出啟動和停止錄製：關閉、遠端介面或並行錄製。"
 }

@@ -8285,6 +8285,23 @@
       "note": "Eight hex digits (four pairs), stored as four decimal bytes."
     }
   },
+  "00154": {
+    "name": "SDI/HDMI Rec Control",
+    "help": "Lets the SDI or HDMI output start and stop recording: off, remote interface, or parallel recording.",
+    "status": "likely",
+    "group": "video",
+    "subgroup": "Recording › SDI/HDMI Rec Control",
+    "order": 1,
+    "evidence": "FS7M2 round 143 (2026-10-29): SDI/HDMI Rec Control Off -> Parallel Rec changed ALL 00154 from 0 to 2 (ALL only; 00254 changed 0 -> 1 in the same round, cause unknown). The camera offers Off, SDI/HDMI Remote I/F, Parallel Rec; Off = 0 and Parallel Rec = 2 seen, SDI/HDMI Remote I/F = 1 assumed from the menu order.",
+    "widget": {
+      "type": "choice",
+      "choices": {
+        "0": "Off",
+        "1": "SDI/HDMI Remote I/F – assumption",
+        "2": "Parallel Rec"
+      }
+    }
+  },
   "00159": {
     "name": "NTSC / PAL Area",
     "help": "Television system of the camera. Switching it changes the frame rates that are available.",

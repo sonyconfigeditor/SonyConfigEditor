@@ -922,5 +922,6 @@
   "Shows the license of this program.": "Menampilkan lisensi program ini.",
   "Shows the licenses of the components this program uses.": "Menampilkan lisensi komponen yang dipakai program ini.",
   "Starts a new file for the FS7 (Mk1).": "Membuat file baru untuk FS7 (Mk1).",
-  "Starts a new file for the FS7 Mk2.": "Membuat file baru untuk FS7 Mk2."
+  "Starts a new file for the FS7 Mk2.": "Membuat file baru untuk FS7 Mk2.",
+  "Lets the SDI or HDMI output start and stop recording: off, remote interface, or parallel recording.": "Memungkinkan keluaran SDI atau HDMI memulai dan menghentikan perekaman: mati, antarmuka jarak jauh, atau perekaman paralel."
 }

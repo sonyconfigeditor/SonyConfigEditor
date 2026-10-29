@@ -3,12 +3,13 @@
 Newest first. `_version` / `_date` in `SonyConfigEditor.py` match the top entry.
 The version number is only raised for a release.
 
-## [Unreleased] - 2026-10-27
+## [Unreleased] - 2026-10-29
 
 ### Changed
 - **Opening a file is about three times faster:** the table builds only the tab that is shown at once; the other menus follow in the background one after the other (a tab that you open earlier is built right away, a search or filter builds all of them). Values, undo and saving do not wait for the rows. The background build works in small steps (a few rows each), so the window stays usable.
 
 ### Added
+- **Recording › SDI/HDMI Rec Control** (Off, SDI/HDMI Remote I/F, Parallel Rec) is now a named setting in ALL files (marked as likely; the middle value is assumed).
 - **User menu:** every slot says in one sentence what the chosen menu item is (under its raw value), for all 77 menu items, in all ten languages.
 - **Explanations as tooltips** for the four menus of the menu bar (File, Edit, View, Help), the New, About, Compare and Open windows and for the controls of the import windows (search, filters, All / None / Invert selection / Known only, Import selection, Import all known, Cancel, Show differences; for user menus the two placement choices), in all ten languages.
 

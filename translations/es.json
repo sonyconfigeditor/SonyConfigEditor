@@ -922,5 +922,6 @@
   "Shows the license of this program.": "Muestra la licencia de este programa.",
   "Shows the licenses of the components this program uses.": "Muestra las licencias de los componentes que usa este programa.",
   "Starts a new file for the FS7 (Mk1).": "Crea un archivo nuevo para la FS7 (Mk1).",
-  "Starts a new file for the FS7 Mk2.": "Crea un archivo nuevo para la FS7 Mk2."
+  "Starts a new file for the FS7 Mk2.": "Crea un archivo nuevo para la FS7 Mk2.",
+  "Lets the SDI or HDMI output start and stop recording: off, remote interface, or parallel recording.": "Permite que la salida SDI o HDMI inicie y detenga la grabación: desactivado, interfaz remota o grabación en paralelo."
 }
